@@ -1,0 +1,68 @@
+version: '3.9'
+
+services:
+  web:
+    build:
+      target: dev
+      args:
+        RUBY_VERSION: 3.4.3
+        NODE_VERSION: 22
+    environment:
+      RAILS_ENV: development
+      BUNDLE_WITHOUT: ""
+      DATABASE_URL: postgresql://postgres:password@db:5432/reordersweb_development
+      RAILS_LOG_TO_STDOUT: 1
+      BOOTSNAP_CACHE_DIR: /tmp/bootsnap-cache
+    volumes:
+      - .:/rails
+      - bundle_cache:/usr/local/bundle
+      - node_modules:/rails/node_modules
+      - bootsnap_cache:/tmp/bootsnap-cache
+    stdin_open: true
+    tty: true
+    command: >
+      bash -c "
+        bundle check || bundle install &&
+        yarn install --check-files &&
+        echo 'Development container ready!' &&
+        tail -f /dev/null
+      "
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    environment:
+      POSTGRES_DB: reordersweb_development
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+
+  # Email testing in development
+  mailcatcher:
+    image: sj26/mailcatcher
+    ports:
+      - "1080:1080"  # Web interface
+      - "1025:1025"  # SMTP
+    profiles:
+      - mail
+
+  # Redis for caching and background jobs
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    profiles:
+      - redis
+
+volumes:
+  bundle_cache:
+    driver: local
+  node_modules:
+    driver: local
+  bootsnap_cache:
+    driver: local
+  redis_data:
+    driver: local
