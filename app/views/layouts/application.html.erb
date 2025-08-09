@@ -19,9 +19,89 @@
 
     <%# Includes all stylesheet files in app/assets/stylesheets %>
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags 'admin_application' %>
   </head>
 
-  <body>
-    <%= yield %>
+  <body class="bg-gray-50 min-h-screen">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm border-b border-gray-200">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-16">
+          <!-- Logo and Brand -->
+          <div class="flex items-center">
+            <%= link_to orders_path, class: "flex items-center" do %>
+              <div class="h-8 w-8 bg-indigo-600 rounded-lg flex items-center justify-center mr-3">
+                <svg class="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+                </svg>
+              </div>
+              <span class="text-xl font-bold text-gray-900">Shirtpop</span>
+            <% end %>
+          </div>
+
+          <!-- Main Navigation -->
+          <div class="hidden md:flex items-center space-x-8">
+            <%= link_to "Products", products_path, 
+                        class: "#{current_page?(products_path) ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-gray-500 hover:text-gray-700'} px-3 py-2 text-sm font-medium transition duration-150 ease-in-out" %>
+            <%= link_to "Orders", orders_path, 
+                        class: "#{current_page?(orders_path) ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-gray-500 hover:text-gray-700'} px-3 py-2 text-sm font-medium transition duration-150 ease-in-out" %>
+            <%= link_to cart_path, 
+                        class: "#{current_page?(cart_path) ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-gray-500 hover:text-gray-700'} px-3 py-2 text-sm font-medium relative transition duration-150 ease-in-out" do %>
+              <span>Cart</span>
+              <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">3</span>
+            <% end %>
+          </div>
+
+          <!-- User Menu -->
+          <div class="flex items-center space-x-4">
+            <div class="text-sm text-gray-700">
+              Hello, <span class="font-medium"><%= current_user.email.split('@').first.capitalize %></span>
+            </div>
+            <%= link_to "Sign out", destroy_user_session_path, 
+                        data: { "turbo-method": :delete },
+                        class: "bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition duration-150 ease-in-out" %>
+          </div>
+        </div>
+
+        <!-- Mobile Navigation -->
+        <div class="md:hidden">
+          <div class="pt-2 pb-3 space-y-1">
+            <%= link_to "Products", products_path, 
+                        class: "#{current_page?(products_path) ? 'bg-indigo-50 border-indigo-500 text-indigo-700' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'} block border-l-4 py-2 pl-3 pr-4 text-base font-medium" %>
+            <%= link_to "Orders", orders_path, 
+                        class: "#{current_page?(orders_path) ? 'bg-indigo-50 border-indigo-500 text-indigo-700' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'} block border-l-4 py-2 pl-3 pr-4 text-base font-medium" %>
+            <%= link_to "Cart", cart_path, 
+                        class: "#{current_page?(cart_path) ? 'bg-indigo-50 border-indigo-500 text-indigo-700' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'} block border-l-4 py-2 pl-3 pr-4 text-base font-medium" %>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Flash Messages -->
+    <% if notice %>
+      <div class="bg-green-50 border-l-4 border-green-400 p-4">
+        <div class="flex">
+          <svg class="h-5 w-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+          </svg>
+          <p class="ml-3 text-sm text-green-700"><%= notice %></p>
+        </div>
+      </div>
+    <% end %>
+
+    <% if alert %>
+      <div class="bg-red-50 border-l-4 border-red-400 p-4">
+        <div class="flex">
+          <svg class="h-5 w-5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+          </svg>
+          <p class="ml-3 text-sm text-red-700"><%= alert %></p>
+        </div>
+      </div>
+    <% end %>
+
+    <main class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+      <%= yield %>
+    </main>
   </body>
 </html>
