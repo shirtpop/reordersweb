@@ -18,4 +18,6 @@ pin_all_from "app/javascript/controllers/client", under: "controllers/client"
 pin_all_from "app/javascript/controllers/shared", under: "controllers/shared"
 
 # External JS
-pin "flowbite", to: "https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.turbo.min.js"
+pin "trix"
+pin "@rails/actiontext", to: "actiontext.esm.js"
+pin "flowbite", to: "flowbite.esm.js"

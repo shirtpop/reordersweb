@@ -1,0 +1,240 @@
+<%= form_with model: [:admin, @product], local: true, class: "p-6 space-y-6", data: { controller: "product-form", turbo: false } do |form| %>
+  <% if @product.errors[:base].any? %>
+    <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+      <h4 class="font-medium">Please fix the following errors:</h4>
+      <ul class="mt-2 list-disc list-inside">
+        <% @product.errors[:base].each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <!-- Basic Product Information -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div class="md:col-span-2">
+      <%= form.label :name, class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" %>
+      <%= form.text_field :name,
+          required: true,
+          class: field_error_class(@product, :name, "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white") %>
+      <%= display_field_errors(@product, :name) %>
+    </div>
+
+    <div class="md:col-span-2">
+      <%= form.label :image_url, class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" %>
+      <%= form.text_field :image_url,
+          placeholder: "Enter image URL",
+          class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" %>
+      <%= display_field_errors(@product, :image_url) %>
+    </div>
+  </div>
+
+  <!-- Description (WYSIWYG) -->
+  <div class="border-t pt-6">
+    <div>
+      <%= form.label :description, class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" %>
+      <%= form.rich_text_area :description, 
+          class: "trix-editor-wrapper w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white",
+          data: { controller: 'trix' } %>
+      <%= display_field_errors(@product, :description) %>
+    </div>
+  </div>
+
+  <!-- Sizes -->
+  <div class="border-t pt-6">
+    <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Available Sizes</h3>
+    <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
+      <% Product::SIZES.each do |size| %>
+        <div class="flex items-center">
+          <%= form.check_box :sizes, 
+              { multiple: true, 
+                checked: @product.sizes&.include?(size),
+                class: "h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" }, 
+              size, nil %>
+          <%= form.label "sizes_#{size.downcase.gsub(/[^a-z0-9]/, '_')}", size,
+              class: "ml-2 text-sm text-gray-700 dark:text-gray-300" %>
+        </div>
+      <% end %>
+    </div>
+    <%= display_field_errors(@product, :sizes) %>
+  </div>
+
+  <!-- Price Information -->
+  <div class="border-t pt-6">
+    <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Pricing Information</h3>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+      <div>
+        <%= form.label :minimum_order, class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" %>
+        <%= form.number_field :minimum_order,
+            required: true,
+            min: 1,
+            class: field_error_class(@product, :minimum_order, "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white") %>
+        <%= display_field_errors(@product, :minimum_order) %>
+      </div>
+
+      <div>
+        <%= form.label :base_price, class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" %>
+        <%= form.text_field :base_price,
+            required: true,
+            placeholder: "$35.00",
+            class: field_error_class(@product, :base_price, "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white") %>
+        <%= display_field_errors(@product, :base_price) %>
+      </div>
+    </div>
+
+    <!-- Bulk Prices -->
+    <div class="mb-4">
+      <div class="flex items-center justify-between mb-3">
+        <h4 class="text-md font-medium text-gray-900 dark:text-white">Bulk Pricing Tiers</h4>
+        <button type="button" 
+                class="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md text-blue-600 bg-blue-100 hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:bg-blue-900 dark:text-blue-200 dark:hover:bg-blue-800"
+                data-product-form-target="addBulkPriceBtn"
+                data-action="click->product-form#addBulkPrice">
+          + Add Bulk Price
+        </button>
+      </div>
+      
+      <div data-product-form-target="bulkPricesContainer">
+        <% bulk_prices = @product.bulk_prices || [] %>
+        <% if bulk_prices.any? %>
+          <% bulk_prices.each_with_index do |bulk_price, index| %>
+            <div class="flex items-end space-x-3 mb-3 bulk-price-row" data-product-form-target="bulkPriceRow">
+              <div class="flex-1">
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Quantity</label>
+                <input type="number" 
+                       name="product[bulk_prices][][qty]" 
+                       value="<%= bulk_price['qty'] %>"
+                       min="1"
+                       class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+              </div>
+              <div class="flex-1">
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Price</label>
+                <input type="text" 
+                       name="product[bulk_prices][][price]" 
+                       value="<%= bulk_price['price'] %>"
+                       placeholder="$30.00"
+                       class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+              </div>
+              <button type="button" 
+                      class="px-3 py-2 text-red-600 hover:text-red-800 text-sm font-medium"
+                      data-action="click->product-form#removeBulkPrice">
+                Remove
+              </button>
+            </div>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Colors -->
+  <div class="border-t pt-6">
+    <div class="flex items-center justify-between mb-4">
+      <h3 class="text-lg font-medium text-gray-900 dark:text-white">Available Colors</h3>
+      <button type="button" 
+              class="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md text-blue-600 bg-blue-100 hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:bg-blue-900 dark:text-blue-200 dark:hover:bg-blue-800"
+              data-product-form-target="addColorBtn"
+              data-action="click->product-form#addColor">
+        + Add Color
+      </button>
+    </div>
+    
+    <div data-product-form-target="colorsContainer">
+      <% colors = @product.colors || [] %>
+      <% if colors.any? %>
+        <% colors.each_with_index do |color, index| %>
+          <div class="flex items-end space-x-3 mb-3 color-row" data-product-form-target="colorRow">
+            <div class="flex-1">
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Color Name</label>
+              <input type="text" 
+                     name="product[colors][][name]" 
+                     value="<%= color['name'] %>"
+                     placeholder="Red"
+                     class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+            </div>
+            <div class="flex-1">
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Hex Color</label>
+              <div class="flex items-center space-x-2">
+                <input type="text" 
+                       name="product[colors][][hex_color]" 
+                       value="<%= color['hex_color'] %>"
+                       placeholder="#FF0000"
+                       class="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+              </div>
+            </div>
+            <button type="button" 
+                    class="px-3 py-2 text-red-600 hover:text-red-800 text-sm font-medium"
+                    data-action="click->product-form#removeColor">
+              Remove
+            </button>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Form Actions -->
+  <div class="flex items-center justify-end pt-6 border-t space-x-3">
+    <%= link_to "Cancel", admin_products_path, 
+        class: "px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-600" %>
+    
+    <%= form.submit view == 'new' ? "Create Product" : "Update Product", 
+        class: "px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" %>
+  </div>
+
+  <!-- Hidden templates for dynamic fields -->
+  <template data-product-form-target="bulkPriceTemplate">
+    <div class="flex items-end space-x-3 mb-3 bulk-price-row" data-product-form-target="bulkPriceRow">
+      <div class="flex-1">
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Quantity</label>
+        <input type="number" 
+               name="product[bulk_prices][][qty]" 
+               min="1"
+               class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+      </div>
+      <div class="flex-1">
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Price</label>
+        <input type="text" 
+               name="product[bulk_prices][][price]" 
+               placeholder="$30.00"
+               class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+      </div>
+      <button type="button" 
+              class="px-3 py-2 text-red-600 hover:text-red-800 text-sm font-medium"
+              data-action="click->product-form#removeBulkPrice">
+        Remove
+      </button>
+    </div>
+  </template>
+
+  <template data-product-form-target="colorTemplate">
+    <div class="flex items-end space-x-3 mb-3 color-row" data-product-form-target="colorRow">
+      <div class="flex-1">
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Color Name</label>
+        <input type="text" 
+               name="product[colors][][name]" 
+               placeholder="Red"
+               class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+      </div>
+      <div class="flex-1">
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Hex Color</label>
+        <div class="flex items-center space-x-2">
+          <input type="color" 
+                 name="product[colors][][hex_color]" 
+                 value="#FF0000"
+                 class="h-10 w-16 border border-gray-300 rounded cursor-pointer">
+          <input type="text" 
+                 name="product[colors][][hex_color]" 
+                 placeholder="#FF0000"
+                 class="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+        </div>
+      </div>
+      <button type="button" 
+              class="px-3 py-2 text-red-600 hover:text-red-800 text-sm font-medium"
+              data-action="click->product-form#removeColor">
+        Remove
+      </button>
+    </div>
+  </template>
+<% end %>
