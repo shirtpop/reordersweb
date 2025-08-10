@@ -1,4 +1,3 @@
-// app/javascript/controllers/client_autocomplete_controller.js
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
@@ -8,7 +7,7 @@ export default class extends Controller {
   connect() {
     // Set default URL if not provided
     if (!this.urlValue) {
-      this.urlValue = "/admin/clients/search"
+      this.urlValue = "/admin/clients"
     }
     
     this.debounceTimer = null
@@ -70,22 +69,17 @@ export default class extends Controller {
     const resultsHTML = clients.map(client => `
       <div class="px-4 py-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 border-b border-gray-200 dark:border-gray-600 last:border-b-0"
            data-client-id="${client.id}"
-           data-client-name="${client.name}"
+           data-client-name="${client.company_name}"
            data-action="mousedown->client-autocomplete#selectClient mouseenter->client-autocomplete#handleMouseEnter mouseleave->client-autocomplete#handleMouseLeave">
         <div class="flex items-center">
           <div class="flex-1">
             <p class="text-sm font-medium text-gray-900 dark:text-white">
-              ${this.escapeHtml(client.name)}
+              ${this.escapeHtml(client.company_name)}
             </p>
             <p class="text-xs text-gray-500 dark:text-gray-400">
-              ${this.escapeHtml(client.email || 'No email')}
+              ${this.escapeHtml(client.personal_name)}
             </p>
           </div>
-          ${client.company ? `
-            <div class="text-xs text-gray-400 dark:text-gray-500">
-              ${this.escapeHtml(client.company)}
-            </div>
-          ` : ''}
         </div>
       </div>
     `).join('')
@@ -136,7 +130,7 @@ export default class extends Controller {
   }
 
   hideResults() {
-    if (this.hasResultsTarget && !this.isMouseOverResults) {
+    if (this.hasResultsTarget && this.isMouseOverResults) {
       this.resultsTarget.classList.add("hidden")
       document.removeEventListener("click", this.boundHandleDocumentClick)
     }

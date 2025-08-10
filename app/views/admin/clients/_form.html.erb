@@ -1,0 +1,198 @@
+<%= form_with model: [:admin, @client], local: true, class: "p-6 space-y-6", data: { controller: "address", turbo: false } do |form| %>
+  <% if @client.errors[:base].any? %>
+    <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+      <h4 class="font-medium">Please fix the following errors:</h4>
+      <ul class="mt-2 list-disc list-inside">
+        <% @client.errors[:base].each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <!-- Client Information -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div>
+      <%= form.label :company_name, class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" %>
+      <%= form.text_field :company_name,
+          required: true,
+          class: field_error_class(@client, :company_name, "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white") %>
+      <%= display_field_errors(@client, :company_name) %>
+    </div>
+
+    <div>
+      <%= form.label :personal_name, class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" %>
+      <%= form.text_field :personal_name,
+          required: true,
+          class: field_error_class(@client, :personal_name, "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white") %>
+      <%= display_field_errors(@client, :personal_name) %>
+    </div>
+
+    <div>
+      <%= form.label :phone_number, class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" %>
+      <%= form.text_field :phone_number,
+          required: true,
+          class: field_error_class(@client, :phone_number, "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white") %>
+      <%= display_field_errors(@client, :phone_number) %>
+    </div>
+  </div>
+
+  <!-- Main Address -->
+  <div class="border-t pt-6">
+    <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Main Address</h3>
+    
+    <%= form.fields_for :address do |address_form| %>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="md:col-span-2">
+          <%= address_form.label :street, class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" %>
+          <%= address_form.text_area :street, rows: 2, required: true,
+              class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white",
+              data: { address_target: "mainField", action: "input->address#updateShipping" } %>
+          <%= display_field_errors(@client, 'address.street') %>
+        </div>
+
+        <div>
+          <%= address_form.label :city, class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" %>
+          <%= address_form.text_field :city, required: true,
+              class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white",
+              data: { address_target: "mainField", action: "input->address#updateShipping" } %>
+              <%= display_field_errors(@client, 'address.city') %>
+        </div>
+
+        <div>
+          <%= address_form.label :state, class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" %>
+          <%= address_form.text_field :state, required: true,
+              class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white",
+              data: { address_target: "mainField", action: "input->address#updateShipping" } %>
+          <%= display_field_errors(@client, 'address.state') %>
+        </div>
+
+        <div>
+          <%= address_form.label :zip_code, class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" %>
+          <%= address_form.text_field :zip_code, required: true,
+              class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white",
+              data: { address_target: "mainField", action: "input->address#updateShipping" } %>
+          <%= display_field_errors(@client, 'address.zip_code') %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+  <!-- Shipping Address -->
+  <div class="border-t pt-6">
+    <div class="flex items-center mb-4">
+      <input type="checkbox" 
+            id="same_as_main" 
+            name="same_as_main"
+            value="1"
+            class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+            data-address-target="sameAsMain"
+            data-action="change->address#toggle">
+      <label for="same_as_main" class="ml-2 text-sm text-gray-700 dark:text-gray-300">
+        Shipping address same as main address
+      </label>
+    </div>
+
+    <div id="shipping_address_fields" data-address-target="shippingFields">
+      <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Shipping Address</h3>
+      
+      <%= form.fields_for :shipping_address do |shipping_form| %>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="md:col-span-2">
+            <%= shipping_form.label :street, class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" %>
+            <%= shipping_form.text_area :street, rows: 2, required: true,
+                class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white",
+                data: { address_target: "shippingField" } %>
+            <%= display_field_errors(@client, 'shipping_address.street') %>
+          </div>
+
+          <div>
+            <%= shipping_form.label :city, class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" %>
+            <%= shipping_form.text_field :city, required: true,
+                class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white",
+                data: { address_target: "shippingField" } %>
+            <%= display_field_errors(@client, 'shipping_address.city') %>
+          </div>
+
+          <div>
+            <%= shipping_form.label :state, class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" %>
+            <%= shipping_form.text_field :state, required: true,
+                class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white",
+                data: { address_target: "shippingField" } %>
+            <%= display_field_errors(@client, 'shipping_address.state') %>
+          </div>
+
+          <div>
+            <%= shipping_form.label :zip_code, class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" %>
+            <%= shipping_form.text_field :zip_code, required: true,
+                class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white",
+                data: { address_target: "shippingField" } %>
+            <%= display_field_errors(@client, 'shipping_address.zip_code') %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- User Information -->
+  <% if view == 'new' %>
+    <div class="border-t pt-6">
+      <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Client User Account</h3>
+      
+      <%= form.fields_for :users do |user_form| %>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <%= user_form.label :email, class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" %>
+            <%= user_form.email_field :email, required: true,
+                class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" %>
+            <%= display_field_errors(@client, 'users.email') %>
+          </div>
+
+          <div>
+            <%= user_form.label :password, class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" %>
+            <%= user_form.password_field :password, required: true,
+                class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" %>
+            <%= display_field_errors(@client, 'users.password') %>
+          </div>
+
+          <%= user_form.hidden_field :role, value: 'client' %>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <% if @client.users.any? %>
+      <div class="border-t pt-6">
+        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Associated Users</h3>
+        
+        <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+          <% @client.users.each do |user| %>
+            <div class="flex items-center justify-between py-2 border-b border-gray-200 dark:border-gray-600 last:border-b-0">
+              <div>
+                <p class="text-sm font-medium text-gray-900 dark:text-white"><%= user.email %></p>
+              </div>
+              <div class="flex space-x-2">
+                <%= link_to "Delete", admin_user_path(user), method: :delete,
+                    class: "text-red-600 hover:text-red-800 text-sm",
+                    confirm: "Are you sure you want to delete this user?" %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+        
+        <div class="mt-4">
+          <%#= link_to "Add New User", new_admin_user_path(client_id: @client.id),
+              class: "inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:bg-gray-600 dark:text-white dark:border-gray-500 dark:hover:bg-gray-700" %>
+        </div>
+      </div>
+    <% end %>
+  <% end %>
+
+  <!-- Form Actions -->
+  <div class="flex items-center justify-end pt-6 border-t space-x-3">
+    <%= link_to "Cancel", admin_clients_path, 
+        class: "px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-600" %>
+    
+    <%= form.submit "Create Client", 
+        class: "px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" %>
+  </div>
+<% end %>

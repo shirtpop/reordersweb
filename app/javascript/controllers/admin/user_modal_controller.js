@@ -1,9 +1,8 @@
-// app/javascript/controllers/user_modal_controller.js
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
   static targets = [
-    "modal", "form", "clientField", "errorContainer", "errorList", 
+    "modal", "clientField", "errorContainer", "errorList", 
     "submitButton", "tableContainer", "roleSelect", "modalTitle",
     "viewContent", "formContent", "viewFooter", "formFooter",
     "viewEmail", "viewRole", "viewClient", "viewCreated", "viewClientContainer",

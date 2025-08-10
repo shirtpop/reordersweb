@@ -20,7 +20,6 @@ export default class extends Controller {
   }
 
   connect() {
-    console.log("AutoSearchController connected")
     this.timeout = null
   }
 

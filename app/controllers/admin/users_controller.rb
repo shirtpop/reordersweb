@@ -1,46 +1,24 @@
 module Admin
   class UsersController < BaseController
-    before_action :set_user, only: [:show, :edit, :update, :destroy]
+    before_action :set_user, only: [:update, :destroy]
 
     def index
       @users = if params[:q].present?
-               User.where("email ILIKE ?", "%#{params[:q]}%").order(:email)
+               User.where("email ILIKE ?", "%#{params[:q]}%")
              else
                User.order(created_at: :desc)
              end
 
-       respond_to do |format|
-          format.html
-          format.turbo_stream do
-            render turbo_stream: turbo_stream.replace(
-              "users_table",
-              partial: "table",
-              locals: { users: @users }
-            )
-          end
-        end
-    end
-
-    def show
       respond_to do |format|
         format.html
-        format.json { 
-          render json: { 
-            user: {
-              id: @user.id,
-              email: @user.email,
-              role: @user.role,
-              client_id: @user.role,
-              client_name: @user.email,
-              created_at: @user.created_at.strftime('%B %d, %Y at %I:%M %p')
-            }
-          }
-        }
+        format.turbo_stream do
+          render turbo_stream: turbo_stream.replace(
+            "users_table",
+            partial: "table",
+            locals: { users: @users }
+          )
+        end
       end
-    end
-
-    def new
-      @user = User.new
     end
 
     def create
@@ -78,8 +56,6 @@ module Admin
         end
       end
     end
-
-    def edit; end
 
     def update
       respond_to do |format|
