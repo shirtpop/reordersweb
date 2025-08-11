@@ -2,7 +2,11 @@ import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
   static targets = ["container", "input", "results", "resultsList", "hiddenField"]
-  static values = { url: String }
+  static values = { 
+    url: String,
+    clientName: String,
+    clientId: String
+  }
 
   connect() {
     // Set default URL if not provided
@@ -15,6 +19,8 @@ export default class extends Controller {
     
     // Bind methods to preserve context
     this.boundHandleDocumentClick = this.handleDocumentClick.bind(this)
+
+    this.initializeExistingClient()
   }
 
   disconnect() {
@@ -36,6 +42,16 @@ export default class extends Controller {
     this.debounceTimer = setTimeout(() => {
       this.performSearch(query)
     }, 300)
+  }
+
+  initializeExistingClient() {
+    if (this.hasClientNameValue && this.clientNameValue.trim() !== '') {
+      this.inputTarget.value = this.clientNameValue
+    }
+    
+    if (this.hasClientIdValue && this.clientIdValue.trim() !== '') {
+      this.hiddenFieldTarget.value = this.clientIdValue
+    }
   }
 
   async performSearch(query) {

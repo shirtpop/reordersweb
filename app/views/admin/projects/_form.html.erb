@@ -1,0 +1,154 @@
+<%= form_with model: [:admin, @project], local: true, class: "p-6 space-y-6", data: { turbo: false } do |form| %>
+  <% if @project.errors[:base].any? %>
+    <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+      <h4 class="font-medium">Please fix the following errors:</h4>
+      <ul class="mt-2 list-disc list-inside">
+        <% @project.errors[:base].each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <!-- Basic Project Information -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div class="md:col-span-2">
+      <%= form.label :name, class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" %>
+      <%= form.text_field :name,
+          required: true,
+          class: field_error_class(@project, :name, "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white") %>
+      <%= display_field_errors(@project, :name) %>
+    </div>
+
+    <div class="md:col-span-2">
+      <%= form.label :status, class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" %>
+      <%= form.select :status, Project.statuses.keys.map { |status| [status.humanize, status] }, { include_blank: false }, class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" %>
+      <%= display_field_errors(@project, :status) %>
+    </div>
+  </div>
+
+  <!-- Client Field (conditional) -->
+  <div data-user-modal-target="clientField"
+      data-controller="client-autocomplete"
+      data-client-autocomplete-client-name-value="<%= @project.client&.company_name %>"
+      data-client-autocomplete-client-id-value="<%= @project.client&.id %>">
+    <%= form.label :client_id, "Client", class: "block mb-2 text-sm font-medium text-gray-900 dark:text-white" %>
+    <div class="relative">
+      <%= form.text_field :client_search, 
+            placeholder: "Search for client...",
+            data: { 
+              client_autocomplete_target: "input",
+              user_modal_target: "clientSearchField",
+              action: "input->client-autocomplete#search focus->client-autocomplete#showResults blur->client-autocomplete#hideResults"
+            },
+            class: "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" %>
+      
+      <%= form.hidden_field :client_id, 
+            value: @project.client&.id,
+            data: { 
+              client_autocomplete_target: "hiddenField",
+              user_modal_target: "clientIdField"
+            } %>
+      
+      <!-- Autocomplete Results -->
+      <div data-client-autocomplete-target="results" 
+            class="absolute z-50 w-full mt-1 bg-white rounded-lg shadow-lg border border-gray-200 dark:bg-gray-700 dark:border-gray-600 hidden">
+        <div data-client-autocomplete-target="resultsList" 
+              class="max-h-60 overflow-y-auto">
+          <!-- Results will be populated here -->
+        </div>
+      </div>
+    </div>
+    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+      Search and select a client to associate with this project.
+    </p>
+  </div>
+
+  <!-- Description (WYSIWYG) -->
+  <div class="border-t pt-6">
+    <div>
+      <%= form.label :description, class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" %>
+      <%= form.rich_text_area :description, 
+          class: "trix-editor-wrapper w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white",
+          data: { controller: 'trix' } %>
+      <%= display_field_errors(@project, :description) %>
+    </div>
+  </div>
+
+  <!-- Products Section -->
+  <div class="border-t pt-6" data-controller="product-search" data-product-search-url-value="<%= admin_products_path(format: :json) %>">
+    <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Products</h3>
+    
+    <!-- Product Search -->
+    <div class="mb-6">
+      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+        Add Products
+      </label>
+      <div class="relative">
+        <input type="text" 
+               placeholder="Search products by name..."
+               class="w-full px-4 py-2 pl-10 pr-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
+               data-product-search-target="searchInput"
+               data-action="input->product-search#search keydown->product-search#handleKeydown">
+        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+          <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+          </svg>
+        </div>
+        
+        <!-- Search Results Dropdown -->
+        <div class="absolute z-10 w-full mt-1 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg hidden"
+             data-product-search-target="resultsDropdown">
+          <div class="max-h-60 overflow-y-auto" data-product-search-target="resultsList">
+            <!-- Search results will be populated here -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Selected Products List -->
+    <div class="space-y-3" data-product-search-target="selectedProducts">
+      <% if @project.persisted? && @project.products.any? %>
+        <% @project.products.each do |product| %>
+          <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600" 
+               data-product-id="<%= product.id %>">
+            <div class="flex-1">
+              <h4 class="font-medium text-gray-900 dark:text-white"><%= product.name %></h4>
+              <% if product.color_names.present? %>
+                <p class="text-sm text-gray-500 dark:text-gray-400">Colors: <%= product.color_names %></p>
+              <% end %>
+            </div>
+            <button type="button" 
+                    class="ml-4 text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
+                    data-action="click->product-search#removeProduct"
+                    data-product-id="<%= product.id %>">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+              </svg>
+            </button>
+            <%= hidden_field_tag "project[product_ids][]", product.id, data: { product_search_target: "hiddenInput" } %>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+
+    <!-- Empty State -->
+    <div class="text-center py-8 text-gray-500 dark:text-gray-400 <% if @project.persisted? && @project.products.any? %>hidden<% end %>"
+         data-product-search-target="emptyState">
+      <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
+      </svg>
+      <p class="mt-2">No products added yet</p>
+      <p class="text-sm">Search and select products to add them to this project</p>
+    </div>
+  </div>
+
+  <!-- Form Actions -->
+  <div class="flex items-center justify-end pt-6 border-t space-x-3">
+    <%= link_to "Cancel", admin_projects_path, 
+        class: "px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-600" %>
+    
+    <%= form.submit @project.persisted? ? "Update Project" : "Create Project", 
+        class: "px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" %>
+  </div>
+<% end %>

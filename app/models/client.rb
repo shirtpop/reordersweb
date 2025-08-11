@@ -3,6 +3,7 @@ class Client < ApplicationRecord
   belongs_to :shipping_address, class_name: 'Address', optional: true
 
   has_many :users, inverse_of: :client, dependent: :destroy
+  has_many :projects, dependent: :destroy
 
   validates :company_name, :personal_name, :phone_number, presence: true
 

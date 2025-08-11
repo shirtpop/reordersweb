@@ -2,7 +2,7 @@ import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
   static targets = [
-    "modal", "clientField", "errorContainer", "errorList", 
+    "modal", "form", "clientField", "errorContainer", "errorList", 
     "submitButton", "tableContainer", "roleSelect", "modalTitle",
     "viewContent", "formContent", "viewFooter", "formFooter",
     "viewEmail", "viewRole", "viewClient", "viewCreated", "viewClientContainer",

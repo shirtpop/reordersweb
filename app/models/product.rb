@@ -9,6 +9,9 @@ class Product < ApplicationRecord
     where("#{table_name}.name ILIKE ?", "%#{sanitize_sql_like(name)}%")
   }
 
+  has_many :products_projects, dependent: :destroy
+  has_many :projects, through: :products_projects
+
   has_rich_text :description
 
   def color_names

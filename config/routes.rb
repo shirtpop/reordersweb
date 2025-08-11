@@ -21,6 +21,7 @@ Rails.application.routes.draw do
     resources :users, only: [:index, :create, :update, :destroy]
     resources :orders
     resources :products
+    resources :projects
   end
 
   resources :orders, only: [:index, :show]

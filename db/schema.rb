@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_08_10_094610) do
+ActiveRecord::Schema[8.0].define(version: 2025_08_11_123414) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -86,6 +86,21 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_10_094610) do
     t.index ["name"], name: "index_products_on_name"
   end
 
+  create_table "products_projects", id: false, force: :cascade do |t|
+    t.bigint "project_id", null: false
+    t.bigint "product_id", null: false
+    t.index ["project_id", "product_id"], name: "index_products_projects_on_project_id_and_product_id", unique: true
+  end
+
+  create_table "projects", force: :cascade do |t|
+    t.bigint "client_id", null: false
+    t.string "name", null: false
+    t.string "status", limit: 10, default: "draft", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["client_id"], name: "index_projects_on_client_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
@@ -110,5 +125,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_10_094610) do
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "clients", "addresses"
   add_foreign_key "clients", "addresses", column: "shipping_address_id"
+  add_foreign_key "projects", "clients"
   add_foreign_key "users", "clients"
 end
