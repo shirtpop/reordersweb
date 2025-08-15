@@ -1,0 +1,74 @@
+<div id="orders_table" class="relative overflow-x-auto shadow-md sm:rounded-lg">
+  <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+    <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+      <tr>
+        <th scope="col" class="px-6 py-3">Client</th>
+        <th scope="col" class="px-6 py-3">Project</th>
+        <th scope="col" class="px-6 py-3">Delivery date</th>
+        <th scope="col" class="px-6 py-3">Quantity</th>
+        <th scope="col" class="px-6 py-3">Created at</th>
+        <th scope="col" class="px-6 py-3">
+          <span class="sr-only">Actions</span>
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <% if orders.any? %>
+        <% orders.each do |order| %>
+          <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+            <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+              <%= order.client.company_name %>
+            </th>
+            <td class="px-6 py-4">
+              <%= order.project.name %>
+            </td>
+            <td class="px-6 py-4">
+              <%= order.delivery_date.strftime("%B %d, %Y") %>
+            </td>
+            <td class="px-6 py-4">
+              <%= order.total_quantity %>
+            </td>
+            <td class="px-6 py-4">
+              <%= order.created_at.strftime("%B %d, %Y") %>
+            </td>
+            <td class="px-6 py-4 text-right">
+              <div class="flex items-center space-x-2">
+                <%= link_to "View", admin_order_path(order), class: "font-medium text-blue-600 dark:text-blue-500 hover:underline cursor-pointer" %>
+              </div>
+            </td>
+          </tr>
+        <% end %>
+      <% else %>
+        <tr>
+          <td colspan="5" class="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
+            <div class="flex flex-col items-center justify-center">
+              <svg class="w-12 h-12 mb-4 text-gray-300 dark:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5 0a6 6 0 00-9-5.197"></path>
+              </svg>
+              <p class="text-lg font-medium">No orders found</p>
+            </div>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
+
+<!-- Pagination if using Kaminari -->
+<% if respond_to?(:paginate) && orders.respond_to?(:current_page) %>
+  <div class="flex items-center justify-between mt-6">
+    <div class="text-sm text-gray-700 dark:text-gray-400">
+      Showing 
+      <span class="font-medium"><%= orders.offset_value + 1 %></span>
+      to 
+      <span class="font-medium"><%= [orders.offset_value + orders.limit_value, orders.total_count].min %></span>
+      of 
+      <span class="font-medium"><%= orders.total_count %></span>
+      results
+    </div>
+    
+    <div class="flex items-center space-x-2">
+      <%= paginate orders, theme: 'twitter_bootstrap_4' if orders.respond_to?(:current_page) %>
+    </div>
+  </div>
+<% end %>

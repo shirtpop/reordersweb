@@ -1,0 +1,166 @@
+<div class="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-sm">
+  <!-- Header Section -->
+  <div class="flex items-center justify-between mb-8">
+    <div class="flex items-center space-x-4">
+      <!-- Back Button -->
+      <%= link_to admin_orders_path, 
+          class: "inline-flex items-center px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white" do %>
+        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+        </svg>
+        Back to Orders
+      <% end %>
+
+      <div>
+        <h1 class="text-3xl font-bold text-gray-900 dark:text-white"><%= @order.project.name %></h1>
+        <div class="flex items-center mt-2 space-x-4">
+          <!-- Created Date -->
+          <span class="text-sm text-gray-500 dark:text-gray-400">
+            Created <%= @order.created_at.strftime("%B %d, %Y") %>
+          </span>
+          <!-- Order ID -->
+          <span class="text-sm text-gray-500 dark:text-gray-400">
+            Order #<%= @order.id.to_s.rjust(6, '0') %>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content Grid -->
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <!-- Left Column - Order Details & Items -->
+    <div class="lg:col-span-2 space-y-6">
+      <!-- Order Summary Card -->
+      <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-6">
+        <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Order Summary</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Client Name</label>
+            <p class="mt-1 text-sm text-gray-900 dark:text-white"><%= @order.client.company_name %></p>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Delivery Date</label>
+            <p class="mt-1 text-sm text-gray-900 dark:text-white">
+              <%= @order.delivery_date.strftime("%B %d, %Y") %>
+            </p>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Total Estimation Price</label>
+            <p class="mt-1 text-lg font-semibold text-green-600 dark:text-green-400">
+              $<%= number_with_precision(@order.price, precision: 2) %>
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Order Items Card -->
+      <div class="bg-white dark:bg-gray-700 rounded-lg shadow-sm border border-gray-200 dark:border-gray-600">
+        <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-600">
+          <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Order Items</h2>
+          <p class="text-sm text-gray-500 dark:text-gray-400">
+            <%= pluralize(@order.total_quantity, 'item') %> total
+          </p>
+        </div>
+        
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-600">
+            <thead class="bg-gray-50 dark:bg-gray-800">
+              <tr>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  Product
+                </th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  Color
+                </th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  Size
+                </th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  Quantity
+                </th>
+              </tr>
+            </thead>
+            <tbody class="bg-white dark:bg-gray-700 divide-y divide-gray-200 dark:divide-gray-600">
+              <% @order.order_items.each do |item| %>
+                <tr class="hover:bg-gray-50 dark:hover:bg-gray-600">
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm font-medium text-gray-900 dark:text-white">
+                      <%= item.product.name %>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="flex items-center">
+                      <div class="w-4 h-4 rounded-full mr-2" style="background-color: <%= item.color %>"></div>
+                      <span class="text-sm text-gray-900 dark:text-white capitalize">
+                        <%= item.color %>
+                      </span>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300">
+                      <%= item.size %>
+                    </span>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                    <%= item.quantity %>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Items Summary -->
+        <div class="px-6 py-4 bg-gray-50 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-600">
+          <div class="flex justify-between items-center">
+            <span class="text-sm font-medium text-gray-700 dark:text-gray-300">
+              Total Items: <%= @order.total_quantity %>
+            </span>
+            <span class="text-sm font-medium text-gray-700 dark:text-gray-300">
+              Unique Products: <%= @order.order_items.group_by(&:product_id).count %>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column - Status & Timeline -->
+    <div class="space-y-6">
+      <!-- Quick Stats Card -->
+      <div class="bg-white dark:bg-gray-700 rounded-lg shadow-sm border border-gray-200 dark:border-gray-600 p-6">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Quick Stats</h3>
+        
+        <div class="space-y-4">
+          <div class="flex justify-between items-center">
+            <span class="text-sm text-gray-600 dark:text-gray-400">Days Until Delivery</span>
+            <span class="text-sm font-medium text-gray-900 dark:text-white">
+              <%= (@order.delivery_date - Date.current).to_i %> days
+            </span>
+          </div>
+          
+          <div class="flex justify-between items-center">
+            <span class="text-sm text-gray-600 dark:text-gray-400">Total Quantity</span>
+            <span class="text-sm font-medium text-gray-900 dark:text-white">
+              <%= @order.total_quantity %> items
+            </span>
+          </div>
+          
+          <div class="flex justify-between items-center">
+            <span class="text-sm text-gray-600 dark:text-gray-400">Product Types</span>
+            <span class="text-sm font-medium text-gray-900 dark:text-white">
+              <%= @order.order_items.distinct.count(&:product_id) %>
+            </span>
+          </div>
+
+          <div class="flex justify-between items-center">
+            <span class="text-sm text-gray-600 dark:text-gray-400">Sizes Available</span>
+            <span class="text-sm font-medium text-gray-900 dark:text-white">
+              <%= @order.order_items.map(&:size).uniq.join(', ') %>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -19,84 +19,112 @@
 
     <%# Includes all stylesheet files in app/assets/stylesheets %>
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
-    <%= javascript_importmap_tags 'admin_application' %>
+    <%= javascript_importmap_tags 'client_application' %>
+    
+    <!-- Flowbite CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.css" rel="stylesheet" />
+    <!-- Flowbite JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.js"></script>
   </head>
 
-  <body class="bg-gray-50 min-h-screen">
-    <!-- Navigation -->
-    <nav class="bg-white shadow-sm border-b border-gray-200">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between h-16">
-          <!-- Logo and Brand -->
-          <div class="flex items-center">
-            <%= link_to orders_path, class: "flex items-center" do %>
-              <div class="h-8 w-8 bg-indigo-600 rounded-lg flex items-center justify-center mr-3">
-                <svg class="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
-                </svg>
-              </div>
-              <span class="text-xl font-bold text-gray-900">Shirtpop</span>
-            <% end %>
+  <body class="client-theme bg-gray-50 min-h-screen">
+    <!-- Navigation with Flowbite Navbar -->
+    <nav class="bg-white border-gray-200 shadow-sm">
+      <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
+        <!-- Logo and Brand -->
+        <%= link_to orders_path, class: "flex items-center space-x-3 rtl:space-x-reverse" do %>
+          <div class="h-8 w-8 bg-pink-600 rounded-lg flex items-center justify-center">
+            <svg class="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+            </svg>
           </div>
+          <span class="self-center text-2xl font-semibold whitespace-nowrap text-gray-900">Shirtpop</span>
+        <% end %>
 
-          <!-- Main Navigation -->
-          <div class="hidden md:flex items-center space-x-8">
-            <%= link_to "Products", products_path, 
-                        class: "#{current_page?(products_path) ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-gray-500 hover:text-gray-700'} px-3 py-2 text-sm font-medium transition duration-150 ease-in-out" %>
-            <%= link_to "Orders", orders_path, 
-                        class: "#{current_page?(orders_path) ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-gray-500 hover:text-gray-700'} px-3 py-2 text-sm font-medium transition duration-150 ease-in-out" %>
-            <%= link_to cart_path, 
-                        class: "#{current_page?(cart_path) ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-gray-500 hover:text-gray-700'} px-3 py-2 text-sm font-medium relative transition duration-150 ease-in-out" do %>
-              <span>Cart</span>
-              <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">3</span>
-            <% end %>
-          </div>
-
-          <!-- User Menu -->
-          <div class="flex items-center space-x-4">
-            <div class="text-sm text-gray-700">
-              Hello, <span class="font-medium"><%= current_user.email.split('@').first.capitalize %></span>
+        <!-- User Menu and Mobile Menu Button -->
+        <div class="flex items-center md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
+          <!-- User Dropdown Button -->
+          <button type="button" class="flex text-sm bg-gray-800 rounded-full md:me-0 focus:ring-4 focus:ring-pink-300" id="user-menu-button" aria-expanded="false" data-dropdown-toggle="user-dropdown" data-dropdown-placement="bottom">
+            <span class="sr-only">Open user menu</span>
+            <div class="w-8 h-8 bg-pink-600 rounded-full flex items-center justify-center">
+              <span class="text-white text-sm font-medium"><%= current_user.email.first.upcase %></span>
             </div>
-            <%= link_to "Sign out", destroy_user_session_path, 
-                        data: { "turbo-method": :delete },
-                        class: "bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition duration-150 ease-in-out" %>
+          </button>
+          
+          <!-- User Dropdown -->
+          <div class="z-50 hidden my-4 text-base list-none bg-white divide-y divide-gray-100 rounded-lg shadow" id="user-dropdown">
+            <div class="px-4 py-3">
+              <span class="block text-sm text-gray-900">Hello,</span>
+              <span class="block text-sm text-gray-500 truncate"><%= current_user.email.split('@').first.capitalize %></span>
+            </div>
+            <ul class="py-2" aria-labelledby="user-menu-button">
+              <li>
+                <%= link_to "Sign out", destroy_user_session_path, 
+                            data: { "turbo-method": :delete },
+                            class: "block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" %>
+              </li>
+            </ul>
           </div>
+
+          <!-- Mobile menu button -->
+          <button data-collapse-toggle="navbar-user" type="button" class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200" aria-controls="navbar-user" aria-expanded="false">
+            <span class="sr-only">Open main menu</span>
+            <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 17 14">
+              <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h15M1 7h15M1 13h15"/>
+            </svg>
+          </button>
         </div>
 
-        <!-- Mobile Navigation -->
-        <div class="md:hidden">
-          <div class="pt-2 pb-3 space-y-1">
-            <%= link_to "Products", products_path, 
-                        class: "#{current_page?(products_path) ? 'bg-indigo-50 border-indigo-500 text-indigo-700' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'} block border-l-4 py-2 pl-3 pr-4 text-base font-medium" %>
-            <%= link_to "Orders", orders_path, 
-                        class: "#{current_page?(orders_path) ? 'bg-indigo-50 border-indigo-500 text-indigo-700' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'} block border-l-4 py-2 pl-3 pr-4 text-base font-medium" %>
-            <%= link_to "Cart", cart_path, 
-                        class: "#{current_page?(cart_path) ? 'bg-indigo-50 border-indigo-500 text-indigo-700' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'} block border-l-4 py-2 pl-3 pr-4 text-base font-medium" %>
-          </div>
+        <!-- Navigation Links -->
+        <div class="items-center justify-between hidden w-full md:flex md:w-auto md:order-1" id="navbar-user">
+          <ul class="flex flex-col font-medium p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-white">
+            <li>
+              <%= link_to "Projects", projects_path, 
+                          class: "#{current_page?(projects_path) ? 'block py-2 px-3 text-pink-800 md:text-pink-700 md:p-0' : 'block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-pink-700 md:p-0'}" %>
+            </li>
+            <li>
+              <%= link_to "Orders", orders_path, 
+                          class: "#{current_page?(orders_path) ? 'block py-2 px-3 text-pink-800 rounded md:text-pink-700 md:p-0' : 'block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-pink-700 md:p-0'}" %>
+            </li>
+          </ul>
         </div>
       </div>
     </nav>
 
-    <!-- Flash Messages -->
+    <!-- Flash Messages with Flowbite Alerts -->
     <% if notice %>
-      <div class="bg-green-50 border-l-4 border-green-400 p-4">
-        <div class="flex">
-          <svg class="h-5 w-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
-            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-          </svg>
-          <p class="ml-3 text-sm text-green-700"><%= notice %></p>
+      <div id="alert-success" class="flex items-center p-4 mb-4 text-green-800 rounded-lg bg-green-50" role="alert">
+        <svg class="flex-shrink-0 w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+          <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
+        </svg>
+        <span class="sr-only">Success</span>
+        <div class="ms-3 text-sm font-medium">
+          <%= notice %>
         </div>
+        <button type="button" class="ms-auto -mx-1.5 -my-1.5 bg-green-50 text-green-500 rounded-lg focus:ring-2 focus:ring-green-400 p-1.5 hover:bg-green-200 inline-flex items-center justify-center h-8 w-8" data-dismiss-target="#alert-success" aria-label="Close">
+          <span class="sr-only">Close</span>
+          <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+          </svg>
+        </button>
       </div>
     <% end %>
 
     <% if alert %>
-      <div class="bg-red-50 border-l-4 border-red-400 p-4">
-        <div class="flex">
-          <svg class="h-5 w-5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
-            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
-          </svg>
-          <p class="ml-3 text-sm text-red-700"><%= alert %></p>
+      <div id="alert-error" class="flex items-center p-4 mb-4 text-red-800 rounded-lg bg-red-50" role="alert">
+        <svg class="flex-shrink-0 w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+          <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
+        </svg>
+        <span class="sr-only">Error</span>
+        <div class="ms-3 text-sm font-medium">
+          <%= alert %>
         </div>
+        <button type="button" class="ms-auto -mx-1.5 -my-1.5 bg-red-50 text-red-500 rounded-lg focus:ring-2 focus:ring-red-400 p-1.5 hover:bg-red-200 inline-flex items-center justify-center h-8 w-8" data-dismiss-target="#alert-error" aria-label="Close">
+          <span class="sr-only">Close</span>
+          <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+          </svg>
+        </button>
       </div>
     <% end %>
 

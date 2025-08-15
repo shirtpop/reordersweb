@@ -3,4 +3,8 @@ class ApplicationController < ActionController::Base
   allow_browser versions: :modern
 
   before_action :authenticate_user!
+
+  def current_client
+    @current_client ||= current_user.client
+  end
 end

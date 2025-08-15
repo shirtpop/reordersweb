@@ -10,7 +10,7 @@ Rails.application.routes.draw do
   # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
 
   # Defines the root path route ("/")
-  root "orders#index"
+  root "projects#index"
   devise_for :users, controllers: {
     sessions: 'users/sessions'
   }
@@ -19,12 +19,11 @@ Rails.application.routes.draw do
     root to: 'dashboard#index', as: :root
     resources :clients
     resources :users, only: [:index, :create, :update, :destroy]
-    resources :orders
+    resources :orders, only: [:index, :show]
     resources :products
     resources :projects
   end
 
-  resources :orders, only: [:index, :show]
-  resources :products, only: [:index]
-  get 'cart', to: 'cart#show', as: :cart
+  resources :orders, only: [:index, :show, :create]
+  resources :projects, only: [:index, :show]
 end
