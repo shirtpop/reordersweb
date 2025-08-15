@@ -1,0 +1,3 @@
+<%= turbo_stream.update "products_list" do %>
+  <%= render "table", products: @products, pagy: @pagy %>
+<% end %>

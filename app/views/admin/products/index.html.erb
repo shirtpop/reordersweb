@@ -31,7 +31,7 @@
   </div>
   
   <!-- Products Table -->
-  <div data-product-modal-target="tableContainer">
-    <%= render partial: "table", locals: { products: @products } %>
+  <div class="mt-8">
+    <%= render 'table', products: @products, pagy: @pagy %>
   </div>
 </div>

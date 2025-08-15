@@ -5,4 +5,5 @@
 @layer components {
   @import "./admin/modal.css";
   @import "./actiontext.css";
+  @import "./pagy.tailwind.css";
 }

@@ -3,33 +3,8 @@ module Admin
     before_action :set_product, only: [:edit, :show, :update, :destroy]
 
     def index
-      @products = if params[:q].present?
-                    Product.search_by_name(params[:q])
-                  else
-                    Product.order(created_at: :desc)
-                  end
-
-      respond_to do |format|
-        format.html
-        format.turbo_stream do
-          render turbo_stream: turbo_stream.replace(
-            "products_table",
-            partial: "table",
-            locals: { products: @products }
-          )
-        end
-        format.json do
-          render json: {
-            products: @products.map do |product|
-              {
-                id: product.id,
-                name: product.name,
-                price_info: product.price_info
-              }
-            end
-          }
-        end
-      end
+      scope = params[:q].present? ? Product.search_by_name(params[:q]) : Product.order(created_at: :desc)
+      @pagy, @products = pagy(scope)
     end
 
     def show; end
