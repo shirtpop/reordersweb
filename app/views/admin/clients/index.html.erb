@@ -31,7 +31,7 @@
   </div>
   
   <!-- clients Table -->
-  <div data-client-modal-target="tableContainer">
-    <%= render partial: "table", locals: { clients: @clients } %>
+  <div class="mt-8">
+    <%= render 'table', clients: @clients, pagy: @pagy %>
   </div>
 </div>

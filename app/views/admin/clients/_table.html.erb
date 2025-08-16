@@ -1,84 +1,77 @@
-<div id="clients_table" class="relative overflow-x-auto shadow-md sm:rounded-lg">
-  <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-    <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-      <tr>
-        <th scope="col" class="px-6 py-3">Company Name</th>
-        <th scope="col" class="px-6 py-3">Personal Name</th>
-        <th scope="col" class="px-6 py-3">Phone number</th>
-        <th scope="col" class="px-6 py-3">Created</th>
-        <th scope="col" class="px-6 py-3">Updated</th>
-        <th scope="col" class="px-6 py-3">
-          <span class="sr-only">Actions</span>
-        </th>
-      </tr>
-    </thead>
-    <tbody>
-      <% if clients.any? %>
-        <% clients.each do |client| %>
-          <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-            <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-              <%= client.company_name %>
-            </th>
-            <td class="px-6 py-4">
-              <%= client.personal_name %>
-            </td>
-            <td class="px-6 py-4">
-              <%= client.phone_number %>
-            </td>
-            <td class="px-6 py-4">
-              <%= client.created_at.strftime("%b %d, %Y") %>
-            </td>
-            <td class="px-6 py-4">
-              <%= client.updated_at.strftime("%b %d, %Y") %>
-            </td>
-            <td class="px-6 py-4 text-right">
-              <div class="flex items-center space-x-2">
-                <%= link_to "View", admin_client_path(client), class: "font-medium text-blue-600 dark:text-blue-500 hover:underline cursor-pointer" %>
-                <%= link_to "Edit", edit_admin_client_path(client), class: "font-medium text-yellow-600 dark:text-yellow-500 hover:underline cursor-pointer" %>
-                <%= link_to admin_client_path(client), 
-                            data: { 
-                              "turbo-method": :delete,
-                              "turbo-confirm": "Are you sure you want to delete this client?"
-                            },
-                            class: "font-medium text-red-600 dark:text-red-500 hover:underline" do %>
-                  Delete
-                <% end %>
-              </div>
-            </td>
-          </tr>
-        <% end %>
-      <% else %>
-        <tr>
-          <td colspan="5" class="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
-            <div class="flex flex-col items-center justify-center">
-              <svg class="w-12 h-12 mb-4 text-gray-300 dark:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5 0a6 6 0 00-9-5.197"></path>
-              </svg>
-              <p class="text-lg font-medium">No clients found</p>
-              <p class="text-sm">Get started by creating your first client.</p>
-            </div>
-          </td>
-        </tr>
-      <% end %>
-    </tbody>
-  </table>
-</div>
+<%= turbo_frame_tag "clients_list" do %>
+  <div class="px-4 sm:px-6 lg:px-8">
+    <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg">
+      <div id="clients_table" class="relative overflow-x-auto shadow-md sm:rounded-lg">
+        <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+          <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+            <tr>
+              <th scope="col" class="px-6 py-3">Company Name</th>
+              <th scope="col" class="px-6 py-3">Personal Name</th>
+              <th scope="col" class="px-6 py-3">Phone number</th>
+              <th scope="col" class="px-6 py-3">Created</th>
+              <th scope="col" class="px-6 py-3">Updated</th>
+              <th scope="col" class="px-6 py-3">
+                <span class="sr-only">Actions</span>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <% if clients.any? %>
+              <% clients.each do |client| %>
+                <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                  <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                    <%= client.company_name %>
+                  </th>
+                  <td class="px-6 py-4">
+                    <%= client.personal_name %>
+                  </td>
+                  <td class="px-6 py-4">
+                    <%= client.phone_number %>
+                  </td>
+                  <td class="px-6 py-4">
+                    <%= client.created_at.strftime("%b %d, %Y") %>
+                  </td>
+                  <td class="px-6 py-4">
+                    <%= client.updated_at.strftime("%b %d, %Y") %>
+                  </td>
+                  <td class="px-6 py-4 text-right">
+                    <div class="flex items-center space-x-2">
+                      <%= link_to "View", admin_client_path(client), class: "font-medium text-blue-600 dark:text-blue-500 hover:underline cursor-pointer" %>
+                      <%= link_to "Edit", edit_admin_client_path(client), class: "font-medium text-yellow-600 dark:text-yellow-500 hover:underline cursor-pointer" %>
+                      <%= link_to admin_client_path(client), 
+                                  data: { 
+                                    "turbo-method": :delete,
+                                    "turbo-confirm": "Are you sure you want to delete this client?"
+                                  },
+                                  class: "font-medium text-red-600 dark:text-red-500 hover:underline" do %>
+                        Delete
+                      <% end %>
+                    </div>
+                  </td>
+                </tr>
+              <% end %>
+            <% else %>
+              <tr>
+                <td colspan="5" class="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
+                  <div class="flex flex-col items-center justify-center">
+                    <svg class="w-12 h-12 mb-4 text-gray-300 dark:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5 0a6 6 0 00-9-5.197"></path>
+                    </svg>
+                    <p class="text-lg font-medium">No clients found</p>
+                    <p class="text-sm">Get started by creating your first client.</p>
+                  </div>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
 
-<!-- Pagination if using Kaminari -->
-<% if respond_to?(:paginate) && clients.respond_to?(:current_page) %>
-  <div class="flex items-center justify-between mt-6">
-    <div class="text-sm text-gray-700 dark:text-gray-400">
-      Showing 
-      <span class="font-medium"><%= clients.offset_value + 1 %></span>
-      to 
-      <span class="font-medium"><%= [clients.offset_value + clients.limit_value, clients.total_count].min %></span>
-      of 
-      <span class="font-medium"><%= clients.total_count %></span>
-      results
-    </div>
-    
-    <div class="flex items-center space-x-2">
-      <%= paginate clients, theme: 'twitter_bootstrap_4' if clients.respond_to?(:current_page) %>
+      <% if @pagy && @pagy.pages > 1 %>
+        <div class="border-t border-gray-200 dark:border-gray-700">
+          <%= pagy_tailwind_nav(@pagy, link_extra: 'data-turbo-frame="clients_list"').html_safe %>
+        </div>
+      <% end %>
     </div>
   </div>
 <% end %>

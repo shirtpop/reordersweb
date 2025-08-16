@@ -34,8 +34,8 @@
   </div>
   
   <!-- Users Table -->
-  <div data-user-modal-target="tableContainer">
-    <%= render partial: "table", locals: { users: @users } %>
+  <div data-user-modal-target="tableContainer" class="mt-8">
+    <%= render partial: "table", locals: { users: @users, pagy: @pagy } %>
   </div>
 
   <!-- User Modal (Create/Edit/View) -->

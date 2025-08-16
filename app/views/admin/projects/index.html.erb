@@ -31,7 +31,7 @@
   </div>
   
   <!-- Projects Table -->
-  <div>
-    <%= render partial: "table", locals: { projects: @projects } %>
+  <div class="mt-8">
+    <%= render 'table', projects: @projects, pagy: @pagy %>
   </div>
 </div>

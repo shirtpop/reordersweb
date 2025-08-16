@@ -3,22 +3,8 @@ module Admin
     before_action :set_user, only: [:update, :destroy]
 
     def index
-      @users = if params[:q].present?
-               User.where("email ILIKE ?", "%#{params[:q]}%")
-             else
-               User.order(created_at: :desc)
-             end
-
-      respond_to do |format|
-        format.html
-        format.turbo_stream do
-          render turbo_stream: turbo_stream.replace(
-            "users_table",
-            partial: "table",
-            locals: { users: @users }
-          )
-        end
-      end
+      scope = params[:q].present? ? User.where("email ILIKE ?", "%#{params[:q]}%") : User.order(created_at: :desc)
+      @pagy, @users = pagy(scope)
     end
 
     def create

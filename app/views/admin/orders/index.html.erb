@@ -24,7 +24,7 @@
   </div>
   
   <!-- orders Table -->
-  <div>
-    <%= render partial: "table", locals: { orders: @orders } %>
+  <div class="mt-8">
+    <%= render 'table', orders: @orders, pagy: @pagy %>
   </div>
 </div>

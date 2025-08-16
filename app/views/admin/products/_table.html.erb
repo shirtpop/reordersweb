@@ -1,18 +1,6 @@
 <%= turbo_frame_tag "products_list" do %>
   <div class="px-4 sm:px-6 lg:px-8">
     <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg">
-      <!-- Table Header with Items Count -->
-      <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-        <div class="flex items-center justify-between">
-          <h3 class="text-lg font-medium text-gray-900 dark:text-white">Products List</h3>
-          <% if @pagy %>
-            <p class="text-sm text-gray-500 dark:text-gray-400">
-              Showing <%= @pagy.from %> to <%= @pagy.to %> of <%= @pagy.count %> products
-            </p>
-          <% end %>
-        </div>
-      </div>
-
       <!-- Products Table -->
       <div id="products_table" class="relative overflow-x-auto">
         <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">

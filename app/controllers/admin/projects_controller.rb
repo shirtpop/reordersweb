@@ -3,33 +3,8 @@ module Admin
     before_action :set_project, only: [:edit, :show, :update, :destroy]
 
     def index
-      @projects = if params[:q].present?
-                    Project.search_by_name(params[:q])
-                  else
-                    Project.includes(:client).order(created_at: :desc)
-                  end
-
-      respond_to do |format|
-        format.html
-        format.turbo_stream do
-          render turbo_stream: turbo_stream.replace(
-            "projects_table",
-            partial: "table",
-            locals: { projects: @projects }
-          )
-        end
-        format.json do
-          render json: {
-            projects: @projects.map do |project|
-              {
-                id: project.id,
-                name: project.name,
-                price_info: project.price_info
-              }
-            end
-          }
-        end
-      end
+      scope = params[:q].present? ? Project.search_by_keyword(params[:q]) : Project.includes(:client).order(created_at: :desc)
+      @pagy, @projects = pagy(scope)
     end
 
     def show; end
@@ -44,7 +19,6 @@ module Admin
       if @project.save
         redirect_to admin_projects_path, notice: "Project was successfully created."
       else
-        byebug
         render :new
       end
     end
