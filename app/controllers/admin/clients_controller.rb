@@ -3,33 +3,8 @@ module Admin
     before_action :set_client, only: [:edit, :show,:update, :destroy]
 
     def index
-      @clients = if params[:q].present?
-               Client.search_by_name(params[:q])
-             else
-               Client.order(created_at: :desc)
-             end
-
-      respond_to do |format|
-        format.html
-        format.turbo_stream do
-          render turbo_stream: turbo_stream.replace(
-            "clients_table",
-            partial: "table",
-            locals: { clients: @clients }
-          )
-        end
-        format.json do
-          render json: {
-            clients: @clients.map do |client|
-              {
-                id: client.id,
-                company_name: client.company_name,
-                personal_name: client.personal_name
-              }
-            end
-          }
-        end
-      end
+      scope = params[:q].present? ? Client.search_by_name(params[:q]) : Client.order(created_at: :desc)
+      @pagy, @clients = pagy(scope)
     end
 
     def show; end
