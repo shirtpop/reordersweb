@@ -83,10 +83,9 @@
             <div class="border border-gray-200 rounded-lg p-4">
               <!-- Product Header -->
               <div class="flex items-start space-x-4 mb-4">
-                <% if item_group.first.product&.image_url.present? %>
+                <% if item_group.first.product&.drive_files.any? %>
                   <div class="flex-shrink-0">
-                    <img src="<%= item_group.first.product.image_url %>" alt="<%= item_group.first.product.name %>" 
-                         class="w-16 h-16 object-cover rounded-lg">
+                    <%= image_tag item_group.first.product.drive_files.first.preview_url, alt: item_group.first.product.name, class: "w-16 h-16 object-cover rounded-lg", referrerpolicy: "no-referrer" %>
                   </div>
                 <% end %>
                 

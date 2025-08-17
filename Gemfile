@@ -46,6 +46,9 @@ gem 'devise'
 gem "flowbite", "~> 3.1"
 gem 'pagy'
 
+gem "googleauth"
+gem "google-apis-drive_v3"
+
 group :development, :test do
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
   # Static analysis for security vulnerabilities [https://brakemanscanner.org/]

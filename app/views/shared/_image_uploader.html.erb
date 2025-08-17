@@ -1,0 +1,81 @@
+<!-- app/views/shared/_images_uploader.html.erb -->
+<div class="md:col-span-2">
+  <div class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-6 transition-colors duration-200" 
+       data-controller="drive-upload"
+       data-drive-upload-attachable-type-value="<%= attachable.class.name %>"
+       data-drive-upload-attachable-id-value="<%= attachable.persisted? ? attachable.id : '' %>">
+
+    <div class="text-center">
+      <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
+        <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" 
+              stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+
+      <!-- Rails form_with -->
+      <%= form_with url: drive_files_path(attachable_type: attachable.class.name, attachable_id: attachable.persisted? ? attachable.id : ''),
+                    html: { 
+                      multipart: true, 
+                      data: { drive_upload_target: "form" },
+                      class: "space-y-4"
+                    },
+                    method: :post,
+                    local: true do |f| %>
+
+        <div class="mt-4">
+          <label for="drive-file-input-<%= attachable.class.name.downcase %>-<%= attachable.persisted? ? attachable.id : 'new' %>" class="cursor-pointer">
+            <span class="mt-2 block text-sm font-medium text-gray-900 dark:text-white">
+              Upload <%= attachable.class.name.downcase %> images
+            </span>
+            <span class="mt-1 block text-sm text-gray-500 dark:text-gray-400">
+              PNG, JPG, GIF up to 10MB each
+            </span>
+          </label>
+          <%= f.file_field :file,
+                multiple: true,
+                accept: "image/*",
+                class: "sr-only",
+                id: "drive-file-input-#{attachable.class.name.downcase}-#{attachable.persisted? ? attachable.id : 'new'}",
+                data: { 
+                  action: "change->drive-upload#handleFiles", 
+                  drive_upload_target: "fileInput" 
+                } %>
+        </div>
+
+        <p class="mt-2">
+          <button type="button" 
+                  class="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400 focus:outline-none focus:underline"
+                  data-action="click->drive-upload#triggerFileInput">
+            Choose files
+          </button>
+          or drag and drop
+        </p>
+      <% end %>
+    </div>
+
+    <!-- Upload Progress -->
+    <div data-drive-upload-target="progressContainer" class="hidden mt-4">
+      <div class="bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+        <div data-drive-upload-target="progressBar" 
+             class="bg-blue-600 h-2 rounded-full transition-all duration-300" 
+             style="width: 0%"></div>
+      </div>
+      <p data-drive-upload-target="progressText" class="text-sm text-gray-600 dark:text-gray-400 mt-2">
+        Uploading files...
+      </p>
+    </div>
+
+    <!-- Error Messages -->
+    <div data-drive-upload-target="errorContainer" class="hidden mt-4">
+      <div class="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 px-4 py-3 rounded">
+        <p data-drive-upload-target="errorMessage"></p>
+      </div>
+    </div>
+
+    <!-- Existing Images -->
+    <%= turbo_frame_tag "images_container_#{attachable.class.name.downcase}_#{attachable.persisted? ? attachable.id : 'new'}", 
+                        data: { drive_upload_target: "imagesContainer" }, 
+                        class: "mt-6" do %>
+      <%= render 'shared/images_list', attachable: attachable %>
+    <% end %>
+  </div>
+</div>

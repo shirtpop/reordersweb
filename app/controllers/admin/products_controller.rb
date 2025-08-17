@@ -34,8 +34,10 @@ module Admin
     end
 
     def destroy
-      @product.destroy!
+      Products::Destroyer.new(product: @product).call!
       redirect_to admin_products_path, notice: "Product was successfully deleted."
+    rescue Products::Destroyer::DeleteError => e
+      redirect_to admin_products_path, alert: e.message
     end
 
     private

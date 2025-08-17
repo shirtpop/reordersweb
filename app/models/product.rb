@@ -1,4 +1,6 @@
 class Product < ApplicationRecord
+  include HasDriveFiles
+
   SIZES = ['XXS', 'XS', 'S', 'M', 'L', 'XL', '2XL', '3XL', '4XL', '5XL', '6XL', '7XL', 'Single Size'].freeze
   
   store_accessor :price_info, :minimum_order, :base_price, :bulk_prices

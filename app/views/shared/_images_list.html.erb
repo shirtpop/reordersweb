@@ -1,0 +1,55 @@
+<!-- app/views/shared/_images_list.html.erb -->
+<% if attachable.persisted? && attachable.drive_files.any? %>
+  <h4 class="text-sm font-medium text-gray-900 dark:text-white mb-3">Uploaded Images</h4>
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+    <% attachable.drive_files.each do |drive_file| %>
+      <%= turbo_frame_tag "drive_file_#{drive_file.id}", class: "relative group", data: { drive_upload_target: "imageCard", drive_file_id: drive_file.id } do %>
+        <div class="aspect-square bg-gray-100 dark:bg-gray-800 rounded-lg overflow-hidden">
+          <%= image_tag drive_file.preview_url, 
+              class: 'w-full h-full object-cover', 
+              alt: drive_file.filename, 
+              referrerPolicy: 'no-referrer',
+              loading: 'lazy' %>
+        </div>
+        <div class="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity duration-200 rounded-lg flex items-center justify-center">
+          <%= button_to drive_file_path(
+                attachable_type: attachable.class.name,
+                attachable_id: attachable.id,
+                id: drive_file.id
+              ),
+              method: :delete,
+              form: { 
+                data: { 
+                  turbo_confirm: "Are you sure you want to delete this image?",
+                  turbo_method: :delete
+                } 
+              },
+              class: "bg-red-600 hover:bg-red-700 text-white p-2 rounded-full transition-colors duration-200 shadow-lg",
+              title: "Delete image" do %>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+          <% end %>
+        </div>
+        <p class="mt-1 text-xs text-gray-600 dark:text-gray-400 truncate" title="<%= drive_file.filename %>">
+          <%= drive_file.filename %>
+        </p>
+      <% end %>
+    <% end %>
+  </div>
+<% elsif attachable.persisted? %>
+  <div class="text-center py-4">
+    <svg class="mx-auto h-8 w-8 text-gray-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+            d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+    </svg>
+    <p class="text-sm text-gray-500 dark:text-gray-400">No images uploaded yet.</p>
+  </div>
+<% else %>
+  <div class="text-center py-4">
+    <p class="text-sm text-gray-500 dark:text-gray-400">
+      Save the record first to enable image uploads.
+    </p>
+  </div>
+<% end %>

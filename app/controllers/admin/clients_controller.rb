@@ -46,19 +46,10 @@ module Admin
     end
 
     def destroy
-      @client.destroy
-      respond_to do |format|
-        format.html { 
-          redirect_to admin_clients_path, 
-          notice: 'Client was successfully deleted.' 
-        }
-        format.json { 
-          render json: { 
-            status: 'success', 
-            message: 'Client deleted successfully' 
-          }
-        }
-      end
+      Clients::Destroyer.new(client: @client).call!
+      redirect_to admin_clients_path, notice: "Client was successfully deleted."
+    rescue Clients::Destroyer::DeleteError => e
+      redirect_to admin_clients_path, alert: e.message
     end
 
     private

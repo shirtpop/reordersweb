@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_08_12_013317) do
+ActiveRecord::Schema[8.0].define(version: 2025_08_16_101032) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -75,6 +75,17 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_12_013317) do
     t.index ["shipping_address_id"], name: "index_clients_on_shipping_address_id"
   end
 
+  create_table "drive_files", force: :cascade do |t|
+    t.string "attachable_type"
+    t.bigint "attachable_id"
+    t.string "drive_file_id"
+    t.string "mime_type"
+    t.string "filename"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["attachable_type", "attachable_id"], name: "index_drive_files_on_attachable"
+  end
+
   create_table "order_items", force: :cascade do |t|
     t.bigint "order_id", null: false
     t.bigint "product_id", null: false
@@ -104,7 +115,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_12_013317) do
     t.jsonb "price_info", default: {}
     t.string "sizes", default: [], array: true
     t.jsonb "colors", default: []
-    t.string "image_url"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["name"], name: "index_products_on_name"

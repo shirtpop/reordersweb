@@ -26,4 +26,7 @@ Rails.application.routes.draw do
 
   resources :orders, only: [:index, :show, :create]
   resources :projects, only: [:index, :show]
+
+  post 'drive_files/:attachable_type/:attachable_id', to: 'admin/drive_files#create', as: :drive_files
+  delete 'drive_files/:attachable_type/:attachable_id/:id', to: 'admin/drive_files#destroy', as: :drive_file
 end

@@ -19,14 +19,6 @@
           class: field_error_class(@product, :name, "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white") %>
       <%= display_field_errors(@product, :name) %>
     </div>
-
-    <div class="md:col-span-2">
-      <%= form.label :image_url, class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" %>
-      <%= form.text_field :image_url,
-          placeholder: "Enter image URL",
-          class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" %>
-      <%= display_field_errors(@product, :image_url) %>
-    </div>
   </div>
 
   <!-- Description (WYSIWYG) -->

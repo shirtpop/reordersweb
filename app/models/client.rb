@@ -1,4 +1,6 @@
 class Client < ApplicationRecord
+  include HasDriveFiles
+
   belongs_to :address, optional: true
   belongs_to :shipping_address, class_name: 'Address', optional: true
 

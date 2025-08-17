@@ -5,7 +5,6 @@ class CreateProducts < ActiveRecord::Migration[8.0]
       t.jsonb :price_info, default: {}
       t.string :sizes, array: true, default: []
       t.jsonb :colors, default: []
-      t.string :image_url
 
       t.timestamps
     end

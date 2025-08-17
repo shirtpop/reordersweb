@@ -51,6 +51,16 @@
     </div>
   </div>
 
+  <!-- Image Uploader -->
+  <div class="bg-white dark:bg-gray-800 shadow rounded-lg">
+    <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+      <h3 class="text-lg font-medium text-gray-900 dark:text-white">Client Information</h3>
+    </div>
+    <div class="p-6">
+      <%= render 'shared/image_uploader', attachable: @client %>
+    </div>
+  </div>
+
   <!-- Main Address -->
   <div class="bg-white dark:bg-gray-800 shadow rounded-lg">
     <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
