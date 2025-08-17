@@ -31,8 +31,8 @@
                 </td>
                 <td class="px-6 py-4 text-right">
                   <div class="flex items-center space-x-2">
-                    <%= link_to "View", admin_project_path(project), class: "font-medium text-blue-600 dark:text-blue-500 hover:underline cursor-pointer" %>
-                    <%= link_to "Edit", edit_admin_project_path(project), class: "font-medium text-yellow-600 dark:text-yellow-500 hover:underline cursor-pointer" %>
+                    <%= link_to "View", admin_project_path(project), class: "font-medium text-blue-600 dark:text-blue-500 hover:underline cursor-pointer", data: { turbo_frame: "_top" } %>
+                    <%= link_to "Edit", edit_admin_project_path(project), class: "font-medium text-yellow-600 dark:text-yellow-500 hover:underline cursor-pointer", data: { turbo_frame: "_top" } %>
                     <%= link_to admin_project_path(project), 
                                 data: { 
                                   "turbo-method": :delete,
