@@ -48,7 +48,7 @@ module Admin
 
     def product_params
       params.require(:product).permit(
-        :name, :image_urls, :description, :minimum_order, :base_price,
+        :name, :description, :minimum_order, :base_price,
         sizes: [],
         bulk_prices: [:qty, :price],
         colors: [:name, :hex_color]
