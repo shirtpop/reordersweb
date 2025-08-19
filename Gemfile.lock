@@ -120,6 +120,7 @@ GEM
     faraday-net_http (3.4.1)
       net-http (>= 0.5.0)
     ffi (1.17.2-aarch64-linux-gnu)
+    ffi (1.17.2-arm64-darwin)
     flowbite (3.1.2)
     globalid (1.2.1)
       activesupport (>= 6.1)
@@ -213,6 +214,8 @@ GEM
     nio4r (2.7.4)
     nokogiri (1.18.9-aarch64-linux-gnu)
       racc (~> 1.4)
+    nokogiri (1.18.9-arm64-darwin)
+      racc (~> 1.4)
     orm_adapter (0.5.0)
     os (1.1.4)
     ostruct (0.6.3)
@@ -222,6 +225,7 @@ GEM
       ast (~> 2.4.1)
       racc
     pg (1.6.0-aarch64-linux)
+    pg (1.6.0-arm64-darwin)
     pp (0.6.2)
       prettyprint
     prettyprint (0.2.0)
@@ -359,8 +363,10 @@ GEM
       railties (>= 7.0.0)
       tailwindcss-ruby (~> 4.0)
     tailwindcss-ruby (4.1.11-aarch64-linux-gnu)
+    tailwindcss-ruby (4.1.11-arm64-darwin)
     thor (1.4.0)
     thruster (0.1.14-aarch64-linux)
+    thruster (0.1.14-arm64-darwin)
     timeout (0.4.3)
     trailblazer-option (0.1.2)
     turbo-rails (2.0.16)
@@ -389,6 +395,7 @@ GEM
 
 PLATFORMS
   aarch64-linux
+  arm64-darwin-22
 
 DEPENDENCIES
   bcrypt (~> 3.1.7)

@@ -1,14 +1,12 @@
 # syntax=docker/dockerfile:1
 
-# Define build arguments
 ARG RUBY_VERSION=3.4.3
 ARG NODE_VERSION=22
 
-FROM ruby:$RUBY_VERSION-slim AS base
+# Builder stage (dependencies + asset compilation)
+FROM ruby:$RUBY_VERSION-slim AS builder
 
-WORKDIR /rails
-
-# Install system dependencies (including editors for all stages)
+# Install build dependencies
 RUN apt-get update -qq && apt-get install --no-install-recommends -y \
     build-essential \
     curl \
@@ -23,97 +21,89 @@ RUN apt-get update -qq && apt-get install --no-install-recommends -y \
     libvips \
     libxml2-dev \
     libxslt1-dev \
+    nodejs \
+    npm \
     libyaml-dev \
-    nano \
-    vim \
-    postgresql-client \
     zlib1g-dev \
+    g++ \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
-# Install Node.js and Yarn
-ARG NODE_VERSION
-RUN curl -fsSL https://deb.nodesource.com/setup_${NODE_VERSION}.x | bash - && \
-    apt-get install --no-install-recommends -y nodejs && \
-    npm install --global yarn && \
-    apt-get clean && rm -rf /var/lib/apt/lists /var/cache/apt/archives
+# Install Yarn
+RUN npm install --global yarn
 
-# Production build stage
-FROM base AS build
-
-ENV BUNDLE_JOBS=4 \
-    BUNDLE_RETRY=3 \
-    RAILS_ENV=production \
-    NODE_ENV=production
-
-# Copy dependency files first for better caching
-COPY Gemfile* package.json* yarn.lock* .ruby-version* ./
+WORKDIR /rails
 
 # Install dependencies
-RUN if [ -f "Gemfile" ]; then \
-        bundle config set --local deployment 'true' && \
-        bundle config set --local without 'development test' && \
-        bundle install && \
-        rm -rf "${BUNDLE_PATH}/ruby/*/cache" "${BUNDLE_PATH}/ruby/*/bundler/gems/*/.git"; \
-    fi
-
-RUN if [ -f "package.json" ]; then \
-        yarn install --frozen-lockfile --production; \
-    fi
+COPY Gemfile* package.json* yarn.lock* .ruby-version* ./
+RUN bundle config set --local deployment 'true' \
+    && bundle config set --local without 'development test' \
+    && bundle install --jobs 4 --retry 3 \
+    && rm -rf /usr/local/bundle/cache/*.gem \
+    && yarn install --frozen-lockfile --production
 
 # Copy application code
 COPY . .
 
-# Precompile assets and bootsnap
-RUN if [ -f "bin/rails" ]; then \
-        SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:precompile && \
-        bundle exec bootsnap precompile app/ lib/; \
-    fi
+# Precompile assets
+RUN SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:precompile \
+    && bundle exec bootsnap precompile app/ lib/
 
 # Production stage
-FROM base AS prod
+FROM ruby:$RUBY_VERSION-slim AS prod
+
+# Install runtime dependencies
+RUN apt-get update -qq && apt-get install --no-install-recommends -y \
+    curl \
+    libjemalloc2 \
+    libvips \
+    postgresql-client \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# Add wait-for-it
+RUN curl -o /usr/local/bin/wait-for-it \
+    https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh \
+    && chmod +x /usr/local/bin/wait-for-it
+
+WORKDIR /rails
 
 # Copy built artifacts
-COPY --from=build "${BUNDLE_PATH}" "${BUNDLE_PATH}"
-COPY --from=build /rails /rails
+COPY --from=builder /usr/local/bundle /usr/local/bundle
+COPY --from=builder /rails /rails
 
-# Create non-root user for security
-RUN groupadd --system --gid 1000 ruby && \
-    useradd ruby --uid 1000 --gid 1000 --create-home --shell /bin/bash && \
-    chown -R ruby:ruby db log storage tmp public
+# Create non-root user
+RUN groupadd --system --gid 1000 rails \
+    && useradd --system --uid 1000 --gid rails rails \
+    && chown -R rails:rails db log storage tmp public
 
-USER ruby:ruby
+USER rails:rails
 
-# Set production environment
+# Environment variables
 ENV RAILS_ENV=production \
     BUNDLE_DEPLOYMENT=1 \
-    BUNDLE_WITHOUT="development:test"
+    BUNDLE_PATH="/usr/local/bundle" \
+    RAILS_LOG_TO_STDOUT=1 \
+    RAILS_SERVE_STATIC_FILES=true
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:3000/health || exit 1
+    CMD curl -f http://localhost:3000/up || exit 1
 
+# Entrypoint and command
 ENTRYPOINT ["./bin/docker-entrypoint"]
-EXPOSE 3000
-CMD ["./bin/rails", "server", "-b", "0.0.0.0"]
+CMD ["./bin/rails", "server"]
 
 # Development stage
-FROM base AS dev
-
-# Copy dependency files
-COPY Gemfile* .ruby-version* package.json* yarn.lock* ./
-
-# Install all dependencies (including dev/test)
-RUN if [ -f "Gemfile" ]; then bundle install; fi
-RUN if [ -f "package.json" ]; then yarn install --check-files; fi
-
-# Create development directories
-RUN mkdir -p tmp/pids tmp/cache log
+FROM builder AS dev
 
 # Set development environment
 ENV RAILS_ENV=development \
     BUNDLE_WITHOUT="" \
     BOOTSNAP_CACHE_DIR=/tmp/bootsnap-cache \
     EDITOR=nano
+
+# Create development directories
+RUN mkdir -p tmp/pids tmp/cache log
 
 EXPOSE 3000

@@ -1,14 +1,16 @@
-#!/bin/bash -e
+#!/bin/bash
+set -e
 
-# Enable jemalloc for reduced memory usage and latency.
-if [ -z "${LD_PRELOAD+x}" ]; then
-    LD_PRELOAD=$(find /usr/lib -name libjemalloc.so.2 -print -quit)
-    export LD_PRELOAD
+# Extract host:port from DATABASE_URL
+if [[ -n "$DATABASE_URL" ]]; then
+  DB_HOST_PORT=$(echo "$DATABASE_URL" | awk -F[@/] '{print $4}')
+  /usr/local/bin/wait-for-it "$DB_HOST_PORT" -t 30
 fi
 
-# If running the rails server then create or migrate existing database
-if [ "${@: -2:1}" == "./bin/rails" ] && [ "${@: -1:1}" == "server" ]; then
-  ./bin/rails db:prepare
+# Run migrations on first deploy
+if [[ -f /rails/tmp/initialized ]] || [[ "$KAMAL_RUN_MIGRATIONS" == "1" ]]; then
+  bundle exec rails db:migrate
+  touch /rails/tmp/initialized
 fi
 
-exec "${@}"
+exec "$@"
