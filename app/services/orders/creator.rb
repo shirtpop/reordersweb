@@ -44,13 +44,13 @@ module Orders
     end
 
     def price_for(product, qty)
-      return product.base_price if product.bulk_prices.blank?
+      return product.base_price.to_i unless product.bulk_prices
 
       applicable_prices = product.bulk_prices
         .select { |bp| bp["qty"].to_i <= qty }
         .map { |bp| bp["price"].to_f }
 
-      applicable_prices.min.to_i || product.base_price
+      applicable_prices.min.to_i || product.base_price.to_i
     end
   end
 end
