@@ -3,7 +3,6 @@ module GoogleDrive
     # Scope is defined in each APIs.
     # ex) https://developers.google.com/drive/api/reference/rest/v3/files/create?hl=en#authorization-scopes
     SCOPE = ['https://www.googleapis.com/auth/drive'].freeze
-    FOLDER_ID = '14zCpiIlc1supTf-6pO-YlFuEYkFUsOXp'
     PERMISSION_TYPE = 'anyone'
     PERMISSION_ROLE = 'reader'
 
@@ -39,7 +38,7 @@ module GoogleDrive
       end
 
       def metadata(filename:)
-        Google::Apis::DriveV3::File.new(name: filename, parents: [FOLDER_ID])
+        Google::Apis::DriveV3::File.new(name: filename, parents: [folder_id])
       end
 
       def permission
@@ -48,6 +47,10 @@ module GoogleDrive
       
       def authorization
         GoogleDrive::Auth.authorization
+      end
+
+      def folder_id
+        ENV['GOOGLE_DRIVE_FOLDER_ID']
       end
     end
   end
