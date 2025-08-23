@@ -12,6 +12,7 @@ module Admin
       
       respond_to do |format|
         if @user.save
+          UserMailer.with(user: @user, password: user_params[:password]).welcome_client.deliver_later
           format.html { 
             redirect_to admin_users_path, 
             notice: 'User was successfully created.' 

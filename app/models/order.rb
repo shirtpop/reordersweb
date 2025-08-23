@@ -20,7 +20,16 @@ class Order < ApplicationRecord
 
   accepts_nested_attributes_for :order_items, allow_destroy: true
 
+  after_commit :send_notifications, on: :create
+
   def total_price
     order_items.sum { |item| item.total_price }
-  end  
+  end
+
+  private
+
+  def send_notifications
+    OrderMailer.with(order: self).client_confirmation.deliver_later
+    OrderMailer.with(order: self).admin_notification.deliver_later
+  end
 end

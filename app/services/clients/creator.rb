@@ -39,7 +39,8 @@ module Clients
 
     def create_users!
       @user_params.values.each do |user_param|
-        @client.users.create!(user_param.merge(client_id: @client.id))
+        user = @client.users.create!(user_param.merge(client_id: @client.id))
+        UserMailer.with(user: user, password: user_param[:password]).welcome_client.deliver_later
       end
     end
   end
