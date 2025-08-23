@@ -50,7 +50,7 @@ module GoogleDrive
       end
 
       def folder_id
-        ENV['GOOGLE_DRIVE_FOLDER_ID']
+        Rails.application.credentials.dig(Rails.env.to_sym, :google_drive, :folder_id)
       end
     end
   end
