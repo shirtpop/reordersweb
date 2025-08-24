@@ -2,9 +2,9 @@ module GoogleDrive
   class DriveService
     # Scope is defined in each APIs.
     # ex) https://developers.google.com/drive/api/reference/rest/v3/files/create?hl=en#authorization-scopes
-    SCOPE = ['https://www.googleapis.com/auth/drive'].freeze
-    PERMISSION_TYPE = 'anyone'
-    PERMISSION_ROLE = 'reader'
+    SCOPE = [ "https://www.googleapis.com/auth/drive" ].freeze
+    PERMISSION_TYPE = "anyone"
+    PERMISSION_ROLE = "reader"
 
     class << self
       def drive_service
@@ -24,7 +24,7 @@ module GoogleDrive
       end
 
       def get_file(file_id)
-        drive_service.get_file(file_id, fields: 'id,name,mime_type,webContentLink,webViewLink,thumbnailLink', supports_all_drives: true)
+        drive_service.get_file(file_id, fields: "id,name,mime_type,webContentLink,webViewLink,thumbnailLink", supports_all_drives: true)
       rescue Google::Apis::ClientError => e
         raise GoogleDrive::Errors::UploadError, "Failed to retrieve file: #{e.message}"
       end
@@ -38,19 +38,19 @@ module GoogleDrive
       end
 
       def metadata(filename:)
-        Google::Apis::DriveV3::File.new(name: filename, parents: [folder_id])
+        Google::Apis::DriveV3::File.new(name: filename, parents: [ folder_id ])
       end
 
       def permission
         Google::Apis::DriveV3::Permission.new(type: PERMISSION_TYPE, role: PERMISSION_ROLE)
       end
-      
+
       def authorization
         GoogleDrive::Auth.authorization
       end
 
       def folder_id
-        Rails.application.credentials.dig(Rails.env.to_sym, :google_drive, :folder_id)
+        Rails.application.credentials.dig(:google_drive, :folder_id)
       end
     end
   end

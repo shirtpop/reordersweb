@@ -69,11 +69,11 @@ Rails.application.configure do
   config.action_mailer.smtp_settings = {
     address: "smtp.sendgrid.net",
     port: 587,
-    user_name: Rails.application.credentials.dig(:staging, :smtp, :user),
-    password: Rails.application.credentials.dig(:staging, :smtp, :password),
+    user_name: Rails.application.credentials.dig(:smtp, :user),
+    password: Rails.application.credentials.dig(:smtp, :password),
     authentication: :login,
     enable_starttls_auto: true,
-    domain: Rails.application.credentials.dig(:staging, :smtp, :domain)
+    domain: Rails.application.credentials.dig(:smtp, :domain)
   }
 
   # Enable locale fallbacks for I18n (makes lookups for any locale fall back to
@@ -120,6 +120,4 @@ Rails.application.configure do
   # config.active_record.database_selector = { delay: 2.seconds }
   # config.active_record.database_resolver = ActiveRecord::Middleware::DatabaseSelector::Resolver
   # config.active_record.database_resolver_context = ActiveRecord::Middleware::DatabaseSelector::Resolver::Session
-
-  config.secret_key_base = Rails.application.credentials.dig(:staging, :secret_key_base)
 end
