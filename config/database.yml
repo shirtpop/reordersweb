@@ -90,8 +90,14 @@ test:
 # for a full overview on how database connection configuration can be specified.
 #
 staging:
-  <<: *default
-  url: <%= ENV["DATABASE_URL"] %>
+  primary:
+    <<: *default
+    url: <%= ENV["DATABASE_URL"] %>
+    schema_search_path: "public"
+  queue:
+    <<: *default
+    url: <%= ENV["DATABASE_URL"] %>
+    schema_search_path: "solid"
 production:
   primary: &primary_production
     <<: *default
