@@ -8,6 +8,5 @@ set :puma_env,  :production
 set :ssh_options, {
   forward_agent: true,
   user: "deploy",
-  auth_methods: %w[publickey],
-  keys: %w[~/.ssh/shirtpop]
+  auth_methods: %w[publickey]
 }
