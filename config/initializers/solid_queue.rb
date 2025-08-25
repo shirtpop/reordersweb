@@ -1,6 +1,3 @@
-SolidQueue.connects_to do
-  {
-    database: :queue,
-    schema: "solid"
-  }
+Rails.application.config.to_prepare do
+  SolidQueue::Record.connects_to database: { writing: :queue }
 end
