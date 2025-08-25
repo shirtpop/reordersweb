@@ -1,6 +1,6 @@
 SolidQueue.connects_to do
-  { 
-    database: :primary,
-    schema: "solid" 
+  {
+    database: :queue,
+    schema: "solid"
   }
 end
