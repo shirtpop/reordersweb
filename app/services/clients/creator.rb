@@ -15,7 +15,7 @@ module Clients
       ActiveRecord::Base.transaction do
         billing_address = create_address!(@main_address_params)
         shipping_address = @same_as_main ? billing_address : create_address!(@shipping_address_params)
-        
+
         @client.assign_attributes(address: billing_address, shipping_address: shipping_address)
         @client.save!
         create_users! if @user_params.present?
@@ -40,7 +40,7 @@ module Clients
     def create_users!
       @user_params.values.each do |user_param|
         user = @client.users.create!(user_param.merge(client_id: @client.id))
-        UserMailer.with(user: user, password: user_param[:password]).welcome_client.deliver_later
+        UserMailer.with(user_id: user.id, password: user_param[:password]).welcome_client.deliver_later
       end
     end
   end
