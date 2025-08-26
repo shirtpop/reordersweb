@@ -22,7 +22,7 @@ staging:
   workers:
     - queues: "*"
       threads: 2
-      processes: 0
+      processes: 1
       polling_interval: 5
 
 production:
