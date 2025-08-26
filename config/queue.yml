@@ -16,12 +16,14 @@ test:
   <<: *default
 
 staging:
-  <<: *default
+  dispatcher:
+    polling_interval: 10
+    batch_size: 25 
   workers:
     - queues: "*"
-      threads: 3
-      processes: 3
-      polling_interval: 1
+      threads: 1
+      processes: 0
+      polling_interval: 5
 
 production:
   <<: *default
