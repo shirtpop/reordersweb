@@ -14,21 +14,21 @@ Rails.application.routes.draw do
   # Defines the root path route ("/")
   root "projects#index"
   devise_for :users, controllers: {
-    sessions: 'users/sessions'
+    sessions: "users/sessions"
   }
 
   namespace :admin do
-    root to: 'dashboard#index', as: :root
+    root to: "dashboard#index", as: :root
     resources :clients
-    resources :users, only: [:index, :create, :update, :destroy]
-    resources :orders, only: [:index, :show]
+    resources :users, only: [ :index, :create, :update, :destroy ]
+    resources :orders, only: [ :index, :show ]
     resources :products
     resources :projects
   end
 
-  resources :orders, only: [:index, :show, :create]
-  resources :projects, only: [:index, :show]
+  resources :orders, only: [ :index, :show, :create ]
+  resources :projects, only: [ :index, :show ]
 
-  post 'drive_files/:attachable_type/:attachable_id', to: 'admin/drive_files#create', as: :drive_files
-  delete 'drive_files/:attachable_type/:attachable_id/:id', to: 'admin/drive_files#destroy', as: :drive_file
+  post "drive_files/:attachable_type/:attachable_id", to: "admin/drive_files#create", as: :drive_files
+  delete "drive_files/:attachable_type/:attachable_id/:id", to: "admin/drive_files#destroy", as: :drive_file
 end
