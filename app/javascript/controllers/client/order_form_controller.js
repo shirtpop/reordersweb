@@ -2,7 +2,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["grandTotal", "priceField", "submitBtn", "quantityField"]
+  static targets = ["grandTotal", "priceField", "submitBtn", "quantityField", "modal"]
   
   connect() {
     this.productTotals = {}
@@ -236,5 +236,27 @@ export default class extends Controller {
         alertDiv.remove()
       }
     }, 7000)
+  }
+
+  validateAndConfirm(event) {
+    if (!this.validateForm(event)) {
+      return
+    }
+
+    // Show confirmation modal
+    this.openConfirmationModal()
+  }
+
+  openConfirmationModal() {
+    this.modalTarget.classList.remove("hidden")
+  }
+
+  closeConfirmation() {
+    this.modalTarget.classList.add("hidden")
+  }
+
+  submitForm() {
+    this.modalTarget.classList.add("hidden")
+    this.element.requestSubmit() // Submit form
   }
 }

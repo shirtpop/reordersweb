@@ -1,6 +1,6 @@
 module Admin
   class ClientsController < BaseController
-    before_action :set_client, only: [:edit, :show,:update, :destroy]
+    before_action :set_client, only: [ :edit, :show, :update, :destroy ]
 
     def index
       scope = params[:q].present? ? Client.search_by_name(params[:q]) : Client.order(created_at: :desc)
@@ -17,7 +17,7 @@ module Admin
     end
 
     def create
-      creator = Clients::Creator.new(client_params:, same_as_main: params[:same_as_main] == '1' || params[:same_as_main] == 'true')
+      creator = Clients::Creator.new(client_params:, same_as_main: params[:same_as_main] == "1" || params[:same_as_main] == "true")
       @client = creator.call!
 
       if creator.success?
@@ -26,14 +26,14 @@ module Admin
         render :new
       end
     end
-          
+
     def edit; end
 
     def update
       updater = Clients::Updater.new(
         client: @client,
         client_params: client_params,
-        same_as_main: params[:same_as_main] == '1' || params[:same_as_main] == 'true'
+        same_as_main: params[:same_as_main] == "1" || params[:same_as_main] == "true"
       )
 
       @client = updater.call
@@ -60,13 +60,14 @@ module Admin
 
     def client_params
       params.require(:client).permit(
-        :company_name, 
-        :personal_name, 
+        :company_name,
+        :personal_name,
         :phone_number,
         :same_as_main,
-        address_attributes: [:id, :street, :city, :state, :zip_code],
-        shipping_address_attributes: [:id, :street, :city, :state, :zip_code],
-        users_attributes: [:id, :email, :password, :role, :client_id]
+        :company_url,
+        address_attributes: [ :id, :street, :city, :state, :zip_code ],
+        shipping_address_attributes: [ :id, :street, :city, :state, :zip_code ],
+        users_attributes: [ :id, :email, :password, :role, :client_id ]
       )
     end
 

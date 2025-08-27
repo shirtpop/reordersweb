@@ -2,6 +2,7 @@ module Clients
   class Updater
     def initialize(client:, client_params:, same_as_main:)
       @client = client
+      @client_params = client_params.except(:address_attributes, :shipping_address_attributes)
       @main_address_params = client_params[:address_attributes]
       @shipping_address_params = client_params[:shipping_address_attributes]
       @same_as_main = same_as_main
@@ -48,7 +49,11 @@ module Clients
     end
 
     def address_changed?(address, params)
-      params.any? { |key, value| address.send(key) != value }
+      %w[street city state zip_code].any? do |attr|
+        current = address.public_send(attr).to_s.strip.downcase
+        incoming = params[attr].to_s.strip.downcase
+        current != incoming
+      end
     end
   end
 end

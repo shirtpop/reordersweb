@@ -98,6 +98,7 @@ staging:
     <<: *default
     url: <%= ENV["DATABASE_URL"] %>
     schema_search_path: "solid"
+    migrations_paths: []
 production:
   primary: &primary_production
     <<: *default
