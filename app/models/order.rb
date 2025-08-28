@@ -1,7 +1,7 @@
 class Order < ApplicationRecord
-  
   belongs_to :client
   belongs_to :project
+  belongs_to :ordered_by, class_name: "User", optional: true
 
   has_many :order_items, dependent: :destroy
 
@@ -29,7 +29,7 @@ class Order < ApplicationRecord
   private
 
   def send_notifications
-    OrderMailer.with(order: self).client_confirmation.deliver_later
-    OrderMailer.with(order: self).admin_notification.deliver_later
+    OrderMailer.with(order_id: self.id).client_confirmation.deliver_later
+    OrderMailer.with(order_id: self.id).admin_notification.deliver_later
   end
 end

@@ -38,7 +38,7 @@ module Orders
       total_price = 0
       @order.order_items.group_by(&:product_id).each do |product_id, items|
         product = products[product_id]
-        total_price += price_for(product, items.sum(&:quantity)) * items.sum(&:quantity)
+        total_price += price_for(product, items.sum(&:quantity)).to_f * items.sum(&:quantity)
       end
       @order.price = total_price
     end
@@ -50,7 +50,7 @@ module Orders
         .select { |bp| bp["qty"].to_i <= qty }
         .map { |bp| bp["price"].to_f }
 
-      applicable_prices.min.to_i || product.base_price.to_i
+      applicable_prices.min || product.base_price
     end
   end
 end

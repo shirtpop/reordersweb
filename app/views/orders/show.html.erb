@@ -145,6 +145,11 @@
             <span class="text-sm text-gray-600">Order ID</span>
             <span class="text-sm font-medium text-gray-900">#<%= @order.id.to_s.rjust(6, '0') %></span>
           </div>
+
+          <div class="flex justify-between items-center">
+            <span class="text-sm text-gray-600">Ordered by</span>
+            <span class="text-sm font-medium text-gray-900"><%= @order.ordered_by&.email || "Unknown User" %></span>
+          </div>
           
           <div class="flex justify-between items-center">
             <span class="text-sm text-gray-600">Total Items</span>

@@ -6,7 +6,7 @@ export default class extends Controller {
     "submitButton", "tableContainer", "roleSelect", "modalTitle",
     "viewContent", "formContent", "viewFooter", "formFooter",
     "viewEmail", "viewRole", "viewClient", "viewCreated", "viewClientContainer",
-    "emailField", "passwordField", "passwordConfirmationField", 
+    "emailField", "passwordField", "passwordConfirmationField", "roleSelector",
     "clientSearchField", "clientIdField", "passwordFields", "editButton"
   ]
 
@@ -32,6 +32,7 @@ export default class extends Controller {
     this.resetForm()
     this.setSubmitButtonText("Create User")
     this.showPasswordFields()
+    this.showRoleSelector()
     this.openModal()
   }
 
@@ -71,7 +72,8 @@ export default class extends Controller {
     this.showFormMode()
     this.populateFormData(userData)
     this.setSubmitButtonText("Update User")
-    this.hidePasswordFields()
+    this.showPasswordFields()
+    this.hideRoleSelector()
     this.updateFormAction()
     this.openModal()
   }
@@ -93,7 +95,8 @@ export default class extends Controller {
     this.showFormMode()
     this.populateFormData(userData)
     this.setSubmitButtonText("Update User")
-    this.hidePasswordFields()
+    this.showPasswordFields()
+    this.hideRoleSelector()
     this.updateFormAction()
   }
 
@@ -167,7 +170,10 @@ export default class extends Controller {
   }
 
   populateFormData(userData) {
-    if (this.hasEmailFieldTarget) this.emailFieldTarget.value = userData.email
+    if (this.hasEmailFieldTarget) {
+      this.emailFieldTarget.value = userData.email
+      if (this.currentMode === 'edit') this.emailFieldTarget.readOnly = true
+    }
     if (this.hasRoleSelectTarget) this.roleSelectTarget.value = userData.role
     
     // Handle client field
@@ -212,7 +218,10 @@ export default class extends Controller {
     this.isSubmitting = false
     this.setSubmitButtonState(false)
     this.hideClientField()
-    
+    if (this.hasEmailFieldTarget && this.currentMode === 'edit') {
+      this.emailFieldTarget.readOnly = false
+    }
+
     if (this.hasRoleSelectTarget) {
       this.roleSelectTarget.selectedIndex = 0
     }
@@ -221,6 +230,18 @@ export default class extends Controller {
   setSubmitButtonText(text) {
     if (this.hasSubmitButtonTarget) {
       this.submitButtonTarget.value = text
+    }
+  }
+
+  showRoleSelector() {
+    if (this.hasRoleSelectorTarget) {
+      this.roleSelectorTarget.classList.remove("hidden")
+    }
+  }
+
+  hideRoleSelector() {
+    if (this.hasRoleSelectorTarget) {
+      this.roleSelectorTarget.classList.add("hidden")
     }
   }
 

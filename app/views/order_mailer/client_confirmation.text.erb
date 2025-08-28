@@ -1,4 +1,40 @@
-Thank you for your order!
-Your order has been successfully created.
-Project: <%= @order.project&.name %>
-We’ll notify you once it is processed.
+ORDER CONFIRMATION
+
+Dear Valued Customer,
+
+Thank you for your order with <%= Rails.application.class.module_parent_name %>. We have successfully received and processed your request.
+
+ORDER SUMMARY
+───────────────────────────────────────────────────────
+Project: <%= @order.project&.name || 'Not specified' %>
+Order Date: <%= Time.current.strftime("%B %d, %Y") %>
+Delivery Date: <%= @order.delivery_date ? @order.delivery_date.strftime("%B %d, %Y") : 'To be confirmed' %>
+Total Items: <%= number_with_delimiter(@order.total_quantity) %>
+
+ORDER DETAILS
+───────────────────────────────────────────────────────
+PRODUCT               COLOR      SIZE       QUANTITY
+───────────────────────────────────────────────────────
+<% @order.order_items.each do |item| %>
+<%= item.product.name.ljust(20)[0..19] %> <%= (item.color.presence || 'N/A').ljust(10)[0..9] %> <%= (item.size.presence || 'Standard').ljust(10)[0..9] %> <%= number_with_delimiter(item.quantity).to_s.ljust(10) %>
+<% end %>
+
+ORDER TOTAL
+───────────────────────────────────────────────────────
+Total Quantity: <%= number_with_delimiter(@order.total_quantity) %> units
+
+NEXT STEPS
+───────────────────────────────────────────────────────
+Your order is now being processed by our team. You will receive another notification once your order has been shipped or is ready for pickup.
+
+Order Reference: #<%= @order.id %>
+
+Should you have any questions or require further assistance, please do not hesitate to contact our customer service team.
+
+We appreciate your business and look forward to serving you.
+
+Best regards,
+
+The Shirtpop Team
+───────────────────────────────────────────────────────
+This is an automated message. Please do not reply to this email.

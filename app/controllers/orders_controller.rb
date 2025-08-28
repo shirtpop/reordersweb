@@ -12,7 +12,7 @@ class OrdersController < ApplicationController
     @order = creator.call!
 
     if creator.success?
-      redirect_to @order, notice: 'Order was successfully created.'
+      redirect_to @order, notice: "Order was successfully created."
     else
       redirect_to project_path(@order.project_id), alert: @order.errors.full_messages.to_sentence
     end
@@ -22,6 +22,7 @@ class OrdersController < ApplicationController
 
   def order_params
     params.require(:order).permit(:delivery_date, :project_id, :total_price, :total_quantity,
-                                  order_items_attributes: [:id, :product_id, :quantity, :color, :size, :_destroy])
+                                  order_items_attributes: [ :id, :product_id, :quantity, :color, :size, :_destroy ])
+                          .reverse_merge(ordered_by: current_user)
   end
 end

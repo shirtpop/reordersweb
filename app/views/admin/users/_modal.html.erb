@@ -79,7 +79,6 @@
                     placeholder: "user@example.com" %>
             </div>
 
-            <!-- Password Fields (hidden in edit mode) -->
             <div data-user-modal-target="passwordFields">
               <div>
                 <%= form.label :password, class: "block mb-2 text-sm font-medium text-gray-900 dark:text-white" %>
@@ -99,8 +98,8 @@
               </div>
             </div>
 
-            <!-- Role Field -->
-            <div>
+            <!-- Role Field hidden in edit mode-->
+            <div data-user-modal-target="roleSelector" class="hidden">
               <%= form.label :role, class: "block mb-2 text-sm font-medium text-gray-900 dark:text-white" %>
               <%= form.select :role, 
                     options_for_select([

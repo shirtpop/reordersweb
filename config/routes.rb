@@ -17,6 +17,11 @@ Rails.application.routes.draw do
     sessions: "users/sessions"
   }
 
+  as :user do
+    get "users/edit" => "users/registrations#edit",   as: :edit_user_registration
+    put "users"      => "users/registrations#update", as: :user_registration
+  end
+
   namespace :admin do
     root to: "dashboard#index", as: :root
     resources :clients

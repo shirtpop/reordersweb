@@ -1,15 +1,15 @@
 # frozen_string_literal: true
 
 class Users::SessionsController < Devise::SessionsController
-  layout 'auth'
+  layout "auth"
 
   private
-  
+
   def after_sign_in_path_for(resource)
     if resource.role_admin?
       admin_root_path
     else
-      root_path
+      super
     end
   end
 

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_08_27_123728) do
+ActiveRecord::Schema[8.0].define(version: 2025_08_28_150340) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -107,7 +107,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_27_123728) do
     t.integer "total_quantity", default: 0
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "ordered_by_id"
     t.index ["client_id"], name: "index_orders_on_client_id"
+    t.index ["ordered_by_id"], name: "index_orders_on_ordered_by_id"
     t.index ["project_id"], name: "index_orders_on_project_id"
   end
 
@@ -151,6 +153,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_27_123728) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "client_id"
+    t.boolean "first_time_login", default: true
     t.index ["client_id"], name: "index_users_on_client_id"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
@@ -164,6 +167,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_27_123728) do
   add_foreign_key "order_items", "products"
   add_foreign_key "orders", "clients"
   add_foreign_key "orders", "projects"
+  add_foreign_key "orders", "users", column: "ordered_by_id"
   add_foreign_key "projects", "clients"
   add_foreign_key "users", "clients"
 end

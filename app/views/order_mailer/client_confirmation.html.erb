@@ -1,4 +1,52 @@
-<h1>Thank you for your order!</h1>
-<p>Your order has been successfully created.</p>
-<p>Project: <%= @order.project&.name %></p>
-<p>We’ll notify you once it is processed.</p>
+<h1>Order Confirmation</h1>
+
+<p>Dear Valued Customer,</p>
+
+<p>Thank you for your order. We have successfully received and processed your request.</p>
+
+<div style="background-color: #f9f9f9; padding: 20px; margin: 20px 0; border-left: 4px solid #3b82f6;">
+    <h2 style="margin-top: 0; color: #1f2937;">Order Details</h2>
+    
+    <p><strong>Project Reference:</strong> <%= @order.project&.name %></p>
+    <p><strong>Order Date:</strong> <%= @order.created_at.strftime("%B %d, %Y") %></p>
+    <p><strong>Scheduled Delivery Date:</strong> <%= @order.delivery_date.strftime("%B %d, %Y") if @order.delivery_date %></p>
+    <p><strong>Total Quantity:</strong> <%= number_with_delimiter(@order.total_quantity) %> units</p>
+</div>
+
+<h3>Order Items:</h3>
+<table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+    <thead>
+        <tr style="background-color: #3b82f6; color: white;">
+            <th style="padding: 12px; text-align: left; border: 1px solid #ddd;">Product</th>
+            <th style="padding: 12px; text-align: left; border: 1px solid #ddd;">Color</th>
+            <th style="padding: 12px; text-align: left; border: 1px solid #ddd;">Size</th>
+            <th style="padding: 12px; text-align: left; border: 1px solid #ddd;">Quantity</th>
+        </tr>
+    </thead>
+    <tbody>
+        <% @order.order_items.each do |item| %>
+        <tr style="border-bottom: 1px solid #ddd;">
+            <td style="padding: 12px; border: 1px solid #ddd;"><%= item.product.name %></td>
+            <td style="padding: 12px; border: 1px solid #ddd;"><%= item.color.presence || 'N/A' %></td>
+            <td style="padding: 12px; border: 1px solid #ddd;"><%= item.size.presence || 'Standard' %></td>
+            <td style="padding: 12px; border: 1px solid #ddd;"><%= number_with_delimiter(item.quantity) %></td>
+        </tr>
+        <% end %>
+    </tbody>
+</table>
+
+<div style="background-color: #f0f9ff; padding: 20px; margin: 20px 0; border-radius: 8px;">
+    <h3 style="margin-top: 0; color: #0369a1;">Next Steps</h3>
+    <p>Your order is now being processed by our team. You will receive another notification once your order has been shipped or is ready for pickup.</p>
+    
+    <p><strong>Order Reference Number:</strong> #<%= @order.id %></p>
+</div>
+
+<p>Should you have any questions or require further assistance, please do not hesitate to contact our customer service team.</p>
+
+<p>Best regards,<br>
+<strong>The Shirtpop Team</strong></p>
+
+<p style="color: #6b7280; font-size: 14px; margin-top: 30px;">
+    This is an automated message. Please do not reply to this email.
+</p>

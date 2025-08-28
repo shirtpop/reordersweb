@@ -34,10 +34,14 @@
       <!-- Order Summary Card -->
       <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-6">
         <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Order Summary</h2>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div>
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Client Name</label>
             <p class="mt-1 text-sm text-gray-900 dark:text-white"><%= @order.client.company_name %></p>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Ordered by</label>
+            <p class="mt-1 text-sm text-gray-900 dark:text-white"><%= @order.ordered_by&.email || "Unknown User" %></p>
           </div>
           <div>
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Delivery Date</label>
