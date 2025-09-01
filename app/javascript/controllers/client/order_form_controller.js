@@ -2,8 +2,9 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["grandTotal", "priceField", "submitBtn", "quantityField", "modal"]
-  
+  static targets = ["grandTotal", "priceField", "submitBtn", "quantityField", "modal", "deliveryDate", 
+                    "orderSummary", "emptyState", "totalItems", "totalQuantity", "totalPrice"]
+
   connect() {
     this.productTotals = {}
     this.productQuantities = {}
@@ -243,6 +244,8 @@ export default class extends Controller {
       return
     }
 
+    this.populateOrderSummary()
+
     // Show confirmation modal
     this.openConfirmationModal()
   }
@@ -258,5 +261,177 @@ export default class extends Controller {
   submitForm() {
     this.modalTarget.classList.add("hidden")
     this.element.requestSubmit() // Submit form
+  }
+
+  populateOrderSummary() {
+    const orderItems = this.getAllOrderItems()
+    const deliveryDate = document.querySelector('[name="order[delivery_date]"]').value
+    
+    // Update delivery date
+    this.deliveryDateTarget.textContent = this.formatDate(deliveryDate)
+    
+    // Clear existing summary
+    this.orderSummaryTarget.innerHTML = ''
+    
+    if (orderItems.length === 0) {
+      this.emptyStateTarget.classList.remove('hidden')
+      this.orderSummaryTarget.classList.add('hidden')
+      return
+    }
+    
+    this.emptyStateTarget.classList.add('hidden')
+    this.orderSummaryTarget.classList.remove('hidden')
+    
+    // Group items by product
+    const groupedItems = this.groupItemsByProduct(orderItems)
+    
+    // Generate HTML for each product
+    Object.entries(groupedItems).forEach(([productName, items]) => {
+      const productSummaryHtml = this.createProductSummaryHtml(productName, items)
+      this.orderSummaryTarget.insertAdjacentHTML('beforeend', productSummaryHtml)
+    })
+    
+    // Update totals
+    this.updateModalTotals(orderItems)
+  }
+
+  getAllOrderItems() {
+    const items = []
+    
+    // Get all product cards
+    const productCards = document.querySelectorAll('.product-card')
+    
+    productCards.forEach(card => {
+      const productName = card.querySelector('h2').textContent.trim()
+      const productId = card.dataset.productId
+      const itemContainers = card.querySelectorAll('[data-item-id]')
+      
+      itemContainers.forEach(container => {
+        const itemId = container.dataset.itemId
+        const colorElement = container.querySelector('[data-color]')
+        const color = colorElement ? colorElement.textContent.trim() : 'Unknown'
+        const colorHex = container.querySelector('.w-4.h-4')?.style.backgroundColor || '#000000'
+        
+        const sizes = {}
+        let totalQuantity = 0
+        
+        // Get quantities for each size
+        container.querySelectorAll('.size-quantity').forEach(input => {
+          const size = input.dataset.size
+          const quantity = parseInt(input.value) || 0
+          if (quantity > 0) {
+            sizes[size] = quantity
+            totalQuantity += quantity
+          }
+        })
+        
+        if (totalQuantity > 0) {
+          items.push({
+            productId,
+            productName,
+            itemId,
+            color,
+            colorHex,
+            sizes,
+            totalQuantity,
+            unitPrice: this.calculateItemPrice(productId, totalQuantity),
+            totalPrice: this.calculateItemPrice(productId, totalQuantity) * totalQuantity
+          })
+        }
+      })
+    })
+    
+    return items
+  }
+
+  groupItemsByProduct(items) {
+    return items.reduce((grouped, item) => {
+      if (!grouped[item.productName]) {
+        grouped[item.productName] = []
+      }
+      grouped[item.productName].push(item)
+      return grouped
+    }, {})
+  }
+
+  createProductSummaryHtml(productName, items) {
+    const itemsHtml = items.map(item => `
+      <div class="bg-gray-50 rounded-lg p-3 border border-gray-200">
+        <div class="flex items-center gap-3 mb-2">
+          <div class="w-4 h-4 rounded-full border border-gray-300" 
+              style="background-color: ${item.colorHex}"></div>
+          <span class="font-medium text-gray-900">${item.color}</span>
+          <span class="text-sm text-gray-500">(${item.totalQuantity} total)</span>
+        </div>
+        
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm">
+          ${Object.entries(item.sizes).map(([size, qty]) => `
+            <div class="flex justify-between">
+              <span class="text-gray-600">${size}:</span>
+              <span class="font-medium">${qty}</span>
+            </div>
+          `).join('')}
+        </div>
+        
+        <div class="flex justify-between items-center mt-2 pt-2 border-t border-gray-300">
+          <span class="text-sm text-gray-600">Item Total:</span>
+          <span class="font-medium text-pink-600">$${item.totalPrice.toFixed(2)}</span>
+        </div>
+      </div>
+    `).join('')
+    
+    const productTotal = items.reduce((sum, item) => sum + item.totalPrice, 0)
+    
+    return `
+      <div class="border border-gray-200 rounded-lg p-4 mb-4">
+        <div class="flex justify-between items-center mb-3">
+          <h5 class="font-semibold text-gray-900">${productName}</h5>
+          <span class="text-lg font-bold text-pink-600">$${productTotal.toFixed(2)}</span>
+        </div>
+        <div class="space-y-3">
+          ${itemsHtml}
+        </div>
+      </div>
+    `
+  }
+
+  updateModalTotals(items) {
+    const totalItems = items.length
+    const totalQuantity = items.reduce((sum, item) => sum + item.totalQuantity, 0)
+    const totalPrice = items.reduce((sum, item) => sum + item.totalPrice, 0)
+    
+    this.totalItemsTarget.textContent = totalItems
+    this.totalQuantityTarget.textContent = totalQuantity
+    this.totalPriceTarget.textContent = `$${totalPrice.toFixed(2)}`
+  }
+
+  calculateItemPrice(productId, quantity) {
+    // Get product data (you might need to adjust this based on your data structure)
+    const productCard = document.querySelector(`[data-product-id="${productId}"]`)
+    const basePrice = parseFloat(productCard.dataset.basePrice)
+    const bulkPrices = JSON.parse(productCard.dataset.bulkPrice || '[]')
+    
+    // Find applicable bulk price
+    let unitPrice = basePrice
+    for (const bulk of bulkPrices.sort((a, b) => b.qty - a.qty)) {
+      if (quantity >= parseInt(bulk.qty)) {
+        unitPrice = parseFloat(bulk.price)
+        break
+      }
+    }
+    
+    return unitPrice
+  }
+
+  formatDate(dateString) {
+    if (!dateString) return 'Not specified'
+    
+    const date = new Date(dateString)
+    return date.toLocaleDateString('en-US', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    })
   }
 }
