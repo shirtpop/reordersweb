@@ -2,6 +2,7 @@ class Order < ApplicationRecord
   belongs_to :client
   belongs_to :project
   belongs_to :ordered_by, class_name: "User", optional: true
+  belongs_to :shipped_to, class_name: "Address", optional: true
 
   has_many :order_items, dependent: :destroy
 
@@ -20,6 +21,7 @@ class Order < ApplicationRecord
 
   accepts_nested_attributes_for :order_items, allow_destroy: true
 
+  before_create :set_shipped_address
   after_commit :send_notifications, on: :create
 
   def total_price
@@ -31,5 +33,9 @@ class Order < ApplicationRecord
   def send_notifications
     OrderMailer.with(order_id: self.id).client_confirmation.deliver_later
     OrderMailer.with(order_id: self.id).admin_notification.deliver_later
+  end
+
+  def set_shipped_address
+    self.shipped_to_id = client&.shipping_address_id
   end
 end

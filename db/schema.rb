@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_08_28_150340) do
+ActiveRecord::Schema[8.0].define(version: 2025_09_03_135711) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -108,9 +108,11 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_28_150340) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "ordered_by_id"
+    t.bigint "shipped_to_id"
     t.index ["client_id"], name: "index_orders_on_client_id"
     t.index ["ordered_by_id"], name: "index_orders_on_ordered_by_id"
     t.index ["project_id"], name: "index_orders_on_project_id"
+    t.index ["shipped_to_id"], name: "index_orders_on_shipped_to_id"
   end
 
   create_table "products", force: :cascade do |t|
@@ -165,6 +167,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_28_150340) do
   add_foreign_key "clients", "addresses", column: "shipping_address_id"
   add_foreign_key "order_items", "orders"
   add_foreign_key "order_items", "products"
+  add_foreign_key "orders", "addresses", column: "shipped_to_id"
   add_foreign_key "orders", "clients"
   add_foreign_key "orders", "projects"
   add_foreign_key "orders", "users", column: "ordered_by_id"
