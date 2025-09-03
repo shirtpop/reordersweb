@@ -23,7 +23,7 @@ class DriveFile < ApplicationRecord
   def image_file?
     return false unless drive_mime_type.present?
 
-    drive_mime_type.start_with?('image/')
+    drive_mime_type.start_with?("image/")
   end
 
   def drive_file

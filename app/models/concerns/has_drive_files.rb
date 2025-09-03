@@ -16,7 +16,7 @@ module HasDriveFiles
   def validate_drive_files_association
     drive_files.each do |drive_file|
       next if drive_file.marked_for_destruction?
-      
+
       if drive_file.drive_file_id.blank?
         errors.add(:drive_files, "File upload failed for #{drive_file.filename}")
       end

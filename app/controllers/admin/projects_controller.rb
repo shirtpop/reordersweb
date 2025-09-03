@@ -1,6 +1,6 @@
 module Admin
   class ProjectsController < BaseController
-    before_action :set_project, only: [:edit, :show, :update, :destroy]
+    before_action :set_project, only: [ :edit, :show, :update, :destroy ]
 
     def index
       scope = params[:q].present? ? Project.search_by_keyword(params[:q]) : Project.includes(:client).order(created_at: :desc)
@@ -54,7 +54,7 @@ module Admin
 
       # Get the selected product IDs, filtering out empty values
       selected_product_ids = params[:project][:product_ids].reject(&:blank?).map(&:to_i)
-      
+
       # Get current product IDs
       current_product_ids = @project.product_ids
 

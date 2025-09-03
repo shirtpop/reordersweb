@@ -42,36 +42,36 @@ gem "thruster", require: false
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
 gem "image_processing", "~> 1.2"
 
-gem 'devise'
+gem "devise"
 gem "flowbite", "~> 3.1"
-gem 'pagy'
+gem "pagy"
 gem "mission_control-jobs"
 
 gem "googleauth"
 gem "google-apis-drive_v3"
 
-gem 'exception_notification'
-gem 'slack-notifier'
+gem "exception_notification"
+gem "slack-notifier"
 
 group :development, :test do
-  gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
+  gem "byebug", platforms: [ :mri, :mingw, :x64_mingw ]
   # Static analysis for security vulnerabilities [https://brakemanscanner.org/]
   gem "brakeman", require: false
   # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
   gem "rubocop-rails-omakase", require: false
-  gem 'rspec-rails'
-  gem 'factory_bot_rails'
-  gem 'faker'
+  gem "rspec-rails"
+  gem "factory_bot_rails"
+  gem "faker"
 end
 
 group :development do
   # Use console on exceptions pages [https://github.com/rails/web-console]
   gem "web-console"
-  gem 'capistrano',         require: false
-  gem 'capistrano-rbenv',     require: false
-  gem 'capistrano-rails',   require: false
-  gem 'capistrano-bundler', require: false
-  gem 'capistrano3-puma', '6.0.0.beta.1', require: false
-  gem 'ed25519', require: false
-  gem 'bcrypt_pbkdf', require: false
+  gem "capistrano",         require: false
+  gem "capistrano-rbenv",     require: false
+  gem "capistrano-rails",   require: false
+  gem "capistrano-bundler", require: false
+  gem "capistrano3-puma", "6.0.0.beta.1", require: false
+  gem "ed25519", require: false
+  gem "bcrypt_pbkdf", require: false
 end

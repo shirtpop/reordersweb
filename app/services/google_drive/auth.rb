@@ -1,12 +1,12 @@
-require 'google/apis/drive_v3'
-require 'googleauth'
-require 'googleauth/stores/file_token_store'
+require "google/apis/drive_v3"
+require "googleauth"
+require "googleauth/stores/file_token_store"
 
 module GoogleDrive
   class Auth
     # Set up OAuth scope
-    SCOPE = 'https://www.googleapis.com/auth/drive'
-    DEFAULT_USER_ID = 'default'
+    SCOPE = "https://www.googleapis.com/auth/drive"
+    DEFAULT_USER_ID = "default"
 
     class << self
       def authorization
@@ -18,7 +18,7 @@ module GoogleDrive
       def request_credentials
         url = authorizer.get_authorization_url(base_url:)
         puts "Open this URL in your browser: #{url}"
-        puts 'after that, call get_and_store_credentials with the code you received.'
+        puts "after that, call get_and_store_credentials with the code you received."
       end
 
       def credentials
@@ -30,15 +30,15 @@ module GoogleDrive
       end
 
       def base_url
-        ENV['GOOGLE_OAUTH_REDIRECT_URI'] || 'http://localhost:3000'
+        ENV["GOOGLE_OAUTH_REDIRECT_URI"] || "http://localhost:3000"
       end
 
       def file_path
-        Rails.root.join('config', 'google_client_secret.json')
+        Rails.root.join("config", "google_client_secret.json")
       end
 
       def token_path
-        Rails.root.join('config', 'google_token.yaml')
+        Rails.root.join("config", "google_token.yaml")
       end
 
       def client_id

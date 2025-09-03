@@ -1,6 +1,6 @@
 module Admin
   class ProductsController < BaseController
-    before_action :set_product, only: [:edit, :show, :update, :destroy]
+    before_action :set_product, only: [ :edit, :show, :update, :destroy ]
 
     def index
       scope = params[:q].present? ? Product.search_by_name(params[:q]) : Product.order(created_at: :desc)
@@ -50,8 +50,8 @@ module Admin
       params.require(:product).permit(
         :name, :description, :minimum_order, :base_price,
         sizes: [],
-        bulk_prices: [:qty, :price],
-        colors: [:name, :hex_color]
+        bulk_prices: [ :qty, :price ],
+        colors: [ :name, :hex_color ]
       )
     end
   end

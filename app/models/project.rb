@@ -1,13 +1,13 @@
 class Project < ApplicationRecord
   enum :status, {
-    draft: 'draft',
-    active: 'active',
-    archived: 'archived'
+    draft: "draft",
+    active: "active",
+    archived: "archived"
   }, prefix: false, default: :draft
 
   scope :search_by_keyword, ->(keyword) {
     joins(:client)
-    .where("#{table_name}.name ILIKE :keyword OR 
+    .where("#{table_name}.name ILIKE :keyword OR
             #{Client.table_name}.company_name ILIKE :keyword OR
             #{Client.table_name}.personal_name ILIKE :keyword",
             keyword: "%#{sanitize_sql_like(keyword)}%")
