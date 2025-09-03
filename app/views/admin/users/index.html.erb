@@ -1,21 +1,24 @@
-<div class="p-6" data-controller="user-modal client-autocomplete">
+<div class="p-6" data-controller="auto-search">
   <div class="flex items-center justify-between mb-4">
     <h1 class="text-xl font-semibold text-gray-900 dark:text-white">Users</h1>
-    <button type="button" 
-            data-modal-target="user-modal" 
-            data-modal-toggle="user-modal"
-            data-action="click->user-modal#openCreateModal"
-            class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
+    <%= link_to new_admin_user_path,
+        data: { turbo_frame: "user_modal" },
+        class: "text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800" do %>
       <svg class="w-4 h-4 me-2 inline" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
         <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd"></path>
       </svg>
       Add User
-    </button>
+    <% end %>
   </div>
 
   <!-- Search Field -->
-  <div class="mb-6" data-controller="auto-search">
-    <%= form_with url: admin_users_path, method: :get, data: { auto_search_target: "form" }, class: "max-w-md mx-auto" do %>
+  <div class="mb-6">
+    <%= form_with url: admin_users_path, method: :get, 
+        data: { 
+          auto_search_target: "form",
+          turbo_frame: "users_list"
+        }, 
+        class: "max-w-md mx-auto" do %>
       <label for="user-search" class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
       <div class="relative">
         <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
@@ -34,10 +37,12 @@
   </div>
   
   <!-- Users Table -->
-  <div data-user-modal-target="tableContainer" class="mt-8">
+  <div class="mt-8">
     <%= render partial: "table", locals: { users: @users, pagy: @pagy } %>
   </div>
 
-  <!-- User Modal (Create/Edit/View) -->
-  <%= render partial: "modal" %>
+  <!-- User Modal Frame -->
+  <%= turbo_frame_tag "user_modal" do %>
+    <!-- Modal content will be loaded here -->
+  <% end %>
 </div>

@@ -1,0 +1,115 @@
+<div data-controller="client-autocomplete">
+  <!-- Error Messages -->
+  <% if user.errors.any? %>
+    <div class="mb-4">
+      <div class="flex items-center p-4 text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400" role="alert">
+        <svg class="flex-shrink-0 w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+          <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
+        </svg>
+        <div class="ms-3 text-sm font-medium">
+          <ul class="list-disc list-inside">
+            <% user.errors.full_messages.each do |message| %>
+              <li><%= message %></li>
+            <% end %>
+          </ul>
+        </div>
+      </div>
+    </div>
+  <% end %>
+
+  <%= form_with model: [:admin, user], 
+        data: { turbo_frame: "user_modal" },
+        class: "space-y-4" do |form| %>
+    
+    <!-- Email Field -->
+    <div>
+      <%= form.label :email, class: "block mb-2 text-sm font-medium text-gray-900 dark:text-white" %>
+      <%= form.email_field :email, 
+            required: true,
+            readonly: !user.new_record?,
+            class: "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500",
+            placeholder: "user@example.com" %>
+    </div>
+
+    <!-- Password Fields -->
+    <div>
+      <%= form.label :password, class: "block mb-2 text-sm font-medium text-gray-900 dark:text-white" %>
+      <%= form.password_field :password, 
+            class: "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500",
+            placeholder: "••••••••" %>
+      <% if user.persisted? %>
+        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Leave blank to keep current password</p>
+      <% end %>
+    </div>
+
+    <div>
+      <%= form.label :password_confirmation, class: "block mb-2 text-sm font-medium text-gray-900 dark:text-white" %>
+      <%= form.password_field :password_confirmation, 
+            class: "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500",
+            placeholder: "••••••••" %>
+    </div>
+
+    <!-- Role Field (only show for new users or admin editing) -->
+    <% if user.new_record? %>
+      <div>
+        <%= form.label :role, class: "block mb-2 text-sm font-medium text-gray-900 dark:text-white" %>
+        <%= form.select :role, 
+              options_for_select([
+                ['Admin', 'admin'],
+                ['Client', 'client']
+              ], user.role),
+              { prompt: user.new_record? ? 'Select a role' : nil },
+              { 
+                required: true,
+                data: { 
+                  action: "change->client-autocomplete#toggleField"
+                },
+                class: "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              } %>
+      </div>
+    <% end %>
+
+    <!-- Client Field (conditional) -->
+    <div data-client-autocomplete-target="container"
+         class="<%= 'hidden' unless user.role == 'client' %>">
+      <%= form.label :client_id, "Client", class: "block mb-2 text-sm font-medium text-gray-900 dark:text-white" %>
+      <div class="relative">
+        <%= form.text_field :client_search, 
+              value: user.client&.company_name,
+              placeholder: "Search for client...",
+              data: { 
+                client_autocomplete_target: "input",
+                action: "input->client-autocomplete#search focus->client-autocomplete#showResults blur->client-autocomplete#hideResults"
+              },
+              class: "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" %>
+        
+        <%= form.hidden_field :client_id, 
+              value: user.client_id,
+              data: { client_autocomplete_target: "hiddenField" } %>
+        
+        <!-- Autocomplete Results -->
+        <div data-client-autocomplete-target="results" 
+              class="absolute z-50 w-full mt-1 bg-white rounded-lg shadow-lg border border-gray-200 dark:bg-gray-700 dark:border-gray-600 hidden">
+          <div data-client-autocomplete-target="resultsList" 
+                class="max-h-60 overflow-y-auto">
+            <!-- Results will be populated here -->
+          </div>
+        </div>
+      </div>
+      <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+        Search and select a client to associate with this user.
+      </p>
+    </div>
+
+    <!-- Form Footer -->
+    <div class="flex items-center pt-4 md:pt-5 border-t border-gray-200 rounded-b dark:border-gray-600">
+      <%= form.submit user.new_record? ? "Create User" : "Update User",
+            class: "text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 disabled:opacity-50 disabled:cursor-not-allowed" %>
+      <%= link_to admin_users_path,
+          data: { turbo_frame: "user_modal" },
+          class: "py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700" do %>
+        Cancel
+      <% end %>
+    </div>
+  <% end %>
+</div>

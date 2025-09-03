@@ -1,95 +1,79 @@
 module Admin
   class UsersController < BaseController
-    before_action :set_user, only: [ :update, :destroy ]
+    before_action :set_user, only: [ :show, :edit, :update, :destroy ]
 
     def index
-      scope = params[:q].present? ? User.where("email ILIKE ?", "%#{params[:q]}%") : User.order(created_at: :desc)
+      scope = params[:q].present? ? User.where("email ILIKE ?", "%#{params[:q]}%") : User.includes(:client).order(created_at: :desc)
       @pagy, @users = pagy(scope)
+    end
+
+    def new
+      @user = User.new
     end
 
     def create
       @user = User.new(user_params)
 
-      respond_to do |format|
-        if @user.save
-          UserMailer.with(user_id: @user.id, password: user_params[:password]).welcome_client.deliver_later
-          format.html {
-            redirect_to admin_users_path,
-            notice: "User was successfully created."
-          }
-          format.json {
-            render json: {
-              status: "success",
-              message: "User created successfully",
-              user: {
-                id: @user.id,
-                email: @user.email,
-                role: @user.role
-              }
-            }, status: :created
-          }
-        else
-          format.html {
-            # Re-render the index page with modal open and errors
-            @users = User.includes(:client).order(:email).page(params[:page])
-            render :index, status: :unprocessable_entity
-          }
-          format.json {
-            render json: {
-              status: "error",
-              errors: @user.errors.full_messages
-            }, status: :unprocessable_entity
-          }
+      if @user.save
+        pagy, users = pagy(User.order(created_at: :desc))
+        respond_to do |format|
+          format.turbo_stream do
+            render turbo_stream: [
+              turbo_stream.update("user_modal", ""),
+              turbo_stream.replace("users_list", partial: "table", locals: {
+                users: users,
+                pagy: pagy
+              }),
+              turbo_stream.prepend("flash", partial: "admin/flash", locals: {
+                type: "success",
+                message: "User was successfully created."
+              })
+            ]
+          end
+          format.html { redirect_to admin_users_path, notice: "User was successfully created." }
         end
+      else
+        render :new, status: :unprocessable_entity
       end
     end
 
     def update
-      respond_to do |format|
-        if @user.update(user_update_params)
-          format.html {
-            redirect_to admin_users_path,
-            notice: "User was successfully updated."
-          }
-          format.json {
-            render json: {
-              status: "success",
-              message: "User updated successfully",
-              user: {
-                id: @user.id,
-                email: @user.email,
-                role: @user.role
-              }
-            }
-          }
-        else
-          format.html {
-            # Re-render with errors
-            render :edit, status: :unprocessable_entity
-          }
-          format.json {
-            render json: {
-              status: "error",
-              errors: @user.errors.full_messages
-            }, status: :unprocessable_entity
-          }
+      if @user.update(user_params)
+        respond_to do |format|
+          format.turbo_stream do
+            render turbo_stream: [
+              turbo_stream.update("user_modal", ""),
+              turbo_stream.prepend("flash", partial: "admin/flash", locals: {
+                type: "success",
+                message: "User was successfully updated."
+              })
+            ]
+          end
+          format.html { redirect_to admin_users_path, notice: "User was successfully updated." }
         end
+      else
+        render :edit, status: :unprocessable_entity
       end
     end
 
     def destroy
       @user.destroy
+      pagy, users = pagy(User.order(created_at: :desc))
+
       respond_to do |format|
-        format.html {
-          redirect_to admin_users_path,
-          notice: "User was successfully deleted."
-        }
-        format.json {
-          render json: {
-            status: "success",
-            message: "User deleted successfully"
-          }
-        }
+        format.turbo_stream do
+          render turbo_stream: [
+            turbo_stream.replace("users_list", partial: "table", locals: {
+              users: users,
+              pagy: pagy
+            }),
+            turbo_stream.prepend("flash", partial: "admin/flash", locals: {
+              type: "success",
+              message: "User was successfully deleted."
+            })
+          ]
+        end
+        format.html { redirect_to admin_users_path, notice: "User was successfully deleted." }
       end
     end
 

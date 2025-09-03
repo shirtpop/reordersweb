@@ -25,7 +25,7 @@ Rails.application.routes.draw do
   namespace :admin do
     root to: "dashboard#index", as: :root
     resources :clients
-    resources :users, only: [ :index, :create, :update, :destroy ]
+    resources :users
     resources :orders, only: [ :index, :show ]
     resources :products
     resources :projects
