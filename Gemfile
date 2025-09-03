@@ -50,6 +50,9 @@ gem "mission_control-jobs"
 gem "googleauth"
 gem "google-apis-drive_v3"
 
+gem 'exception_notification'
+gem 'slack-notifier'
+
 group :development, :test do
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
   # Static analysis for security vulnerabilities [https://brakemanscanner.org/]
