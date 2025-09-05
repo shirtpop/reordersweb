@@ -7,12 +7,14 @@
     <%= render "devise/shared/error_messages", resource: resource %>
 
     <!-- Current Password -->
-    <div>
-      <%= f.label :current_password, "Current Password", class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1" %>
-      <%= f.password_field :current_password, autocomplete: "current-password",
-            class: "block w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 
-                   dark:text-white focus:ring-pink-500 focus:border-pink-500" %>
-    </div>
+    <% unless current_user.first_time_login? %>
+      <div>
+        <%= f.label :current_password, "Current Password", class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1" %>
+        <%= f.password_field :current_password, autocomplete: "current-password",
+              class: "block w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 
+                    dark:text-white focus:ring-pink-500 focus:border-pink-500" %>
+      </div>
+    <% end %>
     
     <!-- New Password -->
     <div>

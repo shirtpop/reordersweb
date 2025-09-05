@@ -228,37 +228,3 @@
     </div>
   <% end %>
 </div>
-
-<!-- Flowbite Dropdown Script -->
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-  // Initialize dropdowns
-  document.querySelectorAll('[data-dropdown-toggle]').forEach(function(trigger) {
-    const targetId = trigger.getAttribute('data-dropdown-toggle');
-    const dropdown = document.getElementById(targetId);
-    
-    if (dropdown) {
-      trigger.addEventListener('click', function(e) {
-        e.stopPropagation();
-        
-        // Close other dropdowns
-        document.querySelectorAll('[id^="dropdown-"]').forEach(function(other) {
-          if (other !== dropdown) {
-            other.classList.add('hidden');
-          }
-        });
-        
-        // Toggle current dropdown
-        dropdown.classList.toggle('hidden');
-      });
-    }
-  });
-  
-  // Close dropdowns when clicking outside
-  document.addEventListener('click', function() {
-    document.querySelectorAll('[id^="dropdown-"]').forEach(function(dropdown) {
-      dropdown.classList.add('hidden');
-    });
-  });
-});
-</script>
