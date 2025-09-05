@@ -6,6 +6,14 @@
   <%= form_for(resource, as: resource_name, url: user_registration_path, html: { method: :put, class: "space-y-6" }) do |f| %>
     <%= render "devise/shared/error_messages", resource: resource %>
 
+    <!-- Current Password -->
+    <div>
+      <%= f.label :current_password, "Current Password", class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1" %>
+      <%= f.password_field :current_password, autocomplete: "current-password",
+            class: "block w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 
+                   dark:text-white focus:ring-pink-500 focus:border-pink-500" %>
+    </div>
+    
     <!-- New Password -->
     <div>
       <%= f.label :password, "New Password", class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1" %>

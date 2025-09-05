@@ -8,9 +8,6 @@
     
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags "admin_application" %>
-
-    <!-- Flowbite CSS (add this to your application layout or importmap) -->
-    <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.1/dist/flowbite.min.js"></script>
   </head>
 
   <body class="admin-theme bg-gray-50 dark:bg-gray-900">
@@ -165,11 +162,13 @@
                     </p>
                   </div>
                   <ul class="py-1" role="none">
+                    <!--
                     <li>
                       <%= link_to "#", class: "block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white", role: "menuitem" do %>
                         Settings
                       <% end %>
                     </li>
+                    -->
                     <li>
                       <%= link_to "Sign out", destroy_user_session_path, 
                                   data: { "turbo-method": :delete },
