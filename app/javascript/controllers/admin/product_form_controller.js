@@ -9,8 +9,7 @@ export default class extends Controller {
     "bulkPriceRow", 
     "colorsContainer", 
     "colorTemplate", 
-    "colorRow",
-    "colorHexField"
+    "colorRow"
   ]
 
   connect() {
@@ -49,7 +48,7 @@ export default class extends Controller {
 
   syncColorInputs(colorRow) {
     const colorInput = colorRow.querySelector('input[type="color"]')
-    const textInput = this.colorHexFieldTarget
+    const textInput = colorRow.querySelector('input[name="product[colors][][hex_color]"]')
 
     if (colorInput && textInput) {
       // Update text input when color picker changes
