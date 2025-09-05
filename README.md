@@ -1,24 +1,31 @@
-# README
+# Shirtpop Ordering Platform
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+A Ruby on Rails 8 application for managing clients, projects, products, and orders.  
+The app uses PostgreSQL with multiple schemas (`public` for main models and `solid` for background jobs and caching), Devise for authentication, TailwindCSS + Flowbite for UI, Hotwire (Turbo + Stimulus) for interactivity, and Solid Queue for background jobs.
 
-Things you may want to cover:
+---
 
-* Ruby version
+## Requirements
 
-* System dependencies
+- Ruby 3.x
+- Rails 8.x
+- PostgreSQL 14+
+- Node.js & Yarn
+- Redis (optional, only if you choose Redis for caching instead of Solid Cache)
+- Docker (for Mailcatcher and optional services)
 
-* Configuration
+---
 
-* Database creation
+## Installation using docker
 
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+1. **Clone the repository**
+   ```sh
+   git clone https://github.com/your-org/shirtpop.git
+   cd shirtpop
+2. **Build the image**
+   ```sh
+   docker-compose build
+   docker-compose up -d
+3. **Run the server**
+   ```sh
+   docker-compose exec web bin/dev
