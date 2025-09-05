@@ -1,5 +1,6 @@
 class ApplicationController < ActionController::Base
-  http_basic_authenticate_with name: "shirtpop", password: "awesome" if Rails.env.staging?
+  http_basic_authenticate_with name: Rails.credentials.dig(:http_basic_auth, :name),
+                               password: Rails.credentials.dig(:http_basic_auth, :password) if Rails.env.staging?
 
   include Pagy::Backend
 
