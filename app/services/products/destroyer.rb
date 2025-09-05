@@ -8,10 +8,24 @@ module Products
 
     def call!
       ActiveRecord::Base.transaction do
-        @product.destroy!
+        ProductsProject.where(product_id: @product.id).delete_all
+
+        begin
+          @product.destroy!
+        rescue GoogleDrive::Errors::DeleteError => e
+          if e.message.include?("notFound: File not found")
+            file_id = e.message[/[a-zA-Z0-9_-]{25,}/]
+            @product.drive_files.find_by(drive_file_id: file_id)&.delete
+            @product.delete
+          else
+            raise e
+          end
+        end
       end
-    rescue ActiveRecord::RecordNotFound, GoogleDrive::Errors::DeleteError => e
-      raise DeleteError, "Failed to delete product or associated drive files: #{e.message}"
+    rescue GoogleDrive::Errors::DeleteError => e
+      raise DeleteError, "Failed to delete Google Drive files: #{e.message}"
+    rescue ActiveRecord::RecordNotFound, ActiveRecord::InvalidForeignKey => e
+      raise DeleteError, "Failed to delete product or associated records: #{e.message}"
     end
   end
 end

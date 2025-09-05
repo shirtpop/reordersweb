@@ -9,7 +9,7 @@ class Product < ApplicationRecord
     where("#{table_name}.name ILIKE ?", "%#{sanitize_sql_like(name)}%")
   }
 
-  has_many :products_projects, dependent: :destroy
+  has_many :products_projects, dependent: :delete_all
   has_many :projects, through: :products_projects
 
   validates :name, presence: true
