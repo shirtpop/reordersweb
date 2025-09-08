@@ -28,7 +28,11 @@ Rails.application.routes.draw do
     resources :clients
     resources :users
     resources :orders, only: [ :index, :show ]
-    resources :products
+    resources :products do
+      member do
+        post :duplicate
+      end
+    end
     resources :projects
   end
 

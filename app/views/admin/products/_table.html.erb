@@ -40,6 +40,11 @@
                             form: { data: { turbo: false } },
                             data: { confirm: "Are you sure you want to delete this product?" },
                             class: "font-medium text-red-600 dark:text-red-500 hover:underline" %>
+                      <%= button_to "Duplicate", duplicate_admin_product_path(product),
+                            method: :post,
+                            form: { data: { turbo: false } },
+                            data: { confirm: "Are you sure you want to duplicate this product?" },
+                            class: "font-medium text-green-600 dark:text-green-500 hover:underline" %>
                     </div>
                   </td>
                 </tr>

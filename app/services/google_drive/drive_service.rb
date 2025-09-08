@@ -37,6 +37,16 @@ module GoogleDrive
         raise GoogleDrive::Errors::AuthorizationError, "Authorization error: #{e.message}"
       end
 
+      def copy_file(file_id, new_filename:)
+        copied = drive_service.copy_file(file_id, metadata(filename: new_filename), fields: "id")
+        drive_service.create_permission(copied.id, permission)
+        copied.id
+      rescue Google::Apis::ClientError => e
+        raise GoogleDrive::Errors::UploadError, "Failed to copy file: #{e.message}"
+      rescue Google::Apis::AuthorizationError => e
+        raise GoogleDrive::Errors::AuthorizationError, "Authorization error: #{e.message}"
+      end
+
       def metadata(filename:)
         Google::Apis::DriveV3::File.new(name: filename, parents: [ folder_id ])
       end

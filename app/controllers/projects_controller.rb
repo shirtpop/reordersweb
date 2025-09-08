@@ -1,4 +1,4 @@
-class ProjectsController < ApplicationController
+class ProjectsController < BaseController
   def index
     @projects = current_client.projects.active.includes(:products)
   end

@@ -1,4 +1,4 @@
-class OrdersController < ApplicationController
+class OrdersController < BaseController
   def index
     @orders = current_client.orders.includes(:project, order_items: :product)
   end

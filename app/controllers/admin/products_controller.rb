@@ -1,6 +1,6 @@
 module Admin
   class ProductsController < BaseController
-    before_action :set_product, only: [ :edit, :show, :update, :destroy ]
+    before_action :set_product, only: [ :edit, :show, :update, :destroy, :duplicate ]
 
     def index
       scope = params[:q].present? ? Product.search_by_name(params[:q]) : Product.order(created_at: :desc)
@@ -38,6 +38,14 @@ module Admin
       redirect_to admin_products_path, notice: "Product was successfully deleted."
     rescue Products::Destroyer::DeleteError => e
       redirect_to admin_products_path, alert: e.message
+    end
+
+    def duplicate
+      @product = Products::Duplicator.new(product: @product).call!
+
+      redirect_to admin_product_path(@product), notice: "Product was successfully duplicated."
+    rescue Products::Duplicator::DuplicateError => e
+      redirect_to admin_products_path, alert: e
     end
 
     private
