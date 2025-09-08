@@ -8,4 +8,14 @@ class ApplicationController < ActionController::Base
   allow_browser versions: :modern
 
   before_action :authenticate_user!
+  before_action :force_password_change, if: :user_signed_in?
+
+  private
+
+  def force_password_change
+    return if devise_controller? && controller_name == "registrations"
+    return unless current_user.role_client? && current_user.first_time_login?
+
+    redirect_to edit_user_registration_path, alert: "Please change your password."
+  end
 end
