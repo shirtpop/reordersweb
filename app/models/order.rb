@@ -14,7 +14,6 @@ class Order < ApplicationRecord
               products.name ILIKE :keyword", keyword: "%#{keyword}%")
   }
 
-  validates :delivery_date, presence: true
   validates :order_items, presence: true
   validates :price, numericality: { greater_than_or_equal_to: 0 }
   validates :total_quantity, numericality: { greater_than_or_equal_to: 0 }

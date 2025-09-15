@@ -181,23 +181,25 @@ export default class extends Controller {
     
     // Check delivery date
     const deliveryDate = this.element.querySelector('[name="order[delivery_date]"]')
-    if (!deliveryDate || !deliveryDate.value) {
-      event.preventDefault()
-      this.showAlert('Please select a delivery date.')
-      if (deliveryDate) deliveryDate.focus()
-      return false
-    }
+    // if (!deliveryDate || !deliveryDate.value) {
+    //   event.preventDefault()
+    //   this.showAlert('Please select a delivery date.')
+    //   if (deliveryDate) deliveryDate.focus()
+    //   return false
+    // }
     
     // Check if delivery date is in the future
-    const selectedDate = new Date(deliveryDate.value)
-    const today = new Date()
-    today.setHours(0, 0, 0, 0)
-    
-    if (selectedDate < today) {
-      event.preventDefault()
-      this.showAlert('Delivery date must be in the future.')
-      deliveryDate.focus()
-      return false
+    if (deliveryDate && deliveryDate.value) {
+      const selectedDate = new Date(deliveryDate.value)
+      const today = new Date()
+      today.setHours(0, 0, 0, 0)
+      
+      if (selectedDate < today) {
+        event.preventDefault()
+        this.showAlert('Delivery date must be in the future.')
+        deliveryDate.focus()
+        return false
+      }
     }
     
     return true

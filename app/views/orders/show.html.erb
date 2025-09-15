@@ -179,7 +179,7 @@
         <div class="space-y-3">
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">Delivery Date</label>
-              <p class="text-sm text-gray-900"><%= @order.delivery_date.strftime("%B %d, %Y") %></p>
+              <p class="text-sm text-gray-900"><%= @order.delivery_date&.strftime("%B %d, %Y") %></p>
           </div>
           
           <div>

@@ -62,6 +62,7 @@
     <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
       Search and select a client to associate with this project.
     </p>
+    <%= display_field_errors(@project, :client) %>
   </div>
 
   <!-- Description (WYSIWYG) -->
