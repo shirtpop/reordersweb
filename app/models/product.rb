@@ -13,6 +13,7 @@ class Product < ApplicationRecord
   has_many :projects, through: :products_projects
 
   validates :name, presence: true
+  validates :colors, presence: true
   validate :validate_bulk_prices
 
   has_rich_text :description
