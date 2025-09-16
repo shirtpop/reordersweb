@@ -17,11 +17,25 @@
     <% end %>
     
     <!-- New Password -->
-    <div>
+    <div data-controller="password-toggle" class="relative">
       <%= f.label :password, "New Password", class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1" %>
       <%= f.password_field :password, autocomplete: "new-password",
+            data: { "password-toggle-target": "input" },
             class: "block w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 
                    dark:text-white focus:ring-pink-500 focus:border-pink-500" %>
+      <button type="button"
+              class="absolute inset-y-0 right-0 pr-4 flex items-center z-10 cursor-pointer"
+              data-action="password-toggle#toggle">
+        <svg xmlns="http://www.w3.org/2000/svg"
+            class="h-5 w-5 text-gray-500 pointer-events-none"
+            fill="none" viewBox="0 0 24 24" stroke="currentColor"
+            data-password-toggle-target="icon">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+        </svg>
+      </button>
       <% if @minimum_password_length %>
         <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
           Minimum <%= @minimum_password_length %> characters
@@ -30,11 +44,25 @@
     </div>
 
     <!-- Password Confirmation -->
-    <div>
+    <div class="relative" data-controller="password-toggle">
       <%= f.label :password_confirmation, "Confirm New Password", class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1" %>
       <%= f.password_field :password_confirmation, autocomplete: "new-password",
+            data: { "password-toggle-target": "input" },
             class: "block w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 
                    dark:text-white focus:ring-pink-500 focus:border-pink-500" %>
+      <button type="button"
+              class="absolute inset-y-0 right-0 pr-4 flex items-center z-10 cursor-pointer pt-5"
+              data-action="password-toggle#toggle">
+        <svg xmlns="http://www.w3.org/2000/svg"
+            class="h-5 w-5 text-gray-500 pointer-events-none"
+            fill="none" viewBox="0 0 24 24" stroke="currentColor"
+            data-password-toggle-target="icon">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+        </svg>
+      </button>
     </div>
 
     <!-- Submit -->
