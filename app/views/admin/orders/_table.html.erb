@@ -25,7 +25,7 @@
                   <%= order.project.name %>
                 </td>
                 <td class="px-6 py-4">
-                  <%= order.delivery_date.strftime("%B %d, %Y") %>
+                  <%= order.delivery_date&.strftime("%B %d, %Y") %>
                 </td>
                 <td class="px-6 py-4">
                   <%= order.total_quantity %>
