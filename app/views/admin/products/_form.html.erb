@@ -54,7 +54,7 @@
   <!-- Price Information -->
   <div class="border-t pt-6">
     <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Pricing Information</h3>
-    
+    <%= display_field_errors(@product, :bulk_prices) %>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
       <div>
         <%= form.label :minimum_order, class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" %>
@@ -67,10 +67,15 @@
 
       <div>
         <%= form.label :base_price, class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" %>
-        <%= form.text_field :base_price,
-            required: true,
-            placeholder: "$35.00",
-            class: field_error_class(@product, :base_price, "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white") %>
+        <div class="relative">
+          <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500 dark:text-gray-400 pointer-events-none">$</span>
+          <%= form.number_field :base_price,
+              required: true,
+              step: "0.01",
+              min: "0",
+              placeholder: "35.00",
+              class: field_error_class(@product, :base_price, "w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white") %>
+        </div>
         <%= display_field_errors(@product, :base_price) %>
       </div>
     </div>
@@ -102,11 +107,16 @@
               </div>
               <div class="flex-1">
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Price</label>
-                <input type="text" 
-                       name="product[bulk_prices][][price]" 
-                       value="<%= bulk_price['price'] %>"
-                       placeholder="$30.00"
-                       class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                <div class="relative">
+                  <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500 dark:text-gray-400 pointer-events-none">$</span>
+                  <input type="number" 
+                         name="product[bulk_prices][][price]" 
+                         value="<%= bulk_price['price'] %>"
+                         step="0.01"
+                         min="0"
+                         placeholder="30.00"
+                         class="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                </div>
               </div>
               <button type="button" 
                       class="px-3 py-2 text-red-600 hover:text-red-800 text-sm font-medium"
@@ -192,10 +202,15 @@
       </div>
       <div class="flex-1">
         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Price</label>
-        <input type="text" 
-               name="product[bulk_prices][][price]" 
-               placeholder="$30.00"
-               class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+        <div class="relative">
+          <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500 dark:text-gray-400 pointer-events-none">$</span>
+          <input type="number" 
+                 name="product[bulk_prices][][price]" 
+                 step="0.01"
+                 min="0"
+                 placeholder="30.00"
+                 class="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+        </div>
       </div>
       <button type="button" 
               class="px-3 py-2 text-red-600 hover:text-red-800 text-sm font-medium"
