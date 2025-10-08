@@ -65,6 +65,7 @@ module Admin
         :phone_number,
         :same_as_main,
         :company_url,
+        :inventory_enabled,
         address_attributes: [ :id, :street, :city, :state, :zip_code ],
         shipping_address_attributes: [ :id, :street, :city, :state, :zip_code ],
         users_attributes: [ :id, :email, :password, :role, :client_id ]

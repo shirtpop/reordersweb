@@ -1,0 +1,29 @@
+<div class="space-y-6">
+  <%= render "shared/inventory_header" %>
+
+  <!-- Sub-Menu Tabs -->
+  <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+    <%= render "shared/inventory_tab_navigation" %>
+
+    <!-- Tab Content -->
+    <div class="p-6">
+      <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <div class="flex items-center justify-between mb-6">
+          <div>
+            <h1 class="text-2xl font-bold text-gray-900">Edit Product</h1>
+            <p class="text-sm text-gray-600 mt-1">Update product information and variants</p>
+          </div>
+          <%= link_to product_path(@product), 
+              class: "inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500" do %>
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+            </svg>
+            Back to Product
+          <% end %>
+        </div>
+
+        <%= render "form", product: @product %>
+      </div>
+    </div>
+  </div>
+</div>

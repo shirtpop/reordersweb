@@ -7,6 +7,10 @@ class Client < ApplicationRecord
   has_many :users, inverse_of: :client, dependent: :destroy
   has_many :orders, dependent: :destroy
   has_many :projects, dependent: :destroy
+  has_many :client_products, class_name: "Client::Product", dependent: :destroy
+  has_many :client_product_variants, class_name: "Client::ProductVariant", through: :client_products
+  has_many :inventories, class_name: "Client::Inventory", dependent: :destroy
+  has_many :inventory_movements, through: :inventories, source: :inventory_movements
 
   validates :company_name, :personal_name, :phone_number, presence: true
 

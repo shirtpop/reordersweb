@@ -15,8 +15,11 @@ class Product < ApplicationRecord
   validates :name, presence: true
   validates :colors, presence: true
   validate :validate_bulk_prices
+  validate :validate_max_drive_files
 
   has_rich_text :description
+
+  self.max_drive_files = 2
 
   def color_names
     Array(colors).map { |c| c["name"] }.join(", ")

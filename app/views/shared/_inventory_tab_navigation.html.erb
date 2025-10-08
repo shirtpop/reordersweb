@@ -1,0 +1,39 @@
+<div class="border-b border-gray-200">
+  <nav class="flex flex-wrap -mb-px" aria-label="Tabs">
+    <!-- Stock List Tab -->
+    <%= link_to inventories_path, 
+        class: "tab-button inline-flex items-center gap-2 px-6 py-4 text-sm font-medium border-b-2 #{'border-pink-600 text-pink-600' if inventories_controller? } #{'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' unless controller_name == 'inventories' && action_name == 'index'} focus:outline-none" do %>
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+      </svg>
+      Stock List
+    <% end %>
+
+    <!-- Adjustment Tab -->
+    <%= link_to adjustments_inventories_path, 
+        class: "tab-button inline-flex items-center gap-2 px-6 py-4 text-sm font-medium border-b-2 #{'border-pink-600 text-pink-600' if controller_name == 'inventories' && action_name == 'adjustments'} #{'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' unless controller_name == 'inventories' && action_name == 'adjustments'} focus:outline-none" do %>
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+      </svg>
+      Adjustment
+    <% end %>
+
+    <!-- Stock Out Tab -->
+    <%= link_to stock_outs_inventories_path, 
+        class: "tab-button inline-flex items-center gap-2 px-6 py-4 text-sm font-medium border-b-2 #{'border-pink-600 text-pink-600' if controller_name == 'inventories' && action_name == 'stock_outs'} #{'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' unless controller_name == 'inventories' && action_name == 'stock_outs'} focus:outline-none" do %>
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+      </svg>
+      Stock Out
+    <% end %>
+
+    <!-- Products Tab -->
+    <%= link_to products_path, 
+        class: "tab-button inline-flex items-center gap-2 px-6 py-4 text-sm font-medium border-b-2 #{'border-pink-600 text-pink-600' if controller_name == 'products'} #{'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' unless controller_name == 'products'} focus:outline-none" do %>
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+      </svg>
+      Products
+    <% end %>
+  </nav>
+</div>

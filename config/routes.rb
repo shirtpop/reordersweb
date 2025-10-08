@@ -36,6 +36,28 @@ Rails.application.routes.draw do
     resources :projects
   end
 
+  resources :inventories, only: [ :index ] do
+    collection do
+      get :adjustments
+      get :search_products
+      post :save_adjustments
+      get :stock_outs
+      resources :products do
+        collection do
+          get :admin_products
+        end
+
+        member do
+          post :upload_images
+          delete "delete_image/:drive_file_id", to: "products#delete_image", as: :delete_image
+        end
+      end
+    end
+
+    member do
+      resources :inventory_movements, only: [ :index ]
+    end
+  end
   resources :orders, only: [ :index, :show, :create ]
   resources :projects, only: [ :index, :show ]
 

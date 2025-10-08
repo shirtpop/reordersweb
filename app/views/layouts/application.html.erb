@@ -20,9 +20,6 @@
     <%# Includes all stylesheet files in app/assets/stylesheets %>
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags 'client_application' %>
-    
-    <!-- Flowbite CSS -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.css" rel="stylesheet" />
   </head>
 
   <body class="client-theme bg-gray-50 min-h-screen">
@@ -88,6 +85,12 @@
               <%= link_to "Orders", orders_path, 
                           class: "#{current_page?(orders_path) ? 'block py-2 px-3 text-pink-800 rounded md:text-pink-700 md:p-0' : 'block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-pink-700 md:p-0'}" %>
             </li>
+            <% if client_inventory_enabled? %>
+              <li>
+                <%= link_to "Inventories", inventories_path, 
+                            class: "#{current_page?(inventories_path) ? 'block py-2 px-3 text-pink-800 rounded md:text-pink-700 md:p-0' : 'block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-pink-700 md:p-0'}" %>
+              </li>
+            <% end %>
           </ul>
         </div>
       </div>

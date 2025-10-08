@@ -6,7 +6,7 @@ module Admin
     ALLOWED_ATTACHABLE_TYPES = %w[Product Client].freeze
 
     def create
-      drive_file = GoogleDrive::Uploader.new(file: drive_file_params[:file], attachable: @attachable).call!
+      GoogleDrive::Uploader.new(file: drive_file_params[:file], attachable: @attachable).call!
 
       render turbo_stream: turbo_stream.replace(
             "images_container_#{@attachable.class.name.downcase}_#{@attachable.id}",

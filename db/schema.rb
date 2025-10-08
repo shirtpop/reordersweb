@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_09_03_135711) do
+ActiveRecord::Schema[8.0].define(version: 2025_10_07_115901) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -61,6 +61,53 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_03_135711) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "client_inventories", force: :cascade do |t|
+    t.bigint "client_id", null: false
+    t.bigint "client_product_variant_id", null: false
+    t.integer "quantity", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["client_id", "client_product_variant_id"], name: "index_client_inventories_on_client_and_variant", unique: true
+    t.index ["client_id"], name: "index_client_inventories_on_client_id"
+    t.index ["client_product_variant_id"], name: "index_client_inventories_on_client_product_variant_id"
+  end
+
+  create_table "client_inventory_movements", force: :cascade do |t|
+    t.bigint "client_inventory_id", null: false
+    t.bigint "order_item_id"
+    t.bigint "user_id"
+    t.string "movement_type", limit: 10, default: "in", null: false
+    t.integer "quantity", null: false
+    t.jsonb "metadata", default: {}
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["client_inventory_id"], name: "index_client_inventory_movements_on_client_inventory_id"
+    t.index ["movement_type"], name: "index_client_inventory_movements_on_movement_type"
+    t.index ["order_item_id"], name: "index_client_inventory_movements_on_order_item_id"
+    t.index ["user_id"], name: "index_client_inventory_movements_on_user_id"
+  end
+
+  create_table "client_product_variants", force: :cascade do |t|
+    t.bigint "client_product_id", null: false
+    t.string "color", limit: 70
+    t.string "size", limit: 30
+    t.string "sku"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["client_product_id"], name: "index_client_product_variants_on_client_product_id"
+    t.index ["sku"], name: "index_client_product_variants_on_sku", unique: true
+  end
+
+  create_table "client_products", force: :cascade do |t|
+    t.bigint "client_id"
+    t.bigint "product_id"
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["client_id"], name: "index_client_products_on_client_id"
+    t.index ["product_id"], name: "index_client_products_on_product_id"
+  end
+
   create_table "clients", force: :cascade do |t|
     t.string "company_name"
     t.string "personal_name"
@@ -70,6 +117,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_03_135711) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "company_url"
+    t.boolean "inventory_enabled", default: false
     t.index ["address_id"], name: "index_clients_on_address_id"
     t.index ["company_name"], name: "index_clients_on_company_name"
     t.index ["personal_name"], name: "index_clients_on_personal_name"
@@ -163,6 +211,14 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_03_135711) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "client_inventories", "client_product_variants"
+  add_foreign_key "client_inventories", "clients"
+  add_foreign_key "client_inventory_movements", "client_inventories"
+  add_foreign_key "client_inventory_movements", "order_items"
+  add_foreign_key "client_inventory_movements", "users"
+  add_foreign_key "client_product_variants", "client_products"
+  add_foreign_key "client_products", "clients"
+  add_foreign_key "client_products", "products"
   add_foreign_key "clients", "addresses"
   add_foreign_key "clients", "addresses", column: "shipping_address_id"
   add_foreign_key "order_items", "orders"

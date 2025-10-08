@@ -1,0 +1,15 @@
+<div class="space-y-6">
+  <%= render "shared/inventory_header" %>
+
+  <!-- Sub-Menu Tabs -->
+  <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+    <%= render "shared/inventory_tab_navigation" %>
+
+    <!-- Tab Content -->
+    <div class="p-6">
+      <%= turbo_frame_tag "tab-content" do %>
+        <%= render 'products' %>
+      <% end %>
+    </div>
+  </div>
+</div>
