@@ -58,7 +58,11 @@ Rails.application.routes.draw do
       resources :inventory_movements, only: [ :index ]
     end
   end
-  resources :orders, only: [ :index, :show, :create ]
+  resources :orders, only: [ :index, :show, :create ] do
+    member do
+      post :received
+    end
+  end
   resources :projects, only: [ :index, :show ]
 
   post "drive_files/:attachable_type/:attachable_id", to: "admin/drive_files#create", as: :drive_files

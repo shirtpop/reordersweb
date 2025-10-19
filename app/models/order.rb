@@ -27,6 +27,10 @@ class Order < ApplicationRecord
     order_items.sum { |item| item.total_price }
   end
 
+  def received?
+    !!received_at
+  end
+
   private
 
   def send_notifications

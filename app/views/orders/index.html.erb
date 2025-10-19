@@ -50,7 +50,7 @@
                   Project & Items
                 </th>
                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Delivery Date
+                  Received At
                 </th>
                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Total
@@ -117,24 +117,12 @@
 
                     <!-- Delivery Date -->
                     <td class="px-6 py-4 whitespace-nowrap">
-                      <% if order.delivery_date.present? %>
+                      <% if order.received? %>
                         <div class="text-sm text-gray-900">
-                          <%= order.delivery_date.strftime("%b %d, %Y") %>
-                        </div>
-                        <% days_until = (order.delivery_date - Date.current).to_i %>
-                        <div class="text-xs <%= days_until < 0 ? 'text-red-600' : days_until <= 3 ? 'text-orange-600' : 'text-gray-500' %>">
-                          <% if days_until < 0 %>
-                            <%= pluralize(days_until.abs, 'day') %> overdue
-                          <% elsif days_until == 0 %>
-                            Today
-                          <% elsif days_until == 1 %>
-                            Tomorrow
-                          <% else %>
-                            <%= pluralize(days_until, 'day') %> away
-                          <% end %>
+                          <%= order.received_at.strftime("%b %d, %Y") %>
                         </div>
                       <% else %>
-                        <span class="text-sm text-gray-400">Not set</span>
+                        <span class="text-sm text-gray-400">Not delivered</span>
                       <% end %>
                     </td>
 

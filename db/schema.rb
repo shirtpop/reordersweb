@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_10_07_115901) do
+ActiveRecord::Schema[8.0].define(version: 2025_10_18_135006) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -76,7 +76,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_07_115901) do
     t.bigint "client_inventory_id", null: false
     t.bigint "order_item_id"
     t.bigint "user_id"
-    t.string "movement_type", limit: 10, default: "in", null: false
+    t.string "movement_type", limit: 20, default: "in", null: false
     t.integer "quantity", null: false
     t.jsonb "metadata", default: {}
     t.datetime "created_at", null: false
@@ -157,9 +157,12 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_07_115901) do
     t.datetime "updated_at", null: false
     t.bigint "ordered_by_id"
     t.bigint "shipped_to_id"
+    t.datetime "received_at"
+    t.bigint "received_by_id"
     t.index ["client_id"], name: "index_orders_on_client_id"
     t.index ["ordered_by_id"], name: "index_orders_on_ordered_by_id"
     t.index ["project_id"], name: "index_orders_on_project_id"
+    t.index ["received_by_id"], name: "index_orders_on_received_by_id"
     t.index ["shipped_to_id"], name: "index_orders_on_shipped_to_id"
   end
 
@@ -227,6 +230,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_07_115901) do
   add_foreign_key "orders", "clients"
   add_foreign_key "orders", "projects"
   add_foreign_key "orders", "users", column: "ordered_by_id"
+  add_foreign_key "orders", "users", column: "received_by_id"
   add_foreign_key "projects", "clients"
   add_foreign_key "users", "clients"
 end

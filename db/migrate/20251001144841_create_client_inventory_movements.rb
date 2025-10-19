@@ -4,7 +4,7 @@ class CreateClientInventoryMovements < ActiveRecord::Migration[8.0]
       t.references :client_inventory, null: false, foreign_key: { to_table: :client_inventories }
       t.references :order_item, null: true, foreign_key: { to_table: :order_items }
       t.references :user, null: true, foreign_key: { to_table: :users }
-      t.string :movement_type, null: false, limit: 10, default: "in"                  # "in", "out", "adjustment"
+      t.string :movement_type, null: false, limit: 20, default: "in"
       t.integer :quantity, null: false
       t.jsonb :metadata, default: {}
 

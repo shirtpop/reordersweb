@@ -3,11 +3,6 @@ FactoryBot.define do
     project { create(:project, :with_products) }
     client { project.client }
     delivery_date { Time.current.to_date }
-
-    trait :with_order_items do
-      after(:create) do |order|
-        create_list(:order_item, 3, order: order)
-      end
-    end
+    order_items { project.products.map { |product| build(:order_item, product: product) } }
   end
 end
