@@ -26,8 +26,6 @@ class InventoriesController < BaseController
     redirect_to adjustments_inventories_path, alert: "Failed to save adjustments: #{e.message}"
   end
 
-  def stock_outs; end
-
   private
 
   def set_inventory

@@ -5,13 +5,24 @@
       <h2 class="text-xl font-semibold text-gray-900">Product Inventory</h2>
       <p class="text-sm text-gray-600 mt-1">Manage and view all products in inventory</p>
     </div>
-    <%= link_to new_product_path, data: { turbo_frame: "_top" }, 
-        class: "inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-pink-600 border border-transparent rounded-lg hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500" do %>
-      <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-      </svg>
-      Add Product
-    <% end %>
+    <div class="flex items-center space-x-3">
+      <%= link_to barcodes_products_path, data: { turbo_frame: "_top" }, 
+          class: "inline-flex items-center px-4 py-2 text-sm font-medium text-pink-600 bg-white border border-pink-600 rounded-lg hover:bg-pink-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500" do %>
+        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16"></path>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 4v16"></path>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 4v16"></path>
+        </svg>
+        View Barcodes
+      <% end %>
+      <%= link_to new_product_path, data: { turbo_frame: "_top" }, 
+          class: "inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-pink-600 border border-transparent rounded-lg hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500" do %>
+        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+        </svg>
+        Add Product
+      <% end %>
+    </div>
   </div>
 
   <!-- Search Form -->

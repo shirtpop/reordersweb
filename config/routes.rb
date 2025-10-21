@@ -41,9 +41,10 @@ Rails.application.routes.draw do
       get :adjustments
       get :search_products
       post :save_adjustments
-      get :stock_outs
+      resources :checkouts, only: [ :index, :show, :new, :create ]
       resources :products do
         collection do
+          get :barcodes
           get :admin_products
         end
 
@@ -64,7 +65,9 @@ Rails.application.routes.draw do
     end
   end
   resources :projects, only: [ :index, :show ]
+  resources :checkouts, only: [ :index, :show, :new, :create ]
 
   post "drive_files/:attachable_type/:attachable_id", to: "admin/drive_files#create", as: :drive_files
   delete "drive_files/:attachable_type/:attachable_id/:id", to: "admin/drive_files#destroy", as: :drive_file
+  get "product_variants/:sku", to: "product_variants#show", as: :product_variant
 end

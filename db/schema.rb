@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_10_18_135006) do
+ActiveRecord::Schema[8.0].define(version: 2025_10_19_111709) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -61,6 +61,19 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_18_135006) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "client_checkouts", force: :cascade do |t|
+    t.bigint "client_id", null: false
+    t.bigint "user_id", null: false
+    t.string "recipient_email"
+    t.string "recipient_first_name"
+    t.string "recipient_last_name"
+    t.text "notes"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["client_id"], name: "index_client_checkouts_on_client_id"
+    t.index ["user_id"], name: "index_client_checkouts_on_user_id"
+  end
+
   create_table "client_inventories", force: :cascade do |t|
     t.bigint "client_id", null: false
     t.bigint "client_product_variant_id", null: false
@@ -81,6 +94,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_18_135006) do
     t.jsonb "metadata", default: {}
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "client_checkout_id"
+    t.index ["client_checkout_id"], name: "index_client_inventory_movements_on_client_checkout_id"
     t.index ["client_inventory_id"], name: "index_client_inventory_movements_on_client_inventory_id"
     t.index ["movement_type"], name: "index_client_inventory_movements_on_movement_type"
     t.index ["order_item_id"], name: "index_client_inventory_movements_on_order_item_id"
@@ -214,8 +229,11 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_18_135006) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "client_checkouts", "clients"
+  add_foreign_key "client_checkouts", "users"
   add_foreign_key "client_inventories", "client_product_variants"
   add_foreign_key "client_inventories", "clients"
+  add_foreign_key "client_inventory_movements", "client_checkouts"
   add_foreign_key "client_inventory_movements", "client_inventories"
   add_foreign_key "client_inventory_movements", "order_items"
   add_foreign_key "client_inventory_movements", "users"

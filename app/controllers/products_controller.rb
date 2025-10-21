@@ -1,5 +1,5 @@
 class ProductsController < BaseController
-  before_action :set_product, except: [ :index, :new, :create, :admin_products ]
+  before_action :set_product, only: [ :show, :edit, :update ]
 
   def index
     scope = params[:q].present? ? current_client.client_products.search_by_name(params[:q]) : current_client.client_products
@@ -89,6 +89,10 @@ class ProductsController < BaseController
         )
       end
     end
+  end
+
+  def barcodes
+    @products = current_client.client_products.includes(:product_variants)
   end
 
   private

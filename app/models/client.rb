@@ -8,7 +8,8 @@ class Client < ApplicationRecord
   has_many :orders, dependent: :destroy
   has_many :projects, dependent: :destroy
   has_many :client_products, class_name: "Client::Product", dependent: :destroy
-  has_many :client_product_variants, class_name: "Client::ProductVariant", through: :client_products
+  has_many :checkouts, class_name: "Client::Checkout", dependent: :destroy
+  has_many :product_variants, class_name: "Client::ProductVariant", through: :client_products
   has_many :inventories, class_name: "Client::Inventory", dependent: :destroy
   has_many :inventory_movements, through: :inventories, source: :inventory_movements
 
