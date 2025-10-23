@@ -6,11 +6,8 @@ FactoryBot.define do
     status { "active" }
 
     trait :with_products do
-      after(:create) do |project, evaluator|
-        products = create_list(:product, 3)
-        products.each do |product|
-          create(:products_project, project: project, product: product)
-        end
+      after(:create) do |project, _|
+        create(:products_project, project: project, product: create(:product))
       end
     end
   end
