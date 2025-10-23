@@ -1,7 +1,7 @@
 FactoryBot.define do
   factory :client_product, class: 'Client::Product' do
     client
-    admin_product { create(:product, :with_admin_product) }
+    admin_product { create(:product) }
     name { Faker::Commerce.product_name }
     description { Faker::Lorem.paragraph }
 
@@ -12,7 +12,7 @@ FactoryBot.define do
     end
 
     trait :with_admin_product do
-      admin_product { create(:product, :with_admin_product) }
+      admin_product { create(:product) }
     end
 
     trait :without_admin_product do
