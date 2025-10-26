@@ -14,6 +14,7 @@ module Checkouts
     end
 
     def call!
+      validate_stock!
       ActiveRecord::Base.transaction do
         begin
           set_user_and_movement_type
@@ -24,14 +25,14 @@ module Checkouts
             raise StockUpdateError, "Missing inventory for movement #{movement.id}" unless inventory
 
             inventory.with_lock do
-              raise StockUpdateError, "Insufficient stock for #{inventory.id}" if inventory.quantity < movement.quantity
-              inventory.decrement!(:quantity, movement.quantity)
+              raise StockUpdateError, "Insufficient stock for #{inventory.id}" if inventory.quantity < movement.quantity.abs
+              inventory.decrement!(:quantity, movement.quantity.abs)
             end
           end
 
           @checkout
         rescue ActiveRecord::RecordInvalid
-          @checkout
+          raise CheckoutCreationError, "Failed to create checkout: #{checkout.errors.full_messages.join(', ')}"
         end
       end
     end
@@ -41,6 +42,14 @@ module Checkouts
     end
 
     private
+
+    def validate_stock!
+      checkout.inventory_movements.each do |movement|
+        inventory = movement.client_inventory
+        raise StockUpdateError, "Missing inventory for movement #{movement.id}" unless inventory
+        raise StockUpdateError, "Insufficient stock for #{inventory.id}" if inventory.quantity < movement.quantity.abs
+      end
+    end
 
     def set_user_and_movement_type
       checkout.user = user
