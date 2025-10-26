@@ -42,7 +42,11 @@ export default class extends Controller {
   removeVariant(event) {
     const variantRow = event.target.closest('[data-client-product-form-target="variantRow"]')
     if (variantRow) {
-      variantRow.remove()
+      const destroyField = variantRow.querySelector('input[name*="[_destroy]"]')
+      if (destroyField) {
+        destroyField.value = 'true'
+      }
+      variantRow.style.display = 'none'
     }
   }
 
