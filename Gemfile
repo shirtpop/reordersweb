@@ -38,6 +38,9 @@ gem "mission_control-jobs"
 # API building
 gem "jbuilder"
 
+# CSV processing
+gem "csv"
+
 # Google services integration
 gem "googleauth"
 gem "google-apis-drive_v3"
