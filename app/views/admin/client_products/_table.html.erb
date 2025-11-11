@@ -1,0 +1,67 @@
+<%= turbo_frame_tag "client_products_list" do %>
+  <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg">
+    <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+      <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+        <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+          <tr>
+            <th scope="col" class="px-6 py-3">ID</th>
+            <th scope="col" class="px-6 py-3">Name</th>
+            <th scope="col" class="px-6 py-3">Shirtpop Product</th>
+            <th scope="col" class="px-6 py-3">Created At</th>
+            <th scope="col" class="px-6 py-3">Variants Count</th>
+            <th scope="col" class="px-6 py-3">
+              <span class="sr-only">View</span>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if @products.any? %>
+            <% @products.each do |product| %>
+              <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                  <%= product.id %>
+                </td>
+                <td class="px-6 py-4">
+                  <%= product.name %>
+                </td>
+                <td class="px-6 py-4">
+                  <%= product.product_id.present? ? 'Yes' : 'No' %>
+                </td>
+                <td class="px-6 py-4">
+                  <%= product.created_at.strftime("%b %d, %Y") %>
+                </td>
+                <td class="px-6 py-4">
+                  <%= product.product_variants.count %>
+                </td>
+                <td class="px-6 py-4 text-right">
+                  <%= link_to "View",
+                              admin_client_product_path(@client, product),
+                              class: "font-medium text-blue-600 dark:text-blue-500 hover:underline",
+                              data: { turbo_frame: "_top" } %>
+                </td>
+              </tr>
+            <% end %>
+          <% else %>
+            <tr>
+              <td colspan="6" class="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
+                <div class="flex flex-col items-center justify-center">
+                  <svg class="w-12 h-12 mb-4 text-gray-300 dark:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7l1 12a2 2 0 002 1h12a2 2 0 002-1l1-12M5 7h14M9 7V5a3 3 0 016 0v2" />
+                  </svg>
+                  <p class="text-lg font-medium">No products found</p>
+                  <p class="text-sm">Try adjusting your search or add new client products.</p>
+                </div>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+
+    <% if @pagy && @pagy.pages > 1 %>
+      <div class="border-t border-gray-200 dark:border-gray-700">
+        <%= pagy_tailwind_nav(@pagy, link_extra: 'data-turbo-frame="client_products_list"').html_safe %>
+      </div>
+    <% end %>
+  </div>
+<% end %>

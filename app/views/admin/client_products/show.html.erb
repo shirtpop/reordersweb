@@ -1,0 +1,140 @@
+<div class="p-6 space-y-6">
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="text-2xl font-bold text-gray-900 dark:text-white"><%= @product.name %></h1>
+      <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Client Product Details</p>
+    </div>
+    <div class="flex space-x-3">
+      <%= link_to "Back to Products",
+                  admin_client_products_path(@client),
+                  class: "px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-600" %>
+      <% if @product.product_id.present? %>
+        <%= link_to "View Shirtpop Product",
+                    admin_product_path(@product.admin_product),
+                    class: "px-4 py-2 bg-blue-600 text-white rounded-md shadow-sm text-sm font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500",
+                    data: { turbo_frame: "_top" } %>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div class="lg:col-span-2 space-y-6">
+      <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+        <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Product Information</h2>
+        <dl class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Client</dt>
+            <dd class="mt-1 text-sm text-gray-900 dark:text-white"><%= @client.company_name %></dd>
+          </div>
+          <div>
+            <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Linked Shirtpop Product</dt>
+            <dd class="mt-1 text-sm text-gray-900 dark:text-white">
+              <%= @product.admin_product.present? ? @product.admin_product.name : "Not linked" %>
+            </dd>
+          </div>
+          <div>
+            <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Created</dt>
+            <dd class="mt-1 text-sm text-gray-900 dark:text-white">
+              <%= @product.created_at.strftime("%B %d, %Y at %I:%M %p") %>
+            </dd>
+          </div>
+          <div>
+            <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Last Updated</dt>
+            <dd class="mt-1 text-sm text-gray-900 dark:text-white">
+              <%= @product.updated_at.strftime("%B %d, %Y at %I:%M %p") %>
+            </dd>
+          </div>
+        </dl>
+
+        <% if @product.description.present? %>
+          <div class="mt-6">
+            <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Description</h3>
+            <div class="prose-content text-gray-700 dark:text-gray-300 trix-content">
+              <%= @product.description %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+
+      <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Variants</h2>
+          <span class="text-sm text-gray-500 dark:text-gray-400"><%= pluralize(@product.product_variants.count, "variant") %></span>
+        </div>
+
+        <% if @product.product_variants.any? %>
+          <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+            <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+              <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                <tr>
+                  <th scope="col" class="px-6 py-3">SKU</th>
+                  <th scope="col" class="px-6 py-3">Color</th>
+                  <th scope="col" class="px-6 py-3">Size</th>
+                  <th scope="col" class="px-6 py-3">Inventory</th>
+                  <th scope="col" class="px-6 py-3">Created At</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% @product.product_variants.each do |variant| %>
+                  <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                    <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                      <%= variant.sku %>
+                    </td>
+                    <td class="px-6 py-4">
+                      <%= variant.color.presence || "-" %>
+                    </td>
+                    <td class="px-6 py-4">
+                      <%= variant.size.presence || "-" %>
+                    </td>
+                    <td class="px-6 py-4">
+                      <% if variant.inventory.present? %>
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                          <%= variant.inventory.quantity %> in stock
+                        </span>
+                      <% else %>
+                        <span class="text-sm text-gray-500 dark:text-gray-400">No inventory</span>
+                      <% end %>
+                    </td>
+                    <td class="px-6 py-4">
+                      <%= variant.created_at.strftime("%b %d, %Y") %>
+                    </td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+        <% else %>
+          <div class="text-center py-12">
+            <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M24 14l-7 7 7 7m-7-7h14" />
+            </svg>
+            <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">No variants</h3>
+            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">This client product does not have any variants yet.</p>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="space-y-6">
+      <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+        <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Quick Stats</h2>
+        <dl class="grid grid-cols-1 gap-4">
+          <div class="text-center p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+            <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Variants</dt>
+            <dd class="mt-1 text-2xl font-bold text-gray-900 dark:text-white">
+              <%= @product.product_variants.count %>
+            </dd>
+          </div>
+          <div class="text-center p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+            <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Drive Files</dt>
+            <dd class="mt-1 text-2xl font-bold text-gray-900 dark:text-white">
+              <%= @product.drive_files.count %>
+            </dd>
+          </div>
+        </dl>
+      </div>
+
+      <%= render 'shared/image_uploader', attachable: @product %>
+    </div>
+  </div>
+</div>
