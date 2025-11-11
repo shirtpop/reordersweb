@@ -3,7 +3,15 @@ class ProductsController < BaseController
 
   def index
     scope = params[:q].present? ? current_client.client_products.search_by_name(params[:q]) : current_client.client_products
-    @pagy, @products = pagy(scope.includes(:drive_files, :admin_product))
+
+    respond_to do |format|
+      format.html do
+        @pagy, @products = pagy(scope.includes(:drive_files, :admin_product))
+      end
+      format.json do
+        @products = scope
+      end
+    end
   end
 
   def show; end

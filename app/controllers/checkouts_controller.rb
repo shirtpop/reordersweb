@@ -18,12 +18,11 @@ class CheckoutsController < BaseController
     creator = Checkouts::Creator.new(user: current_user, checkout: current_client.checkouts.new(checkout_params))
     creator.call!
 
-    if creator.success?
-      redirect_to checkouts_path, notice: "Checkout created successfully."
-    else
-      @checkout = creator.checkout
-      render :new
-    end
+    redirect_to checkouts_path, notice: "Checkout created successfully."
+
+  rescue Checkouts::Creator::Error => e
+    @checkout = creator.checkout
+    render :new
   end
 
   private

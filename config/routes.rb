@@ -53,6 +53,7 @@ Rails.application.routes.draw do
           delete "delete_image/:drive_file_id", to: "products#delete_image", as: :delete_image
         end
       end
+      resources :product_variants, only: [ :index, :show ], param: :sku
     end
 
     member do
@@ -69,5 +70,4 @@ Rails.application.routes.draw do
 
   post "drive_files/:attachable_type/:attachable_id", to: "admin/drive_files#create", as: :drive_files
   delete "drive_files/:attachable_type/:attachable_id/:id", to: "admin/drive_files#destroy", as: :drive_file
-  get "product_variants/:sku", to: "product_variants#show", as: :product_variant
 end

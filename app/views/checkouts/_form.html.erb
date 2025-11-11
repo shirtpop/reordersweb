@@ -45,8 +45,8 @@
       
       <!-- SKU Search -->
       <div class="p-6 border-b border-gray-200">
-        <div class="flex items-end space-x-4">
-          <div class="flex-1">
+        <div class="flex items-start space-x-4 mb-4">
+          <div class="max-w-md flex-1">
             <div class="flex items-center justify-between mb-1">
               <%= label_tag :sku_search, "Search by SKU", class: "block text-sm font-medium text-gray-700" %>
               <%= display_field_errors(checkout, :inventory_movements) %>
@@ -65,7 +65,7 @@
               </div>
               <%= text_field_tag :sku_search, "", 
                   class: "block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-pink-500 focus:border-pink-500 sm:text-sm",
-                  placeholder: "Scan barcode or type SKU (e.g., TSH-RED-M-A1B2C3)",
+                  placeholder: "Scan barcode or type SKU",
                   autofocus: true,
                   data: { 
                     "checkout-form-target": "skuInput",
@@ -79,15 +79,27 @@
               Press Enter or click Add Item to add to list
             </p>
           </div>
-          <button type="button" 
-                  class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-pink-600 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500"
-                  data-action="click->checkout-form#searchSkuButton">
-            <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-            </svg>
-            Add Item
-          </button>
+          
+          <div class="flex flex-col space-y-2 pt-6">
+            <button type="button" 
+                    class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-pink-600 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500"
+                    data-action="click->checkout-form#searchSkuButton">
+              <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+              </svg>
+              Add Item
+            </button>
+            <button type="button" 
+                    class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500"
+                    data-action="click->checkout-form#openProductSearchModal">
+              <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+              </svg>
+              Search by Product
+            </button>
+          </div>
         </div>
+        
         <div data-checkout-form-target="searchError" class="hidden mt-2">
           <p class="text-sm text-red-600"></p>
         </div>
@@ -144,44 +156,8 @@
     </div>
 
     <!-- Template for item rows -->
-    <template data-checkout-form-target="itemTemplate">
-  <tr data-item-row>
-    <td class="px-6 py-4 whitespace-nowrap">
-      <div class="text-sm font-medium text-gray-900" data-field="product-name"></div>
-    </td>
-    <td class="px-6 py-4 whitespace-nowrap">
-      <div class="text-sm text-gray-500" data-field="sku"></div>
-    </td>
-    <td class="px-6 py-4 whitespace-nowrap">
-      <div class="text-sm text-gray-900" data-field="color"></div>
-    </td>
-    <td class="px-6 py-4 whitespace-nowrap">
-      <div class="text-sm text-gray-900" data-field="size"></div>
-    </td>
-    <td class="px-6 py-4 whitespace-nowrap">
-      <div class="text-sm text-gray-500" data-field="available"></div>
-    </td>
-    <td class="px-6 py-4 whitespace-nowrap">
-      <input type="number" 
-             name="client_checkout[inventory_movements_attributes][INDEX][quantity]" 
-             min="1" 
-             value="1"
-             data-field="quantity-input"
-             class="block w-20 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-pink-500 focus:border-pink-500 sm:text-sm">
-      <input type="hidden" name="client_checkout[inventory_movements_attributes][INDEX][client_inventory_id]" data-field="inventory-id">
-      <input type="hidden" name="client_checkout[inventory_movements_attributes][INDEX][movement_type]" value="stock_out">
-    </td>
-    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-      <button type="button" 
-              data-action="click->checkout-form#removeItem"
-              class="text-red-600 hover:text-red-900">
-        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-        </svg>
-      </button>
-    </td>
-  </tr>
-    </template>
+    <%= render "item_template" %>
+    <!-- Product Search Modal -->
+    <%= render "product_search_modal" %>
   <% end %>
 </div>
-

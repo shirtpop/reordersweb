@@ -4,6 +4,11 @@ class Client::ProductVariant < ApplicationRecord
   has_one :inventory, class_name: "Client::Inventory", dependent: :destroy, foreign_key: "client_product_variant_id"
   has_many :inventory_movements, through: :inventory
 
+  scope :search_by_product_name, ->(query) {
+    joins(:client_product)
+      .where("client_products.name ILIKE ?", "%#{sanitize_sql_like(query)}%")
+  }
+
   before_create :set_sku_if_blank
 
   private
