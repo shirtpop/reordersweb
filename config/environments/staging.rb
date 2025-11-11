@@ -64,7 +64,10 @@ Rails.application.configure do
   # Don't care if the mailer can't send.
   config.action_mailer.raise_delivery_errors = false
   config.action_mailer.perform_caching = false
-  config.action_mailer.default_url_options = { host: Rails.application.credentials.dig(:smtp, :domain) }
+  config.action_mailer.default_url_options = {
+    host: Rails.application.credentials.dig(:smtp, :domain),
+    protocol: Rails.application.credentials.dig(:smtp, :protocol)
+  }
   config.action_mailer.perform_deliveries = true
   config.action_mailer.smtp_settings = {
     address: "smtp.sendgrid.net",
