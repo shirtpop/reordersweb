@@ -51,9 +51,11 @@ ExceptionNotification.configure do |config|
   if Rails.application.credentials.dig(:exception_notification, :slack_url).present?
     config.add_notifier :slack, {
       webhook_url: Rails.application.credentials.dig(:exception_notification, :slack_url),
-      additional_parameters: {
-        mrkdwn: true
-      }
+      additional_parameters: { mrkdwn: true },
+      ignore_exceptions: [
+        "ActionController::BadRequest",
+        "Rack::Multipart::EmptyContentError"
+      ]
     }
   end
 end
