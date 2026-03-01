@@ -1,0 +1,275 @@
+<turbo-frame id="storefront_content">
+  <div class="container mx-auto px-4 py-8 max-w-7xl"
+       data-controller="quantity-grid"
+       data-base-price="<%= @product.base_price.to_f %>"
+       data-minimum-order="<%= @product.minimum_order %>"
+       data-bulk-prices="<%= @product.bulk_prices.to_json %>">
+
+    <!-- Back to Storefront Link -->
+    <%= link_to storefront_path(catalog_id: @catalog.id), class: "inline-flex items-center text-pink-600 hover:text-pink-700 mb-6 transition-colors" do %>
+      <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+      </svg>
+      <span class="font-medium">Back to Store</span>
+    <% end %>
+
+  <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+    <!-- Product Header Section -->
+    <div class="grid lg:grid-cols-2 gap-8 p-8">
+      <!-- Product Images Gallery -->
+      <div>
+        <% if @product.drive_files.any? %>
+          <!-- Main Image -->
+          <div class="relative aspect-square bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl overflow-hidden mb-4 shadow-2xl">
+            <%= image_tag @product.drive_files.first.preview_url,
+                alt: @product.name,
+                class: "w-full h-full object-cover transition-transform duration-700 hover:scale-110",
+                referrerpolicy: "no-referrer" %>
+
+            <!-- Shimmer Overlay -->
+            <div class="absolute inset-0 bg-gradient-to-tr from-transparent via-white/20 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+          </div>
+
+          <!-- Thumbnail Strip (if multiple images) -->
+          <% if @product.drive_files.count > 1 %>
+            <div class="grid grid-cols-4 gap-3">
+              <% @product.drive_files.first(4).each do |drive_file| %>
+                <%= image_tag drive_file.preview_url,
+                    alt: @product.name,
+                    class: "w-full aspect-square object-cover rounded-lg cursor-pointer hover:opacity-75 transition-opacity shadow-sm",
+                    referrerpolicy: "no-referrer" %>
+              <% end %>
+            </div>
+          <% end %>
+        <% else %>
+          <!-- Placeholder if no images -->
+          <div class="aspect-square bg-gray-100 rounded-xl flex items-center justify-center mb-4">
+            <svg class="w-24 h-24 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+            </svg>
+          </div>
+        <% end %>
+      </div>
+
+      <!-- Product Info -->
+      <div>
+        <h1 class="text-4xl font-bold text-gray-900 mb-4"><%= @product.name %></h1>
+        <p class="text-gray-600 text-lg mb-6 leading-relaxed"><%= @product.description %></p>
+
+        <!-- Pricing Info Card -->
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-6 mb-6 border border-blue-100">
+          <div class="flex justify-between items-center mb-3">
+            <span class="text-sm font-medium text-gray-700">Base Price:</span>
+            <span class="text-3xl font-bold text-gray-900">$<%= sprintf("%.2f", @product.base_price.to_f) %></span>
+          </div>
+          <div class="text-sm text-gray-600 mb-4">
+            <span class="font-medium">Minimum order:</span> <%= @product.minimum_order %> units
+          </div>
+
+          <% if @product.bulk_prices.present? && @product.bulk_prices.any? %>
+            <div class="pt-4 border-t border-blue-200">
+              <p class="text-sm font-semibold text-gray-700 mb-3">💰 Bulk Pricing Tiers:</p>
+              <div class="space-y-2">
+                <% @product.bulk_prices.sort_by { |b| b["qty"].to_i }.each do |bulk| %>
+                  <div class="flex justify-between items-center text-sm bg-white/60 rounded-lg px-3 py-2">
+                    <span class="text-gray-700 font-medium"><%= bulk["qty"] %>+ units</span>
+                    <span class="font-bold text-indigo-700">$<%= sprintf("%.2f", bulk["price"].to_f) %>/unit</span>
+                  </div>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+
+        <!-- Available Colors Preview -->
+        <div class="mb-6">
+          <h3 class="text-sm font-semibold text-gray-700 mb-3">Available Colors:</h3>
+          <div class="flex flex-wrap gap-2">
+            <% @product.colors.each do |color| %>
+              <div class="flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-2 border border-gray-200">
+                <div class="w-6 h-6 rounded-full border-2 border-white shadow-md"
+                     style="background-color: <%= color['hex_color'] %>"></div>
+                <span class="text-sm font-medium text-gray-700"><%= color['name'].capitalize %></span>
+              </div>
+            <% end %>
+          </div>
+        </div>
+
+        <!-- Available Sizes Preview -->
+        <div>
+          <h3 class="text-sm font-semibold text-gray-700 mb-3">Available Sizes:</h3>
+          <div class="flex flex-wrap gap-2">
+            <% @product.sizes.each do |size| %>
+              <span class="inline-flex items-center px-4 py-2 rounded-lg text-sm font-medium bg-gray-100 text-gray-800 border border-gray-200">
+                <%= size %>
+              </span>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Size/Color Quantity Grid Section (CR 3.2) -->
+    <%= form_with url: cart_items_path, method: :post,
+                  data: {
+                    turbo_frame: "_top"
+                  },
+                  class: "border-t border-gray-200 p-8 bg-gray-50" do |form| %>
+
+      <%= hidden_field_tag :product_id, params[:id] %>
+      <%= hidden_field_tag :catalog_id, params[:catalog_id] %>
+
+      <div class="flex justify-between items-center mb-6">
+        <div>
+          <h2 class="text-2xl font-bold text-gray-900">Select Quantities</h2>
+          <p class="text-gray-600 mt-1">Enter quantities for each size and color combination</p>
+        </div>
+        <div class="text-right">
+          <p class="text-sm text-gray-600">Total Units:</p>
+          <p class="text-4xl font-bold text-pink-600" data-quantity-grid-target="totalQuantity">0</p>
+        </div>
+      </div>
+
+      <!-- Quantity Grid Table -->
+      <div class="overflow-x-auto bg-white rounded-xl border-2 border-gray-200 shadow-sm">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="sticky top-0 z-20 bg-gradient-to-r from-gray-100 via-pink-50 to-gray-100 shadow-md">
+            <tr>
+              <th class="px-6 py-4 sticky left-0 z-30 bg-gradient-to-r from-gray-100 to-pink-50 border-r-2 border-pink-200">
+                <span class="text-xs font-bold text-gray-700 uppercase tracking-widest">Size / Color</span>
+              </th>
+              <% @product.colors.each do |color| %>
+                <th class="px-4 py-4 text-center min-w-[120px] group">
+                  <div class="flex flex-col items-center gap-2">
+                    <div class="w-12 h-12 rounded-full border-4 border-white shadow-xl ring-2 ring-gray-300 group-hover:ring-pink-500 transition-all duration-200 transform group-hover:scale-110"
+                         style="background-color: <%= color['hex_color'] %>"></div>
+                    <span class="text-xs font-semibold text-gray-700 group-hover:text-pink-700 transition-colors"><%= color['name'].capitalize %></span>
+                  </div>
+                </th>
+              <% end %>
+              <th class="px-6 py-4 text-center sticky right-0 z-30 bg-gradient-to-r from-pink-50 to-gray-100 border-l-2 border-pink-200">
+                <span class="text-xs font-bold text-gray-700 uppercase tracking-widest">Row Total</span>
+              </th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            <% @product.sizes.each_with_index do |size, size_idx| %>
+              <tr class="hover:bg-gray-50 transition-colors">
+                <td class="px-6 py-4 whitespace-nowrap font-bold text-gray-900 sticky left-0 bg-white z-10 border-r border-gray-200">
+                  <%= size %>
+                </td>
+                <% @product.colors.each_with_index do |color, color_idx| %>
+                  <td class="px-4 py-4 group-hover:bg-pink-50 transition-colors duration-200">
+                    <div class="flex items-center justify-center border-2 border-gray-300 rounded-lg bg-white shadow-sm hover:shadow-md transition-all duration-200 w-fit mx-auto">
+                      <!-- Decrement button -->
+                      <button type="button"
+                              data-action="click->quantity-grid#decrement"
+                              class="px-3 py-2 text-gray-600 hover:text-pink-700 hover:bg-gradient-to-r hover:from-pink-50 hover:to-rose-50 rounded-l-lg transition-all duration-200">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path>
+                        </svg>
+                      </button>
+
+                      <!-- Quantity input -->
+                      <%= number_field_tag "items[#{size_idx}_#{color_idx}][quantity]",
+                             0,
+                             class: "w-16 text-center border-x-2 border-gray-300 py-2 font-semibold text-gray-900 focus:outline-none focus:ring-2 focus:ring-pink-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none",
+                             min: 0,
+                             placeholder: "0",
+                             data: {
+                               quantity_grid_target: "quantityInput",
+                               action: "input->quantity-grid#updateTotals",
+                               size: size,
+                               color: color['name'],
+                               row: size,
+                               col: color['name']
+                             } %>
+
+                      <!-- Increment button -->
+                      <button type="button"
+                              data-action="click->quantity-grid#increment"
+                              class="px-3 py-2 text-gray-600 hover:text-pink-700 hover:bg-gradient-to-r hover:from-pink-50 hover:to-rose-50 rounded-r-lg transition-all duration-200">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                        </svg>
+                      </button>
+                    </div>
+                    <%= hidden_field_tag "items[#{size_idx}_#{color_idx}][size]", size %>
+                    <%= hidden_field_tag "items[#{size_idx}_#{color_idx}][color]", color['name'] %>
+                  </td>
+                <% end %>
+                <td class="px-6 py-4 text-center font-bold text-lg text-gray-700 bg-gray-50 sticky right-0 z-10 border-l border-gray-200"
+                    data-quantity-grid-target="rowTotal"
+                    data-row="<%= size %>">
+                  0
+                </td>
+              </tr>
+            <% end %>
+
+            <!-- Column Totals Row -->
+            <tr class="bg-gradient-to-r from-gray-100 to-gray-200 font-bold border-t-2 border-gray-300">
+              <td class="px-6 py-4 text-sm text-gray-800 sticky left-0 bg-gray-200 z-10 border-r border-gray-300">
+                Column Total
+              </td>
+              <% @product.colors.each do |color| %>
+                <td class="px-4 py-4 text-center text-base text-gray-800"
+                    data-quantity-grid-target="colTotal"
+                    data-col="<%= color['name'] %>">
+                  0
+                </td>
+              <% end %>
+              <td class="px-6 py-4 text-center text-2xl font-bold text-pink-600 bg-gray-200 sticky right-0 z-10 border-l border-gray-300"
+                  data-quantity-grid-target="grandTotal">
+                0
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pricing & Feedback Section -->
+      <div class="mt-6 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-6 border-2 border-blue-200">
+        <div class="grid md:grid-cols-2 gap-6 mb-4">
+          <div class="flex justify-between items-center">
+            <span class="text-sm font-medium text-gray-700">Price per Unit:</span>
+            <span class="text-3xl font-bold text-gray-900" data-quantity-grid-target="pricePerUnit">
+              $<%= sprintf("%.2f", @product.base_price.to_f) %>
+            </span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-sm font-medium text-gray-700">Estimated Total:</span>
+            <span class="text-3xl font-bold text-pink-600" data-quantity-grid-target="estimatedTotal">
+              $0.00
+            </span>
+          </div>
+        </div>
+
+        <!-- Dynamic Feedback Messages -->
+        <div class="mt-4 min-h-[2rem]">
+          <div data-quantity-grid-target="feedbackMessage" class="text-sm"></div>
+        </div>
+
+        <!-- Minimum Order Warning -->
+        <% if @product.minimum_order.to_i > 0 %>
+          <div class="mt-4 pt-4 border-t border-blue-200">
+            <div class="flex items-start gap-3">
+              <svg class="w-6 h-6 text-amber-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+              </svg>
+              <p class="text-sm font-medium text-amber-700">
+                Minimum order requirement: <span class="font-bold"><%= @product.minimum_order %> units</span>
+              </p>
+            </div>
+          </div>
+        <% end %>
+      </div>
+
+      <!-- Add to Cart Button -->
+      <div class="mt-8">
+        <%= form.submit "Add to Cart",
+            class: "w-full bg-gradient-to-r from-pink-600 to-pink-700 hover:from-pink-700 hover:to-pink-800 text-white font-bold py-5 rounded-xl text-xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center justify-center gap-3",
+            data: { action: "click->quantity-grid#validateBeforeSubmit" } %>
+      </div>
+    <% end %>
+  </div>
+</turbo-frame>

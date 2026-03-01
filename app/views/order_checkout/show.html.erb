@@ -1,0 +1,182 @@
+<div class="container mx-auto px-4 py-8 max-w-6xl">
+  <h1 class="text-3xl font-bold text-gray-900 mb-8">Checkout</h1>
+
+  <div class="grid lg:grid-cols-3 gap-8">
+    <!-- Checkout Form (Left Column) -->
+    <div class="lg:col-span-2">
+      <%= form_with model: @cart, url: checkout_path, method: :post, class: "bg-white rounded-xl shadow-lg border border-gray-200 p-8" do |form| %>
+
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">Delivery Details</h2>
+
+        <!-- Delivery Date Field -->
+        <div class="mb-8">
+          <%= form.label :delivery_date, "Requested Delivery Date",
+              class: "block text-sm font-bold text-gray-900 mb-3 uppercase tracking-wide" %>
+
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
+              <svg class="w-6 h-6 text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+              </svg>
+            </div>
+
+            <%= form.date_field :delivery_date,
+                class: "input-primary pl-12 text-lg font-semibold hover:shadow-lg",
+                min: Date.today + 21.days,
+                required: true %>
+          </div>
+
+          <!-- Info Box -->
+          <div class="mt-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-xl">
+            <div class="flex items-start gap-3">
+              <svg class="w-6 h-6 text-blue-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+              </svg>
+              <p class="text-sm text-blue-800 leading-relaxed">
+                <strong class="font-bold">Lead Time:</strong> Orders typically ship within 3-4 weeks from order date.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Order Review Section -->
+        <div class="mb-8">
+          <h2 class="text-2xl font-bold text-gray-900 mb-4">Review Your Order</h2>
+          <p class="text-gray-600 mb-6">Please review your order carefully before submitting.</p>
+
+          <div class="space-y-4">
+            <% @cart.order_items.group_by(&:product).each do |product, items| %>
+              <div class="border-2 border-gray-200 rounded-lg p-5 hover:border-pink-300 transition-colors">
+                <div class="flex gap-4 mb-4">
+                  <!-- Product Image -->
+                  <% if product.drive_files.any? %>
+                    <%= image_tag product.drive_files.first.preview_url,
+                        alt: product.name,
+                        class: "w-20 h-20 object-cover rounded-lg border border-gray-200",
+                        referrerpolicy: "no-referrer" %>
+                  <% end %>
+
+                  <!-- Product Info -->
+                  <div class="flex-grow">
+                    <h3 class="font-bold text-gray-900 text-lg"><%= product.name %></h3>
+                    <p class="text-sm text-gray-600"><%= items.sum(&:quantity) %> total units</p>
+                  </div>
+                </div>
+
+                <!-- Item Breakdown -->
+                <div class="bg-gray-50 rounded-lg p-4 space-y-2">
+                  <% items.each do |item| %>
+                    <div class="flex justify-between items-center text-sm">
+                      <div class="flex items-center gap-2">
+                        <% color_data = product.colors.find { |c| c['name'] == item.color } %>
+                        <% if color_data %>
+                          <div class="w-5 h-5 rounded-full border border-gray-300"
+                               style="background-color: <%= color_data['hex_color'] %>"></div>
+                        <% end %>
+                        <span class="font-medium text-gray-700"><%= item.color %> • Size <%= item.size %></span>
+                      </div>
+                      <span class="font-semibold text-gray-900"><%= item.quantity %> units</span>
+                    </div>
+                  <% end %>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        </div>
+
+        <!-- Important Notice -->
+        <div class="mb-8 bg-gradient-to-r from-amber-50 to-orange-50 border-2 border-amber-200 rounded-lg p-6">
+          <div class="flex items-start gap-4">
+            <svg class="w-8 h-8 text-amber-600 flex-shrink-0 mt-1" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+            </svg>
+            <div>
+              <h5 class="font-bold text-amber-900 text-lg mb-2">Important Notice</h5>
+              <p class="text-sm text-amber-800 leading-relaxed">
+                Please double-check all order details before confirming. Once submitted, your order will be processed by our team.
+                You will receive a confirmation email shortly with your order details and tracking information.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <%= form.submit "Place Order",
+            class: "btn-primary w-full py-5 text-xl",
+            data: { turbo_confirm: "Are you sure you want to place this order? Please confirm all details are correct." } %>
+
+        <!-- Back to Cart Link -->
+        <div class="mt-4 text-center">
+          <%= link_to "← Back to Cart", cart_path, class: "text-pink-600 hover:text-pink-700 font-medium" %>
+        </div>
+
+      <% end %>
+    </div>
+
+    <!-- Order Summary (Right Column - Sticky) -->
+    <div class="lg:col-span-1">
+      <div class="bg-white rounded-xl shadow-lg border-2 border-gray-200 p-6 sticky top-8">
+        <h2 class="text-xl font-bold text-gray-900 mb-6">Order Summary</h2>
+
+        <div class="space-y-4">
+          <div class="flex justify-between text-gray-700">
+            <span>Catalog:</span>
+            <span class="font-semibold text-right"><%= @cart.project.name %></span>
+          </div>
+
+          <div class="flex justify-between text-gray-700">
+            <span>Total Items:</span>
+            <span class="font-semibold"><%= @cart.order_items.count %></span>
+          </div>
+
+          <div class="flex justify-between text-gray-700">
+            <span>Total Units:</span>
+            <span class="font-bold text-lg"><%= @cart.order_items.sum(:quantity) %></span>
+          </div>
+
+          <div class="border-t-2 border-gray-200 pt-4">
+            <div class="flex justify-between items-center mb-2">
+              <span class="text-lg font-semibold text-gray-900">Estimated Total:</span>
+              <span class="text-3xl font-bold text-pink-600">
+                <%
+                  total = @cart.order_items.group_by(&:product).sum do |product, items|
+                    qty = items.sum(&:quantity)
+                    price = product.base_price.to_f
+
+                    # Check for bulk pricing
+                    if product.bulk_prices.present?
+                      product.bulk_prices.sort_by { |b| -b["qty"].to_i }.each do |bulk|
+                        if qty >= bulk["qty"].to_i
+                          price = bulk["price"].to_f
+                          break
+                        end
+                      end
+                    end
+
+                    price * qty
+                  end
+                %>
+                $<%= sprintf("%.2f", total) %>
+              </span>
+            </div>
+            <p class="text-xs text-gray-500">*Including bulk pricing discounts where applicable</p>
+          </div>
+
+          <!-- Delivery Date Display -->
+          <div class="bg-blue-50 rounded-lg p-4 mt-4">
+            <div class="flex items-start gap-2">
+              <svg class="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+              </svg>
+              <div>
+                <p class="text-sm font-semibold text-blue-900">Requested Delivery</p>
+                <p class="text-xs text-blue-700 mt-1">Will be set when you submit</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

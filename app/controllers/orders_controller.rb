@@ -1,7 +1,10 @@
 class OrdersController < BaseController
-  before_action :set_order, only: [ :show, :received ]
+  before_action :set_order, only: [ :show, :received, :duplicate ]
   def index
-    @orders = current_client.orders.includes(:project, order_items: :product).order(id: :desc)
+    # Only show submitted orders (exclude cart/draft orders)
+    @pagy, @orders = pagy(current_client.orders.submitted
+                                       .includes(:project, order_items: :product)
+                                       .order(id: :desc))
   end
 
   def show; end
@@ -25,6 +28,17 @@ class OrdersController < BaseController
     redirect_to @order, alert: e.message
   end
 
+  def duplicate
+    cart = Orders::Duplicator.new(order: @order, user: current_user).call!
+    redirect_to cart_path, notice: "Order items added to cart! Review and checkout when ready."
+  rescue Orders::Duplicator::EmptyOrderError => e
+    redirect_to @order, alert: "Cannot reorder: #{e.message}"
+  rescue Orders::Duplicator::ProductNotFoundError => e
+    redirect_to cart_path, alert: "Some products are no longer available but available items have been added to your cart."
+  rescue Orders::Duplicator::DuplicateError => e
+    redirect_to @order, alert: "Failed to duplicate order: #{e.message}"
+  end
+
   private
 
   def order_params
@@ -34,6 +48,7 @@ class OrdersController < BaseController
   end
 
   def set_order
-    @order = current_client.orders.find(params[:id])
+    # Only allow viewing submitted orders (not cart orders)
+    @order = current_client.orders.submitted.find(params[:id])
   end
 end

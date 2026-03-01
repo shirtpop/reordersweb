@@ -1,0 +1,36 @@
+<%# Replace the order summary with updated totals %>
+<%= turbo_stream.replace "order-summary" do %>
+  <%= render "cart/order_summary", cart: @cart, calculator: @calculator %>
+<% end %>
+
+<%# Replace the mobile summary with updated totals %>
+<%= turbo_stream.replace "mobile-summary" do %>
+  <%= render "cart/mobile_summary", calculator: @calculator %>
+<% end %>
+
+<%# Show success message %>
+<%= turbo_stream.prepend "flash-messages" do %>
+  <div data-controller="flash-message" data-flash-message-auto-dismiss-value="true" class="fixed top-4 right-4 z-50 animate-slide-in-right">
+    <div class="bg-green-50 border-l-4 border-green-500 rounded-lg shadow-lg p-4 max-w-md">
+      <div class="flex items-start">
+        <div class="flex-shrink-0">
+          <svg class="h-6 w-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+        </div>
+        <div class="ml-3 flex-1">
+          <p class="text-sm font-medium text-green-800">
+            <%= flash[:notice] %>
+          </p>
+        </div>
+        <div class="ml-4">
+          <button type="button" data-action="click->flash-message#dismiss" class="inline-flex text-green-400 hover:text-green-500 focus:outline-none">
+            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>

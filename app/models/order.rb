@@ -1,10 +1,23 @@
 class Order < ApplicationRecord
   belongs_to :client
-  belongs_to :project
+  belongs_to :project, optional: true
   belongs_to :ordered_by, class_name: "User", optional: true
   belongs_to :shipped_to, class_name: "Address", optional: true
 
   has_many :order_items, dependent: :destroy
+
+  # Order status enum
+  enum :status, {
+    cart: "cart",           # Draft order (items in cart, not submitted)
+    submitted: "submitted",     # Submitted, awaiting processing
+    processing: "processing",
+    received: "received",   # Order received/completed
+    cancelled: "cancelled"  # Cancelled order
+  }, prefix: true
+
+  # Scopes for filtering orders
+  scope :submitted, -> { where.not(status: "cart") }  # Exclude cart/draft orders
+  scope :in_cart, -> { status_cart }
 
   scope :search_by_keyword, ->(keyword) {
     joins(:client, :project, order_items: :product)
@@ -21,7 +34,8 @@ class Order < ApplicationRecord
   accepts_nested_attributes_for :order_items, allow_destroy: true
 
   before_create :set_shipped_address
-  after_commit :send_notifications, on: :create
+  # Only send notifications for submitted orders, not cart/draft orders
+  after_commit :send_notifications, on: :create, if: -> { status_submitted? || status_received? }
 
   def total_price
     order_items.sum { |item| item.total_price }

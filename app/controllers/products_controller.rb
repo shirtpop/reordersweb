@@ -1,5 +1,5 @@
 class ProductsController < BaseController
-  before_action :set_product, only: [ :show, :edit, :update ]
+  before_action :set_product, only: [ :edit, :update ]
 
   def index
     scope = params[:q].present? ? current_client.client_products.search_by_name(params[:q]) : current_client.client_products
@@ -14,7 +14,15 @@ class ProductsController < BaseController
     end
   end
 
-  def show; end
+  def show
+    # Check if this is a storefront request (has catalog_id param)
+    if params[:catalog_id].present?
+      show_storefront_product
+    else
+      # Inventory view (existing behavior)
+      @product = current_client.client_products.find(params[:id])
+    end
+  end
 
   def new
     @product = current_client.client_products.new
@@ -116,5 +124,25 @@ class ProductsController < BaseController
 
   def drive_file_params
     params.permit(:file)
+  end
+
+  def show_storefront_product
+    # Storefront product detail page (for ordering)
+    catalog_id = params[:catalog_id]
+
+    # Find the catalog and product (admin Product, not Client::Product)
+    @catalog = current_client.projects.active.find(catalog_id)
+    @product = @catalog.products.includes(:drive_files).find(params[:id])
+
+    # Get or create cart for this catalog
+    @cart = current_client.orders.in_cart.find_or_initialize_by(
+      project_id: @catalog.id,
+      ordered_by: current_user
+    )
+
+    # Render storefront view instead of default
+    render "products/storefront_show"
+  rescue ActiveRecord::RecordNotFound
+    redirect_to storefront_path, alert: "Product not found or not available in your catalogs."
   end
 end

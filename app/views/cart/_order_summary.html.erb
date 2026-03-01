@@ -1,0 +1,45 @@
+<div class="sticky top-24 bg-gradient-to-br from-white to-pink-50 rounded-2xl shadow-2xl border-2 border-pink-200 p-8" id="order-summary">
+  <h2 class="text-2xl font-bold mb-6 bg-gradient-to-r from-pink-600 to-rose-600 bg-clip-text text-transparent">
+    Order Summary
+  </h2>
+
+  <div class="space-y-4 mb-6">
+    <div class="flex justify-between text-gray-700">
+      <span>Catalog:</span>
+      <span class="font-semibold"><%= cart.project.name %></span>
+    </div>
+    <div class="flex justify-between text-gray-700">
+      <span>Total Items:</span>
+      <span class="font-semibold"><%= cart.order_items.count %></span>
+    </div>
+    <div class="flex justify-between text-gray-700">
+      <span>Total Quantity:</span>
+      <span class="font-bold text-lg"><%= calculator.total_quantity %></span>
+    </div>
+  </div>
+
+  <!-- Total with emphasis -->
+  <div class="border-t-2 border-pink-200 pt-6 mt-6">
+    <div class="flex justify-between items-baseline mb-4">
+      <span class="text-lg font-semibold text-gray-900">Estimated Total:</span>
+      <span class="text-4xl font-bold bg-gradient-to-r from-pink-600 to-rose-600 bg-clip-text text-transparent">
+        $<%= sprintf("%.2f", calculator.total_price) %>
+      </span>
+    </div>
+    <p class="text-xs text-gray-500">*Final price may vary based on bulk pricing tiers</p>
+  </div>
+
+  <!-- Action Buttons -->
+  <div class="space-y-3 mt-6">
+    <%= link_to checkout_path, class: "btn-primary w-full text-lg py-4" do %>
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+      </svg>
+      Proceed to Checkout
+    <% end %>
+
+    <%= link_to "Continue Shopping",
+        storefront_path(catalog_id: cart.project_id),
+        class: "btn-secondary w-full" %>
+  </div>
+</div>

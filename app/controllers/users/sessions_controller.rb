@@ -8,6 +8,9 @@ class Users::SessionsController < Devise::SessionsController
   def after_sign_in_path_for(resource)
     if resource.role_admin?
       admin_root_path
+    elsif resource.role_client?
+      # Redirect client users to new storefront
+      storefront_path
     else
       super
     end

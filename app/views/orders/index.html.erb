@@ -34,126 +34,70 @@
   </div>
   -->
 
-  <!-- Orders Table -->
-  <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-    <% if @orders.any? %>
-      <!-- Table Header -->
-      <div class="bg-gray-50 border-b border-gray-200">
-        <div class="overflow-x-auto">
-          <table class="min-w-full">
-            <thead>
-              <tr>
-                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Order Details
-                </th>
-                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Project & Items
-                </th>
-                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Received At
-                </th>
-                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Total
-                </th>
-                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-          </table>
-        </div>
-      </div>
+  <!-- Orders Cards -->
+  <% if @orders.any? %>
+    <div class="space-y-4">
+      <% @orders.each do |order| %>
+        <%= link_to order_path(order), class: "block" do %>
+          <div class="bg-white rounded-xl shadow-md hover:shadow-xl border-2 border-gray-200 hover:border-pink-300 p-6 transition-all duration-300 transform hover:-translate-y-1">
 
-      <!-- Table Body -->
-      <div class="divide-y divide-gray-200">
-        <% @orders.each do |order| %>
-          <div class="hover:bg-gray-50 transition-colors duration-200">
-            <div class="overflow-x-auto">
-              <table class="min-w-full">
-                <tbody>
-                  <tr>
-                    <!-- Order Details -->
-                    <td class="px-6 py-4 whitespace-nowrap">
-                      <div class="flex flex-col">
-                        <div class="text-sm font-medium text-gray-900">
-                          #<%= order.id.to_s.rjust(6, '0') %>
-                        </div>
-                        <div class="text-sm text-gray-500">
-                          <%= order.created_at.strftime("%b %d, %Y") %>
-                        </div>
-                        <div class="text-xs text-gray-400">
-                          <%= order.created_at.strftime("%I:%M %p") %>
-                        </div>
-                      </div>
-                    </td>
+            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+              <!-- Order Badge -->
+              <div class="flex items-center gap-6">
+                <div class="flex-shrink-0 w-16 h-16 bg-gradient-to-br from-pink-600 to-rose-600 rounded-xl shadow-lg flex items-center justify-center">
+                  <span class="text-white font-bold text-lg">
+                    #<%= order.id.to_s.last(4) %>
+                  </span>
+                </div>
 
-                    <!-- Project & Items -->
-                    <td class="px-6 py-4">
-                      <div class="flex flex-col">
-                        <div class="text-sm font-medium text-gray-900 mb-1">
-                          <%= order.project&.name || "No Project" %>
-                        </div>
-                        <div class="text-sm text-gray-600 mb-2">
-                          <%= pluralize(order.order_items.select(:product_id).distinct.count, 'product') %>
-                        </div>
-                        <!-- Order Items Preview -->
-                        <div class="flex flex-wrap gap-1">
-                          <% order.order_items.includes(:product).group_by(&:product).first(3).each do |product, items| %>
-                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-pink-100 text-pink-800">
-                              <%= product&.name || "Unknown Product" %>
-                              <span class="ml-1 text-pink-600">
-                                (<%= items.sum(&:quantity) %>)
-                              </span>
-                            </span>
-                          <% end %>
-                          <% if order.order_items.select(:product_id).distinct.count > 3 %>
-                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
-                              +<%= order.order_items.select(:product_id).distinct.count - 3 %> more
-                            </span>
-                          <% end %>
-                        </div>
-                      </div>
-                    </td>
+                <!-- Order Info -->
+                <div>
+                  <h3 class="text-lg font-bold text-gray-900 mb-1">
+                    Order #<%= order.id.to_s.rjust(6, '0') %>
+                  </h3>
+                  <p class="text-sm text-gray-600 flex items-center gap-2">
+                    <svg class="w-4 h-4 text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                    </svg>
+                    <%= order.created_at.strftime("%b %d, %Y") %>
+                  </p>
+                  <% if order.project %>
+                    <p class="text-xs text-gray-500 mt-1">
+                      <%= order.project.name %>
+                    </p>
+                  <% end %>
+                </div>
+              </div>
 
-                    <!-- Delivery Date -->
-                    <td class="px-6 py-4 whitespace-nowrap">
-                      <% if order.received? %>
-                        <div class="text-sm text-gray-900">
-                          <%= order.received_at.strftime("%b %d, %Y") %>
-                        </div>
-                      <% else %>
-                        <span class="text-sm text-gray-400">Not delivered</span>
-                      <% end %>
-                    </td>
+              <!-- Products Preview -->
+              <div class="flex flex-wrap gap-2">
+                <% order.order_items.includes(:product).group_by(&:product).first(3).each do |product, items| %>
+                  <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-r from-pink-100 to-rose-100 text-pink-800 text-sm font-semibold border border-pink-300 shadow-sm">
+                    <%= product&.name || 'Product' %>
+                    <span class="bg-pink-600 text-white rounded-full px-2 py-0.5 text-xs">
+                      <%= items.sum(&:quantity) %>
+                    </span>
+                  </span>
+                <% end %>
+                <% if order.order_items.select(:product_id).distinct.count > 3 %>
+                  <span class="inline-flex items-center px-3 py-1.5 rounded-lg bg-gray-100 text-gray-600 text-sm font-semibold">
+                    +<%= order.order_items.select(:product_id).distinct.count - 3 %> more
+                  </span>
+                <% end %>
+              </div>
 
-                    <!-- Total -->
-                    <td class="px-6 py-4 whitespace-nowrap">
-                      <div class="text-xs text-gray-500">
-                        <%= pluralize(order.total_quantity || 0, 'pc') %>
-                      </div>
-                    </td>
-
-                    <!-- Actions -->
-                    <td class="px-6 py-4 whitespace-nowrap text-right">
-                      <div class="flex items-center justify-end space-x-2">
-                        <%= link_to order_path(order), 
-                            class: "inline-flex items-center p-2 text-sm font-medium text-gray-500 hover:text-pink-600 transition-colors duration-200",
-                            title: "View Order" do %>
-                          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                          </svg>
-                        <% end %>
-                      </div>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+              <!-- Arrow Icon -->
+              <div class="flex-shrink-0">
+                <svg class="w-6 h-6 text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                </svg>
+              </div>
             </div>
           </div>
         <% end %>
-      </div>
-    <% else %>
+      <% end %>
+    </div>
+  <% else %>
       <!-- Empty State -->
       <div class="text-center py-12">
         <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -178,41 +122,27 @@
         </div>
       </div>
     <% end %>
-  </div>
 
-  <!-- Pagination -->
-  <% if @orders.respond_to?(:total_pages) %>
-    <div class="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6 mt-6">
-      <div class="flex flex-1 justify-between sm:hidden">
-        <% if @orders.prev_page %>
-          <%= link_to "Previous", orders_path(page: @orders.prev_page, search: params[:search], status: params[:status]), 
-              class: "relative inline-flex items-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-500 hover:bg-gray-50" %>
-        <% end %>
-        <% if @orders.next_page %>
-          <%= link_to "Next", orders_path(page: @orders.next_page, search: params[:search], status: params[:status]), 
-              class: "relative ml-3 inline-flex items-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-500 hover:bg-gray-50" %>
-        <% end %>
-      </div>
-      
-      <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
-        <div>
-          <p class="text-sm text-gray-700">
-            Showing
-            <span class="font-medium"><%= (@orders.current_page - 1) * @orders.limit_value + 1 %></span>
-            to
-            <span class="font-medium"><%= [@orders.current_page * @orders.limit_value, @orders.total_count].min %></span>
-            of
-            <span class="font-medium"><%= @orders.total_count %></span>
-            results
-          </p>
-        </div>
-        
-        <div>
-          <%= paginate @orders, theme: 'twitter_bootstrap_4', 
-              params: { search: params[:search], status: params[:status] },
-              class: "flex items-center space-x-1" %>
+    <!-- Pagination -->
+    <% if @pagy.pages > 1 %>
+      <div class="mt-6 bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm text-gray-700">
+              Showing
+              <span class="font-medium"><%= @pagy.from %></span>
+              to
+              <span class="font-medium"><%= @pagy.to %></span>
+              of
+              <span class="font-medium"><%= @pagy.count %></span>
+              results
+            </p>
+          </div>
+
+          <div>
+            <%== pagy_bootstrap_nav(@pagy) %>
+          </div>
         </div>
       </div>
-    </div>
-  <% end %>
+    <% end %>
 </div>

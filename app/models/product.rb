@@ -25,6 +25,18 @@ class Product < ApplicationRecord
     Array(colors).map { |c| c["name"] }.join(", ")
   end
 
+  def minimum_order
+    super || 0
+  end
+
+  def base_price
+    super || 0.0
+  end
+
+  def bulk_prices
+    super || []
+  end
+
   private
 
   def validate_bulk_prices

@@ -6,11 +6,11 @@
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
     
-    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags 'client_application' %>
   </head>
 
-  <body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+  <body class="bg-gradient-to-br from-pink-50 via-rose-50 to-pink-100 min-h-screen">
     <div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       <%= yield %>
     </div>

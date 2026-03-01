@@ -18,7 +18,7 @@
     <link rel="apple-touch-icon" href="/icon.png">
 
     <%# Includes all stylesheet files in app/assets/stylesheets %>
-    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags 'client_application' %>
     <style>
       @keyframes marquee {
@@ -39,12 +39,36 @@
       .marquee-item {
         flex-shrink: 0;
       }
+      @keyframes slide-in-right {
+        from {
+          transform: translateX(100%);
+          opacity: 0;
+        }
+        to {
+          transform: translateX(0);
+          opacity: 1;
+        }
+      }
+      @keyframes fade-out {
+        from {
+          opacity: 1;
+        }
+        to {
+          opacity: 0;
+        }
+      }
+      .animate-slide-in-right {
+        animation: slide-in-right 0.3s ease-out;
+      }
+      .animate-fade-out {
+        animation: fade-out 0.3s ease-out;
+      }
     </style>
   </head>
 
-  <body class="client-theme bg-gray-50 min-h-screen">
+  <body class="client-theme bg-gray-50 min-h-screen flex flex-col">
     <!-- Navigation with Flowbite Navbar -->
-    <nav class="bg-white border-gray-200 shadow-sm">
+    <nav class="sticky top-0 z-50 bg-gradient-to-r from-white via-pink-50 to-white border-b-2 border-pink-100 shadow-lg backdrop-blur-md bg-white/95">
       <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
         <!-- Logo and Brand -->
         <div class="flex items-center gap-3">
@@ -127,17 +151,33 @@
         <div class="items-center justify-between hidden w-full md:flex md:w-auto md:order-1" id="navbar-user">
           <ul class="flex flex-col font-medium p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-white">
             <li>
-              <%= link_to "Projects", projects_path, 
-                          class: "#{current_page?(projects_path) ? 'block py-2 px-3 text-pink-800 md:text-pink-700 md:p-0' : 'block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-pink-700 md:p-0'}" %>
+              <%= link_to "Shop", storefront_path,
+                          class: "#{current_page?(storefront_path) || current_page?(root_path) ? 'block py-2 px-3 text-pink-800 md:text-pink-700 md:p-0 rounded-lg' : 'block py-2 px-3 text-gray-900 rounded-lg transition-all duration-200 hover:bg-gradient-to-r hover:from-pink-50 hover:to-rose-50 md:hover:bg-transparent md:hover:text-pink-700 md:hover:scale-105 md:p-0'}" %>
             </li>
             <li>
-              <%= link_to "Orders", orders_path, 
-                          class: "#{current_page?(orders_path) ? 'block py-2 px-3 text-pink-800 rounded md:text-pink-700 md:p-0' : 'block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-pink-700 md:p-0'}" %>
+              <%= link_to cart_path, class: "#{current_page?(cart_path) ? 'block py-2 px-3 text-pink-800 md:text-pink-700 md:p-0 rounded-lg' : 'block py-2 px-3 text-gray-900 rounded-lg transition-all duration-200 hover:bg-gradient-to-r hover:from-pink-50 hover:to-rose-50 md:hover:bg-transparent md:hover:text-pink-700 md:hover:scale-105 md:p-0'} relative" do %>
+                <span class="flex items-center gap-2">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                  </svg>
+                  Cart
+                  <% cart_count = current_user&.client&.orders&.in_cart&.where(ordered_by: current_user)&.joins(:order_items)&.sum('order_items.quantity') || 0 %>
+                  <% if cart_count > 0 %>
+                    <span class="bg-gradient-to-br from-pink-600 to-rose-600 text-white text-xs font-bold rounded-full h-6 w-6 flex items-center justify-center shadow-lg animate-pulse">
+                      <%= cart_count %>
+                    </span>
+                  <% end %>
+                </span>
+              <% end %>
+            </li>
+            <li>
+              <%= link_to "Orders", orders_path,
+                          class: "#{current_page?(orders_path) ? 'block py-2 px-3 text-pink-800 rounded-lg md:text-pink-700 md:p-0' : 'block py-2 px-3 text-gray-900 rounded-lg transition-all duration-200 hover:bg-gradient-to-r hover:from-pink-50 hover:to-rose-50 md:hover:bg-transparent md:hover:text-pink-700 md:hover:scale-105 md:p-0'}" %>
             </li>
             <% if client_inventory_enabled? %>
               <li>
-                <%= link_to "Inventories", inventories_path, 
-                            class: "#{current_page?(inventories_path) ? 'block py-2 px-3 text-pink-800 rounded md:text-pink-700 md:p-0' : 'block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-pink-700 md:p-0'}" %>
+                <%= link_to "Inventories", inventories_path,
+                            class: "#{current_page?(inventories_path) ? 'block py-2 px-3 text-pink-800 rounded-lg md:text-pink-700 md:p-0' : 'block py-2 px-3 text-gray-900 rounded-lg transition-all duration-200 hover:bg-gradient-to-r hover:from-pink-50 hover:to-rose-50 md:hover:bg-transparent md:hover:text-pink-700 md:hover:scale-105 md:p-0'}" %>
               </li>
             <% end %>
           </ul>
@@ -147,10 +187,12 @@
 
     <!-- Flash Messages with Flowbite Alerts -->
     <% if notice %>
-      <div id="alert-success" class="flex items-center p-4 mb-4 text-green-800 rounded-lg bg-green-50" role="alert">
-        <svg class="flex-shrink-0 w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-          <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
-        </svg>
+      <div id="alert-success" class="flex items-center p-4 mb-4 bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-200 text-green-800 rounded-xl shadow-lg animate-slide-in-right" role="alert">
+        <div class="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center shadow-md">
+          <svg class="w-5 h-5 text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
+          </svg>
+        </div>
         <span class="sr-only">Success</span>
         <div class="ms-3 text-sm font-medium">
           <%= notice %>
@@ -165,10 +207,12 @@
     <% end %>
 
     <% if alert %>
-      <div id="alert-error" class="flex items-center p-4 mb-4 text-red-800 rounded-lg bg-red-50" role="alert">
-        <svg class="flex-shrink-0 w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-          <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
-        </svg>
+      <div id="alert-error" class="flex items-center p-4 mb-4 bg-gradient-to-r from-red-50 to-rose-50 border-2 border-red-200 text-red-800 rounded-xl shadow-lg animate-slide-in-right" role="alert">
+        <div class="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-br from-red-500 to-rose-600 flex items-center justify-center shadow-md">
+          <svg class="w-5 h-5 text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
+          </svg>
+        </div>
         <span class="sr-only">Error</span>
         <div class="ms-3 text-sm font-medium">
           <%= alert %>
@@ -182,8 +226,50 @@
       </div>
     <% end %>
 
-    <main class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+    <!-- Turbo Stream Flash Messages Container -->
+    <div id="flash-messages" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"></div>
+
+    <main class="flex-1 w-full">
       <%= yield %>
     </main>
+
+    <!-- Footer -->
+    <footer class="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white mt-20">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+          <!-- Brand Column -->
+          <div class="col-span-1 md:col-span-2">
+            <div class="flex items-center gap-3 mb-4">
+              <%= image_tag asset_path("pink-logo.svg"), class: "h-10 w-auto" %>
+              <span class="text-2xl font-bold bg-gradient-to-r from-pink-400 to-rose-400 bg-clip-text text-transparent">Shirtpop</span>
+            </div>
+            <p class="text-gray-400 text-sm leading-relaxed max-w-md">
+              Your trusted partner for custom apparel and reordering solutions.
+            </p>
+          </div>
+
+          <!-- Quick Links -->
+          <div>
+            <h3 class="text-sm font-semibold uppercase tracking-wider mb-4 text-pink-400">Quick Links</h3>
+            <ul class="space-y-2">
+              <li><%= link_to "Shop", storefront_path, class: "text-gray-400 hover:text-pink-400 transition-colors duration-200 text-sm" %></li>
+              <li><%= link_to "Orders", orders_path, class: "text-gray-400 hover:text-pink-400 transition-colors duration-200 text-sm" %></li>
+              <li><%= link_to "Cart", cart_path, class: "text-gray-400 hover:text-pink-400 transition-colors duration-200 text-sm" %></li>
+            </ul>
+          </div>
+
+          <!-- Support -->
+          <div>
+            <h3 class="text-sm font-semibold uppercase tracking-wider mb-4 text-pink-400">Support</h3>
+            <p class="text-gray-400 text-sm">Contact your account manager for assistance</p>
+          </div>
+        </div>
+
+        <!-- Bottom Bar -->
+        <div class="border-t border-gray-700 mt-8 pt-8 text-center">
+          <p class="text-gray-500 text-sm">© <%= Date.current.year %> Shirtpop. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
   </body>
 </html>

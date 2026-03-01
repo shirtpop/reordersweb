@@ -1,0 +1,155 @@
+<% if @catalogs.empty? %>
+  <!-- Empty State: No Catalogs Assigned -->
+  <div class="container mx-auto px-4 py-16">
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+      <div class="text-center py-16 px-6">
+        <svg class="mx-auto h-20 w-20 text-gray-300 mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+        </svg>
+        <h3 class="text-2xl font-semibold text-gray-900 mb-4">No Products Available Yet</h3>
+        <p class="text-gray-600 text-lg mb-2">Your product catalog will appear here once your account manager assigns products to you.</p>
+        <p class="text-sm text-gray-500">If you believe this is an error, please contact your account manager.</p>
+      </div>
+    </div>
+  </div>
+
+<% else %>
+  <!-- Storefront Layout -->
+  <div class="flex bg-gray-50 min-h-screen" data-controller="storefront-cart">
+
+    <!-- Left Sidebar: Catalog Navigation (only if 2+ catalogs) -->
+    <% if @catalogs.count > 1 %>
+      <aside class="w-72 flex-shrink-0 p-6">
+        <div class="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 sticky top-6">
+          <h2 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Catalogs</h2>
+          <nav class="space-y-2">
+            <% @catalogs.each do |catalog| %>
+              <%= link_to catalog.name,
+                  storefront_path(catalog_id: catalog.id),
+                  class: "block px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 #{@selected_catalog.id == catalog.id ? 'bg-gradient-to-r from-pink-600 to-rose-600 text-white shadow-md' : 'text-gray-700 hover:bg-gray-100'}" %>
+            <% end %>
+          </nav>
+        </div>
+      </aside>
+    <% end %>
+
+    <!-- Main Content: Product Grid -->
+    <turbo-frame id="storefront_content" class="flex-1">
+      <div class="<%= @catalogs.count > 1 ? 'p-8' : 'container mx-auto px-4 py-8' %>">
+
+        <!-- Header with Title and Cart -->
+        <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 mb-10">
+          <div>
+            <h1 class="text-4xl lg:text-5xl font-bold mb-3 bg-gradient-to-r from-gray-900 via-pink-800 to-gray-900 bg-clip-text text-transparent">
+              <%= @catalogs.count == 1 ? "Shop Products" : @selected_catalog.name %>
+            </h1>
+            <p class="text-lg text-gray-600 flex items-center gap-2">
+              <svg class="w-5 h-5 text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+              </svg>
+              <%= @products.count %> <%= 'product'.pluralize(@products.count) %> available
+            </p>
+          </div>
+
+          <!-- Cart Icon with Item Count -->
+          <%= link_to cart_path, class: "group relative" do %>
+            <div class="flex items-center gap-3 px-6 py-3.5 bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-700 hover:to-rose-700 text-white font-bold rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 hover:scale-105">
+              <svg class="w-6 h-6 transition-transform duration-200 group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+              </svg>
+              <span>Cart</span>
+              <% if @cart.persisted? && @cart.order_items.any? %>
+                <span class="absolute -top-2 -right-2 bg-gradient-to-br from-yellow-400 to-orange-500 text-gray-900 text-xs font-bold rounded-full h-7 w-7 flex items-center justify-center shadow-lg border-2 border-white animate-bounce" data-storefront-cart-target="cartCount">
+                  <%= @cart.order_items.sum(:quantity) %>
+                </span>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+
+        <!-- Product Grid -->
+        <% if @products.any? %>
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5 max-w-[1600px]">
+            <% @products.each_with_index do |product, index| %>
+              <div class="group bg-white rounded-xl shadow-md hover:shadow-xl border border-gray-200 hover:border-pink-300 overflow-hidden transition-all duration-300 transform hover:-translate-y-1 flex flex-col max-w-sm mx-auto w-full" style="animation-delay: <%= index * 50 %>ms;">
+
+                <!-- Product Image -->
+                <%= link_to product_path(product.id, catalog_id: @selected_catalog.id), class: "block" do %>
+                  <div class="relative aspect-square bg-gradient-to-br from-gray-100 to-gray-200 overflow-hidden">
+                    <% if product.drive_files.any? %>
+                      <%= image_tag product.drive_files.first.preview_url,
+                          alt: product.name,
+                          class: "w-full h-full object-cover transition-transform duration-500 group-hover:scale-105",
+                          loading: "lazy",
+                          referrerpolicy: "no-referrer" %>
+                    <% else %>
+                      <div class="w-full h-full flex items-center justify-center">
+                        <svg class="w-12 h-12 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
+                      </div>
+                    <% end %>
+
+                    <!-- Badge with size count -->
+                    <div class="absolute top-2 right-2 bg-white/95 backdrop-blur-sm rounded-full px-2.5 py-1 text-xs font-semibold text-gray-700 shadow-md">
+                      <%= product.sizes.count %> sizes
+                    </div>
+                  </div>
+                <% end %>
+
+                <!-- Product Info -->
+                <div class="p-4 flex flex-col flex-grow">
+                  <h3 class="font-bold text-pink-700 text-base mb-1.5 line-clamp-2"><%= product.name %></h3>
+
+                  <!-- Price -->
+                  <div class="text-xs text-gray-600 mb-1">
+                    Starting at <span class="text-pink-600 font-bold text-lg">$<%= sprintf("%.2f", product.base_price.to_f) %></span>
+                  </div>
+
+                  <!-- Min Order -->
+                  <div class="text-xs text-gray-500 mb-2.5">
+                    Min. order: <span class="font-semibold text-gray-700"><%= product.minimum_order %> units</span>
+                  </div>
+
+                  <!-- Colors available -->
+                  <div class="flex gap-1 mb-3">
+                    <% product.colors.first(2).each do |color| %>
+                      <div class="w-6 h-6 rounded-full border-2 border-white shadow-sm"
+                           style="background-color: <%= color['hex_color'] %>"
+                           title="<%= color['name'] %>"></div>
+                    <% end %>
+                    <% if product.colors.count > 2 %>
+                      <div class="w-6 h-6 rounded-full border-2 border-white shadow-sm bg-gray-100 flex items-center justify-center">
+                        <span class="text-[10px] font-semibold text-gray-600">+<%= product.colors.count - 2 %></span>
+                      </div>
+                    <% end %>
+                  </div>
+
+                  <!-- Select Options Button -->
+                  <%= link_to product_path(product.id, catalog_id: @selected_catalog.id), class: "btn-primary w-full mt-auto text-sm py-2.5" do %>
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                    </svg>
+                    Select Options
+                  <% end %>
+                </div>
+              </div>
+            <% end %>
+          </div>
+
+        <% else %>
+          <!-- Empty State: No Products in Selected Catalog -->
+          <div class="text-center py-16">
+            <svg class="w-20 h-20 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+            </svg>
+            <h3 class="text-xl font-semibold text-gray-700 mb-2">No products in this catalog</h3>
+            <p class="text-gray-500">Check back later or contact your account manager.</p>
+          </div>
+        <% end %>
+
+      </div>
+    </turbo-frame>
+  </div>
+<% end %>

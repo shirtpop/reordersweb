@@ -1,10 +1,11 @@
 class ProjectsController < BaseController
   def index
-    @projects = current_client.projects.active.includes(:products)
+    # Redirect old projects list to new storefront
+    redirect_to storefront_path
   end
 
   def show
-    @project = current_client.projects.active.find(params[:id])
-    @order = current_client.orders.new
+    # Redirect old project detail to storefront with catalog filter
+    redirect_to storefront_path(catalog_id: params[:id])
   end
 end
