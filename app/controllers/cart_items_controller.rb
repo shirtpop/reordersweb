@@ -1,6 +1,6 @@
 class CartItemsController < BaseController
   def create
-    catalog = current_client.projects.active.find(params[:catalog_id])
+    catalog = current_client.catalogs.active.find(params[:catalog_id])
     product = catalog.products.find(params[:product_id])
 
     # Use service to add items to cart

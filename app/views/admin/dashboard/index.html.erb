@@ -7,6 +7,9 @@
     </div>
   </div>
 
+  <!-- Receipt Reminders -->
+  <%= render "admin/dashboard/receipt_reminders", pending_receipt_orders: @pending_receipt_orders %>
+
   <!-- Stats Cards -->
   <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
     <div class="w-full max-w-sm p-4 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
@@ -18,8 +21,8 @@
           </svg>
         </div>
         <div class="ml-4">
-          <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Total Projects</p>
-          <p class="text-lg font-semibold text-gray-900 dark:text-white"><%= @projects_count %></p>
+          <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Total Catalogs</p>
+          <p class="text-lg font-semibold text-gray-900 dark:text-white"><%= @catalogs_count %></p>
         </div>
       </div>
     </div>
@@ -87,7 +90,7 @@
               </svg>
             </div>
             <div>
-              <p class="text-sm font-medium text-gray-900 dark:text-white"><%= order.project.name.capitalize %></p>
+              <p class="text-sm font-medium text-gray-900 dark:text-white"><%= order.catalog.name.capitalize %></p>
               <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300">
                 <%= order.client.company_name.capitalize %>
               </span>

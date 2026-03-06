@@ -52,8 +52,8 @@ class ProductsController < BaseController
   end
 
   def admin_products
-    @products = Product.joins(products_projects: :project)
-                       .merge(Project.where(client: current_client))
+    @products = Product.joins(catalogs_products: :catalog)
+                       .merge(Catalog.where(client: current_client))
                        .merge(Product.search_by_name(params[:q]))
                        .includes(:rich_text_description)
   end
@@ -131,12 +131,12 @@ class ProductsController < BaseController
     catalog_id = params[:catalog_id]
 
     # Find the catalog and product (admin Product, not Client::Product)
-    @catalog = current_client.projects.active.find(catalog_id)
+    @catalog = current_client.catalogs.active.find(catalog_id)
     @product = @catalog.products.includes(:drive_files).find(params[:id])
 
     # Get or create cart for this catalog
     @cart = current_client.orders.in_cart.find_or_initialize_by(
-      project_id: @catalog.id,
+      catalog_id: @catalog.id,
       ordered_by: current_user
     )
 

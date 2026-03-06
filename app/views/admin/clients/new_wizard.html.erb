@@ -1,0 +1,237 @@
+<div class="max-w-4xl mx-auto p-6" data-controller="wizard address" data-wizard-current-value="0">
+  <div class="mb-6">
+    <h1 class="text-2xl font-bold text-gray-900 dark:text-white">New Client Setup</h1>
+    <p class="text-sm text-gray-600 dark:text-gray-400 mt-1" data-wizard-target="stepCount">Step 1 of 5</p>
+  </div>
+
+  <!-- Step Indicators -->
+  <div class="flex items-center justify-center mb-8 space-x-2">
+    <% ["Company", "User", "Catalog", "Products", "Review"].each_with_index do |label, i| %>
+      <div class="flex items-center">
+        <button type="button" data-wizard-target="indicator" data-step="<%= i %>" data-action="click->wizard#goToStep"
+                class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium text-white <%= i == 0 ? 'bg-blue-600' : 'bg-gray-200 dark:bg-gray-700' %>">
+          <span data-role="number"><%= i + 1 %></span>
+          <svg data-role="check" class="w-4 h-4 hidden" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+          </svg>
+        </button>
+        <span class="ml-1 text-xs text-gray-500 dark:text-gray-400 hidden sm:inline"><%= label %></span>
+        <% unless i == 4 %>
+          <div class="w-8 h-0.5 bg-gray-200 dark:bg-gray-700 mx-2"></div>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+
+  <%= form_with model: [:admin, @client], method: :post, local: true, data: { turbo: false } do |form| %>
+
+    <!-- Step 1: Company Info & Addresses -->
+    <div data-wizard-target="step" class="bg-white dark:bg-gray-800 shadow rounded-lg p-6 space-y-6">
+      <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Company Information & Addresses</h2>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <%= form.label :company_name, class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" %>
+          <%= form.text_field :company_name, required: true,
+              class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" %>
+        </div>
+        <div>
+          <%= form.label :personal_name, class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" %>
+          <%= form.text_field :personal_name, required: true,
+              class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" %>
+        </div>
+        <div>
+          <%= form.label :phone_number, class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" %>
+          <%= form.text_field :phone_number, required: true,
+              class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" %>
+        </div>
+        <div>
+          <%= form.label :company_url, class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" %>
+          <%= form.url_field :company_url,
+              class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" %>
+        </div>
+      </div>
+
+      <!-- Billing Address -->
+      <div class="border-t pt-4">
+        <h3 class="text-md font-medium text-gray-900 dark:text-white mb-3">Billing Address</h3>
+        <%= form.fields_for :address, @client.address || Address.new do |af| %>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="md:col-span-2">
+              <%= af.label :street, class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1" %>
+              <%= af.text_area :street, rows: 2, required: true,
+                  class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white",
+                  data: { address_target: "mainField", action: "input->address#updateShipping" } %>
+            </div>
+            <div>
+              <%= af.label :city, class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1" %>
+              <%= af.text_field :city, required: true,
+                  class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white",
+                  data: { address_target: "mainField", action: "input->address#updateShipping" } %>
+            </div>
+            <div>
+              <%= af.label :state, class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1" %>
+              <%= af.text_field :state, required: true,
+                  class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white",
+                  data: { address_target: "mainField", action: "input->address#updateShipping" } %>
+            </div>
+            <div>
+              <%= af.label :zip_code, class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1" %>
+              <%= af.text_field :zip_code, required: true,
+                  class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white",
+                  data: { address_target: "mainField", action: "input->address#updateShipping" } %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+
+      <!-- Shipping Address -->
+      <div class="border-t pt-4">
+        <div class="flex items-center mb-3">
+          <input type="checkbox" id="same_as_main" name="same_as_main" value="1"
+                 class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                 data-address-target="sameAsMain" data-action="change->address#toggle">
+          <label for="same_as_main" class="ml-2 text-sm text-gray-700 dark:text-gray-300">
+            Shipping address same as billing
+          </label>
+        </div>
+        <div data-address-target="shippingFields">
+          <h3 class="text-md font-medium text-gray-900 dark:text-white mb-3">Shipping Address</h3>
+          <%= form.fields_for :shipping_address, @client.shipping_address || Address.new do |sf| %>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="md:col-span-2">
+                <%= sf.label :street, class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1" %>
+                <%= sf.text_area :street, rows: 2, required: true,
+                    class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white",
+                    data: { address_target: "shippingField" } %>
+              </div>
+              <div>
+                <%= sf.label :city, class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1" %>
+                <%= sf.text_field :city, required: true,
+                    class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white",
+                    data: { address_target: "shippingField" } %>
+              </div>
+              <div>
+                <%= sf.label :state, class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1" %>
+                <%= sf.text_field :state, required: true,
+                    class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white",
+                    data: { address_target: "shippingField" } %>
+              </div>
+              <div>
+                <%= sf.label :zip_code, class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1" %>
+                <%= sf.text_field :zip_code, required: true,
+                    class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white",
+                    data: { address_target: "shippingField" } %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 2: User Account -->
+    <div data-wizard-target="step" class="bg-white dark:bg-gray-800 shadow rounded-lg p-6 space-y-6 hidden">
+      <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Client User Account</h2>
+      <p class="text-sm text-gray-500 dark:text-gray-400">Create a login account for the client</p>
+
+      <%= form.fields_for :users, User.new do |uf| %>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <%= uf.label :email, class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" %>
+            <%= uf.email_field :email, required: true,
+                class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" %>
+          </div>
+          <div>
+            <%= uf.label :password, class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" %>
+            <%= uf.password_field :password, required: true,
+                class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" %>
+          </div>
+          <%= uf.hidden_field :role, value: "client" %>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- Step 3: Catalog -->
+    <div data-wizard-target="step" class="bg-white dark:bg-gray-800 shadow rounded-lg p-6 space-y-6 hidden">
+      <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Catalog Setup</h2>
+      <p class="text-sm text-gray-500 dark:text-gray-400">Create a catalog to organize products for this client</p>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Catalog Name</label>
+          <input type="text" name="catalog_name" value="Default Catalog"
+                 class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Status</label>
+          <select name="catalog_status" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+            <option value="active" selected>Active</option>
+            <option value="draft">Draft</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 4: Products -->
+    <div data-wizard-target="step" class="bg-white dark:bg-gray-800 shadow rounded-lg p-6 space-y-6 hidden">
+      <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Assign Products</h2>
+      <p class="text-sm text-gray-500 dark:text-gray-400">Search and add products for this client's catalog</p>
+
+      <div data-controller="product-search" data-product-search-url-value="<%= admin_products_path(format: :json) %>">
+        <div class="relative mb-4">
+          <input type="text"
+                 data-product-search-target="searchInput"
+                 data-action="input->product-search#search keydown->product-search#handleKeydown"
+                 placeholder="Search products by name..."
+                 class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400">
+          <div data-product-search-target="resultsDropdown" class="hidden absolute z-10 w-full mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md shadow-lg max-h-60 overflow-y-auto">
+            <div data-product-search-target="resultsList"></div>
+          </div>
+        </div>
+
+        <div data-product-search-target="selectedProducts" class="space-y-2"></div>
+
+        <div data-product-search-target="emptyState">
+          <div class="text-center py-6">
+            <svg class="mx-auto h-10 w-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+            </svg>
+            <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">No products selected yet. Search above to add products.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 5: Review -->
+    <div data-wizard-target="step" class="bg-white dark:bg-gray-800 shadow rounded-lg p-6 space-y-6 hidden">
+      <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Review & Confirm</h2>
+      <p class="text-sm text-gray-500 dark:text-gray-400">Review the information before creating the client</p>
+
+      <div data-role="review-content" class="bg-gray-50 dark:bg-gray-700 rounded-lg p-6">
+        <p class="text-sm text-gray-500 dark:text-gray-400">Summary will appear here...</p>
+      </div>
+    </div>
+
+    <!-- Navigation Buttons -->
+    <div class="flex items-center justify-between mt-6">
+      <div class="flex space-x-3">
+        <button type="button" data-wizard-target="prevButton" data-action="click->wizard#prev"
+                class="hidden px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-600">
+          Previous
+        </button>
+        <%= link_to "Cancel", admin_clients_path,
+            class: "px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-600" %>
+      </div>
+      <div>
+        <button type="button" data-wizard-target="nextButton" data-action="click->wizard#next"
+                class="px-6 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+          Next
+        </button>
+        <button type="submit" data-wizard-target="submitButton"
+                class="hidden px-6 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+          Create Client
+        </button>
+      </div>
+    </div>
+  <% end %>
+</div>

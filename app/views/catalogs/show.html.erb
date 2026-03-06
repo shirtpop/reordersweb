@@ -1,17 +1,17 @@
 <div class="container mx-auto px-4 py-8" data-controller="order-form">
-  <!-- Project Information Section -->
+  <!-- Catalog Information Section -->
   <div class="bg-white rounded-lg shadow-md p-6 mb-8">
     <div class="border-b border-gray-200 pb-4 mb-4">
-      <h1 class="text-3xl font-bold text-gray-900 mb-2"><%= @project.name %></h1>
+      <h1 class="text-3xl font-bold text-gray-900 mb-2"><%= @catalog.name %></h1>
       <div class="text-gray-600">
-        <%= @project.description %>
+        <%= @catalog.description %>
       </div>
     </div>
   </div>
 
   <!-- Order Form -->
   <%= form_with model: [@order], local: true, data: { turbo: false }, class: "space-y-8" do |form| %>
-    <%= form.hidden_field :project_id, value: @project.id %>
+    <%= form.hidden_field :catalog_id, value: @catalog.id %>
     
     <!-- Delivery Date -->
     <div class="bg-white rounded-lg shadow-md p-6">
@@ -20,13 +20,13 @@
         <%= form.label :delivery_date, class: "block text-sm font-medium text-gray-700 mb-2" %>
         <%= form.date_field :delivery_date, 
             class: "bg-pink-50 border border-pink-300 text-pink-900 text-sm rounded-lg focus:ring-pink-500 focus:border-pink-500 block p-2.5" %>
-        <%= form.hidden_field :project_id, value: @project.id %>
+        <%= form.hidden_field :catalog_id, value: @catalog.id %>
       </div>
     </div>
 
     <!-- Products Section -->
     <div class="space-y-8">
-      <% @project.products.each_with_index do |product, product_index| %>
+      <% @catalog.products.each_with_index do |product, product_index| %>
         <div class="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100 product-card" 
             data-controller="product-order" 
             data-product-id="<%= product.id %>"
@@ -234,7 +234,7 @@
     <%= form.hidden_field :total_quantity, data: { "order-form-target": "quantityField" } %>
 
     <div class="flex flex-col sm:flex-row gap-4 justify-end">
-      <%= link_to "Cancel", @project, class: "px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 text-center transition-colors duration-200" %>
+      <%= link_to "Cancel", @catalog, class: "px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 text-center transition-colors duration-200" %>
       <button type="button"
               class="submit-btn px-6 py-3 bg-pink-600 hover:bg-pink-700 text-white rounded-lg font-medium disabled:opacity-50 transition-all duration-200",
               data-order-form-target="submitBtn"
@@ -257,9 +257,9 @@
         <!-- Scrollable Content -->
         <div class="max-h-[60vh] overflow-y-auto px-6 py-4">
           
-          <!-- Project Info -->
+          <!-- Catalog Info -->
           <div class="mb-6">
-            <h4 class="font-medium text-gray-900 mb-2">Project: <%= @project.name %></h4>
+            <h4 class="font-medium text-gray-900 mb-2">Catalog: <%= @catalog.name %></h4>
             <p class="text-sm text-gray-600">Delivery Date: <span data-order-form-target="deliveryDate" class="font-medium"></span></p>
           </div>
 

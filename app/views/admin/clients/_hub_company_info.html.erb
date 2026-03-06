@@ -1,0 +1,51 @@
+<div data-controller="collapsible-section" data-collapsible-section-open-value="true">
+  <div class="bg-white dark:bg-gray-800 shadow rounded-lg">
+    <button type="button" data-action="click->collapsible-section#toggle"
+            class="w-full px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+      <h3 class="text-lg font-medium text-gray-900 dark:text-white">Company Information</h3>
+      <svg data-collapsible-section-target="icon" class="w-5 h-5 text-gray-500 transition-transform duration-200 rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+      </svg>
+    </button>
+    <div data-collapsible-section-target="content" class="p-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Company Name</label>
+          <p class="text-sm text-gray-900 dark:text-white bg-gray-50 dark:bg-gray-700 px-3 py-2 rounded-md border border-gray-200 dark:border-gray-600">
+            <%= client.company_name %>
+          </p>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Personal Name</label>
+          <p class="text-sm text-gray-900 dark:text-white bg-gray-50 dark:bg-gray-700 px-3 py-2 rounded-md border border-gray-200 dark:border-gray-600">
+            <%= client.personal_name %>
+          </p>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Phone Number</label>
+          <p class="text-sm text-gray-900 dark:text-white bg-gray-50 dark:bg-gray-700 px-3 py-2 rounded-md border border-gray-200 dark:border-gray-600">
+            <%= client.phone_number %>
+          </p>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Company URL</label>
+          <p class="text-sm text-gray-900 dark:text-white bg-gray-50 dark:bg-gray-700 px-3 py-2 rounded-md border border-gray-200 dark:border-gray-600">
+            <%= client.company_url.present? ? link_to(client.company_url, client.company_url, target: "_blank", class: "text-blue-600 hover:underline") : "N/A" %>
+          </p>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Created</label>
+          <p class="text-sm text-gray-900 dark:text-white bg-gray-50 dark:bg-gray-700 px-3 py-2 rounded-md border border-gray-200 dark:border-gray-600">
+            <%= client.created_at.strftime("%B %d, %Y at %I:%M %p") %>
+          </p>
+        </div>
+      </div>
+
+      <!-- Image Uploader -->
+      <div class="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+        <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Client Images</h4>
+        <%= render 'shared/image_uploader', attachable: client %>
+      </div>
+    </div>
+  </div>
+</div>

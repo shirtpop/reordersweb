@@ -24,7 +24,7 @@ RSpec.describe Orders::Receiver do
       let(:order) { create(:order) }
       let(:client) { order.client }
       let(:user) { client.users.first }
-      let(:product) { order.project.products.first }
+      let(:product) { order.catalog.products.first }
       it 'marks order as received' do
         described_class.call!(order: order, user: user)
 

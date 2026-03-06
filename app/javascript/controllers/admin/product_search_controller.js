@@ -3,7 +3,7 @@ import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
   static targets = ["searchInput", "resultsDropdown", "resultsList", "selectedProducts", "emptyState", "hiddenInput"]
-  static values = { url: String }
+  static values = { url: String, inputName: { type: String, default: "product_ids[]" } }
 
   connect() {
     this.selectedProductIds = new Set()
@@ -123,13 +123,13 @@ export default class extends Controller {
   addProductToList(product) {
     const productElement = document.createElement('div')
     productElement.className = 'flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600'
-    productElement.dataset.productId = product.id
+    productElement.dataset.productRow = product.id
     productElement.innerHTML = `
       <div class="flex-1">
         <h4 class="font-medium text-gray-900 dark:text-white">${this.escapeHtml(product.name)}</h4>
         ${product.color_names ? `<p class="text-sm text-gray-500 dark:text-gray-400">Colors: ${this.escapeHtml(product.color_names)}</p>` : ''}
       </div>
-      <button type="button" 
+      <button type="button"
               class="ml-4 text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
               data-action="click->product-search#removeProduct"
               data-product-id="${product.id}">
@@ -137,7 +137,7 @@ export default class extends Controller {
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
         </svg>
       </button>
-      <input type="hidden" name="project[product_ids][]" value="${product.id}" data-product-search-target="hiddenInput">
+      <input type="hidden" name="${this.inputNameValue}" value="${product.id}" data-product-search-target="hiddenInput">
     `
 
     this.selectedProductsTarget.appendChild(productElement)
@@ -145,8 +145,8 @@ export default class extends Controller {
 
   removeProduct(event) {
     const productId = parseInt(event.currentTarget.dataset.productId)
-    const productElement = event.currentTarget.closest('[data-product-id]')
-    
+    const productElement = event.currentTarget.closest('[data-product-row]')
+
     this.selectedProductIds.delete(productId)
     productElement.remove()
     this.updateEmptyState()
@@ -178,7 +178,8 @@ export default class extends Controller {
   }
 
   updateEmptyState() {
-    const hasProducts = this.selectedProductsTarget.children.length > 0
+    if (!this.hasEmptyStateTarget) return
+    const hasProducts = this.selectedProductsTarget.querySelectorAll('[data-product-row]').length > 0
     if (hasProducts) {
       this.emptyStateTarget.classList.add('hidden')
     } else {

@@ -31,7 +31,7 @@ module Orders
 
     def find_or_create_cart
       @client.orders.in_cart.find_or_initialize_by(
-        project_id: @original_order.project_id,
+        catalog_id: @original_order.catalog_id,
         ordered_by: @user
       )
     end

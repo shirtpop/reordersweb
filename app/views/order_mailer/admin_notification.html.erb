@@ -28,7 +28,7 @@
       <p><strong>Client Company:</strong> <%= @order.client.company_name %></p>
       <p><strong>Contact Person:</strong> <%= @order.client.personal_name %></p>
       <p><strong>Ordered by:</strong> <%= @order.ordered_by&.email || "Unknown User" %></p>
-      <p><strong>Project Reference:</strong> <%= @order.project&.name || 'Not specified' %></p>
+      <p><strong>Catalog Reference:</strong> <%= @order.catalog&.name || 'Not specified' %></p>
       <p><strong>Order Date:</strong> <%= @order.created_at.strftime("%B %d, %Y at %H:%M") %></p>
       <p><strong>Delivery Date:</strong> <%= @order.delivery_date ? @order.delivery_date.strftime("%B %d, %Y") : 'Not specified' %></p>
       <p><strong>Total Quantity:</strong> <%= number_with_delimiter(@order.total_quantity) %> units</p>

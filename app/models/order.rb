@@ -1,6 +1,6 @@
 class Order < ApplicationRecord
   belongs_to :client
-  belongs_to :project, optional: true
+  belongs_to :catalog, optional: true
   belongs_to :ordered_by, class_name: "User", optional: true
   belongs_to :shipped_to, class_name: "Address", optional: true
 
@@ -18,12 +18,17 @@ class Order < ApplicationRecord
   # Scopes for filtering orders
   scope :submitted, -> { where.not(status: "cart") }  # Exclude cart/draft orders
   scope :in_cart, -> { status_cart }
+  scope :pending_receipt, -> {
+    where.not(status: %w[cart received cancelled])
+      .where(received_at: nil)
+      .where("delivery_date < ?", Date.current)
+  }
 
   scope :search_by_keyword, ->(keyword) {
-    joins(:client, :project, order_items: :product)
+    joins(:client, :catalog, order_items: :product)
       .where("clients.company_name ILIKE :keyword OR
               clients.personal_name ILIKE :keyword OR
-              projects.name ILIKE :keyword OR
+              catalogs.name ILIKE :keyword OR
               products.name ILIKE :keyword", keyword: "%#{keyword}%")
   }
 

@@ -8,7 +8,7 @@ module Products
 
     def call!
       ActiveRecord::Base.transaction do
-        ProductsProject.where(product_id: @product.id).delete_all
+        CatalogsProduct.where(product_id: @product.id).delete_all
 
         begin
           @product.destroy!

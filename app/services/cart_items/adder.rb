@@ -25,7 +25,7 @@ module CartItems
 
     def find_or_create_cart
       @cart = @client.orders.in_cart.find_or_initialize_by(
-        project_id: @catalog.id,
+        catalog_id: @catalog.id,
         ordered_by: @user
       )
       # Reload order_items for existing carts to ensure we have the latest data

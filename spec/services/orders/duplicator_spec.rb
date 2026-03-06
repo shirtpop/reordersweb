@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe Orders::Duplicator do
   let(:client) { create(:client) }
-  let(:project) { create(:project, client: client) }
+  let(:catalog) { create(:catalog, client: client) }
   let(:user) { create(:user, client: client, role: :client) }
 
   let(:product1) { create(:product, base_price: 100) }
@@ -10,7 +10,7 @@ RSpec.describe Orders::Duplicator do
   let(:product3) { create(:product, base_price: 75) }
 
   let!(:original_order) do
-    build(:order, client: client, project: project, status: :submitted).tap do |order|
+    build(:order, client: client, catalog: catalog, status: :submitted).tap do |order|
       order.order_items = [
         build(:order_item, order: nil, product: product1, color: "Red", size: "M", quantity: 5),
         build(:order_item, order: nil, product: product2, color: "Blue", size: "L", quantity: 3),
@@ -31,7 +31,7 @@ RSpec.describe Orders::Duplicator do
         expect(cart).to be_persisted
         expect(cart.status).to eq("cart")
         expect(cart.client).to eq(client)
-        expect(cart.project).to eq(project)
+        expect(cart.catalog).to eq(catalog)
         expect(cart.ordered_by).to eq(user)
       end
 
@@ -65,7 +65,7 @@ RSpec.describe Orders::Duplicator do
 
     context "when cart already exists for the same project" do
       let!(:existing_cart) do
-        build(:order, client: client, project: project, status: :cart, ordered_by: user).tap do |order|
+        build(:order, client: client, catalog: catalog, status: :cart, ordered_by: user).tap do |order|
           order.order_items = [
             build(:order_item, order: nil, product: product1, color: "Black", size: "XL", quantity: 1)
           ]
@@ -111,7 +111,7 @@ RSpec.describe Orders::Duplicator do
 
     context "when original order has no items" do
       let!(:empty_order) do
-        build(:order, client: client, project: project, status: :submitted).tap do |order|
+        build(:order, client: client, catalog: catalog, status: :submitted).tap do |order|
           order.order_items = []
           order.save!(validate: false)
           order.reload

@@ -1,4 +1,4 @@
-class Project < ApplicationRecord
+class Catalog < ApplicationRecord
   enum :status, {
     draft: "draft",
     active: "active",
@@ -16,8 +16,8 @@ class Project < ApplicationRecord
   belongs_to :client
 
   has_many :orders, dependent: :destroy
-  has_many :products_projects, dependent: :delete_all
-  has_many :products, through: :products_projects
+  has_many :catalogs_products, dependent: :delete_all
+  has_many :products, through: :catalogs_products
 
   validates :name, presence: true
 

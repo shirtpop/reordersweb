@@ -3,7 +3,7 @@ class OrdersController < BaseController
   def index
     # Only show submitted orders (exclude cart/draft orders)
     @pagy, @orders = pagy(current_client.orders.submitted
-                                       .includes(:project, order_items: :product)
+                                       .includes(:catalog, order_items: :product)
                                        .order(id: :desc))
   end
 
@@ -16,7 +16,7 @@ class OrdersController < BaseController
     if creator.success?
       redirect_to @order, notice: "Order was successfully created."
     else
-      redirect_to project_path(@order.project_id), alert: @order.errors.full_messages.to_sentence
+      redirect_to catalog_path(@order.catalog_id), alert: @order.errors.full_messages.to_sentence
     end
   end
 
@@ -42,7 +42,7 @@ class OrdersController < BaseController
   private
 
   def order_params
-    params.require(:order).permit(:delivery_date, :project_id, :total_price, :total_quantity,
+    params.require(:order).permit(:delivery_date, :catalog_id, :total_price, :total_quantity,
                                   order_items_attributes: [ :id, :product_id, :quantity, :color, :size, :_destroy ])
                           .reverse_merge(ordered_by: current_user)
   end

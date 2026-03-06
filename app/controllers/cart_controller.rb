@@ -3,7 +3,7 @@ class CartController < BaseController
     # Get all cart orders for the current user (there may be multiple, one per catalog)
     @carts = current_client.orders.in_cart
                           .where(ordered_by: current_user)
-                          .includes(order_items: { product: :drive_files }, project: :client)
+                          .includes(order_items: { product: :drive_files }, catalog: :client)
 
     # For now, we'll work with a single cart (first one) or create empty
     # In the future, we could support multiple carts from different catalogs

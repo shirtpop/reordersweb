@@ -7,7 +7,12 @@ module Admin
       @pagy, @clients = pagy(scope)
     end
 
-    def show; end
+    def show
+      @assigned_products = @client.assigned_products
+      @catalogs = @client.catalogs.includes(:products).order(created_at: :desc)
+      @recent_orders = @client.orders.includes(:catalog).order(created_at: :desc).limit(10)
+      @recent_client_products = @client.client_products.order(created_at: :desc).limit(5)
+    end
 
     def new
       @client = Client.new
@@ -16,14 +21,30 @@ module Admin
       @client.users.build
     end
 
+    def new_wizard
+      @client = Client.new
+      @client.build_address
+      @client.build_shipping_address
+    end
+
     def create
-      creator = Clients::Creator.new(client_params:, same_as_main: params[:same_as_main] == "1" || params[:same_as_main] == "true")
+      creator = Clients::Creator.new(
+        client_params:,
+        same_as_main: params[:same_as_main] == "1" || params[:same_as_main] == "true",
+        catalog_name: params[:catalog_name],
+        catalog_status: params[:catalog_status],
+        product_ids: params[:product_ids]
+      )
       @client = creator.call!
 
       if creator.success?
-        redirect_to admin_clients_path, notice: "Client was successfully created."
+        redirect_to admin_client_path(@client), notice: "Client was successfully created."
       else
-        render :new
+        if params[:catalog_name].present?
+          render :new_wizard
+        else
+          render :new
+        end
       end
     end
 
@@ -55,7 +76,7 @@ module Admin
     private
 
     def set_client
-      @client = Client.find(params[:id])
+      @client = Client.includes(:address, :shipping_address, :users).find(params[:id])
     end
 
     def client_params

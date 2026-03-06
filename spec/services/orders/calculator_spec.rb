@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe Orders::Calculator do
   let(:client) { create(:client) }
-  let(:project) { create(:project, client: client) }
+  let(:catalog) { create(:catalog, client: client) }
 
   # Product with base price only
   let(:simple_product) do
@@ -34,7 +34,7 @@ RSpec.describe Orders::Calculator do
 
   # Create order without default items (we'll add them in each test)
   let(:order) do
-    build(:order, client: client, project: project, status: :cart).tap do |o|
+    build(:order, client: client, catalog: catalog, status: :cart).tap do |o|
       o.order_items = []  # Clear default items from factory
       o.save!(validate: false)  # Skip validation that requires order_items
     end

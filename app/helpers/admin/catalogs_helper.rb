@@ -1,4 +1,4 @@
-module Admin::ProjectsHelper
+module Admin::CatalogsHelper
   def status_badge_class(status)
     case status.to_s
     when "draft"

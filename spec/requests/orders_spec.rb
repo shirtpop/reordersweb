@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe "Orders", type: :request do
   let(:client) { create(:client) }
-  let(:project) { create(:project, client: client) }
+  let(:catalog) { create(:catalog, client: client) }
   let(:user) { create(:user, client: client, role: :client) }
 
   before do
@@ -14,7 +14,7 @@ RSpec.describe "Orders", type: :request do
     let(:product2) { create(:product, base_price: 50) }
 
     let(:original_order) do
-      create(:order, client: client, project: project, status: :submitted).tap do |order|
+      create(:order, client: client, catalog: catalog, status: :submitted).tap do |order|
         order.order_items.destroy_all
         create(:order_item, order: order, product: product1, color: "Red", size: "M", quantity: 5)
         create(:order_item, order: order, product: product2, color: "Blue", size: "L", quantity: 3)
@@ -24,7 +24,7 @@ RSpec.describe "Orders", type: :request do
     context "when user is authenticated and order belongs to their client" do
       it "calls Orders::Duplicator with correct params" do
         duplicator = instance_double(Orders::Duplicator)
-        cart = create(:order, client: client, project: project, status: :cart, ordered_by: user)
+        cart = create(:order, client: client, catalog: catalog, status: :cart, ordered_by: user)
 
         expect(Orders::Duplicator).to receive(:new)
           .with(order: original_order, user: user)
@@ -44,7 +44,7 @@ RSpec.describe "Orders", type: :request do
 
         cart = Order.in_cart.last
         expect(cart.client).to eq(client)
-        expect(cart.project).to eq(project)
+        expect(cart.catalog).to eq(catalog)
         expect(cart.ordered_by).to eq(user)
         expect(cart.order_items.count).to eq(2)
       end
@@ -95,7 +95,7 @@ RSpec.describe "Orders", type: :request do
 
     context "when original order has no items" do
       let(:empty_order) do
-        create(:order, client: client, project: project, status: :submitted).tap do |order|
+        create(:order, client: client, catalog: catalog, status: :submitted).tap do |order|
           order.order_items.destroy_all
         end
       end
@@ -124,9 +124,9 @@ RSpec.describe "Orders", type: :request do
 
     context "when order doesn't belong to user's client" do
       let(:other_client) { create(:client) }
-      let(:other_project) { create(:project, client: other_client) }
+      let(:other_catalog) { create(:catalog, client: other_client) }
       let(:other_order) do
-        create(:order, client: other_client, project: other_project, status: :submitted)
+        create(:order, client: other_client, catalog: other_catalog, status: :submitted)
       end
 
       it "raises ActiveRecord::RecordNotFound" do
@@ -150,7 +150,7 @@ RSpec.describe "Orders", type: :request do
 
     context "when trying to duplicate a cart order" do
       let(:cart_order) do
-        create(:order, client: client, project: project, status: :cart, ordered_by: user)
+        create(:order, client: client, catalog: catalog, status: :cart, ordered_by: user)
       end
 
       it "raises ActiveRecord::RecordNotFound (cart orders are excluded by set_order)" do

@@ -1,0 +1,49 @@
+<div data-controller="collapsible-section" data-collapsible-section-open-value="true" class="col-span-2">
+  <div class="bg-white dark:bg-gray-800 shadow rounded-lg">
+    <button type="button" data-action="click->collapsible-section#toggle"
+            class="w-full px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+      <h3 class="text-lg font-medium text-gray-900 dark:text-white">Addresses</h3>
+      <svg data-collapsible-section-target="icon" class="w-5 h-5 text-gray-500 transition-transform duration-200 rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+      </svg>
+    </button>
+    <div data-collapsible-section-target="content" class="p-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Billing Address -->
+        <div>
+          <h4 class="text-sm font-semibold text-gray-900 dark:text-white mb-3">Billing Address</h4>
+          <% if client.address %>
+            <div class="bg-gray-50 dark:bg-gray-700 rounded-md p-4 border border-gray-200 dark:border-gray-600 space-y-1">
+              <p class="text-sm text-gray-900 dark:text-white whitespace-pre-line"><%= client.address.street %></p>
+              <p class="text-sm text-gray-900 dark:text-white"><%= client.address.city %>, <%= client.address.state %> <%= client.address.zip_code %></p>
+            </div>
+          <% else %>
+            <p class="text-sm text-gray-500 dark:text-gray-400">No billing address set</p>
+          <% end %>
+        </div>
+
+        <!-- Shipping Address -->
+        <div>
+          <h4 class="text-sm font-semibold text-gray-900 dark:text-white mb-3">Shipping Address</h4>
+          <% if client.shipping_address %>
+            <% same_address = client.address && client.shipping_address.id == client.address.id %>
+            <% if same_address %>
+              <div class="flex items-center mb-2">
+                <svg class="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                </svg>
+                <span class="ml-2 text-xs text-gray-500 dark:text-gray-400">Same as billing address</span>
+              </div>
+            <% end %>
+            <div class="bg-gray-50 dark:bg-gray-700 rounded-md p-4 border border-gray-200 dark:border-gray-600 space-y-1">
+              <p class="text-sm text-gray-900 dark:text-white whitespace-pre-line"><%= client.shipping_address.street %></p>
+              <p class="text-sm text-gray-900 dark:text-white"><%= client.shipping_address.city %>, <%= client.shipping_address.state %> <%= client.shipping_address.zip_code %></p>
+            </div>
+          <% else %>
+            <p class="text-sm text-gray-500 dark:text-gray-400">No shipping address set</p>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

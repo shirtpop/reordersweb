@@ -12,7 +12,7 @@ Rails.application.routes.draw do
   # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
 
   # Defines the root path route ("/")
-  # Updated to use new storefront instead of old projects list
+  # Updated to use new storefront instead of old catalogs list
   root "storefront#index"
 
   # Storefront routes (new customer-facing e-commerce experience)
@@ -36,6 +36,11 @@ Rails.application.routes.draw do
     root to: "dashboard#index", as: :root
     resources :clients do
       resources :products, only: [ :index, :show ], controller: "client_products"
+      resource :product_assignments, only: [ :show ], controller: "client_product_assignments"
+      resources :catalogs, only: [ :create, :update, :destroy ], controller: "client_catalogs" do
+        resource :products, only: [ :update ], controller: "catalog_products", as: :catalog_products
+      end
+      get :new_wizard, on: :collection
     end
     resources :users
     resources :orders, only: [ :index, :show ]
@@ -44,7 +49,7 @@ Rails.application.routes.draw do
         post :duplicate
       end
     end
-    resources :projects
+    resources :catalogs
   end
 
   resources :inventories, only: [ :index ] do
@@ -77,7 +82,7 @@ Rails.application.routes.draw do
       post :duplicate
     end
   end
-  resources :projects, only: [ :index, :show ]
+  resources :catalogs, only: [ :index, :show ]
   resources :checkouts, only: [ :index, :show, :new, :create ]
 
   post "drive_files/:attachable_type/:attachable_id", to: "admin/drive_files#create", as: :drive_files

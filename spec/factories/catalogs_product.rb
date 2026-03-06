@@ -1,6 +1,6 @@
 FactoryBot.define do
-  factory :products_project do
-    association :project
+  factory :catalogs_product do
+    association :catalog
     association :product
   end
 end

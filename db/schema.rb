@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_02_28_111532) do
+ActiveRecord::Schema[8.0].define(version: 2026_03_05_160243) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -59,6 +59,21 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_28_111532) do
     t.string "zip_code"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "catalogs", force: :cascade do |t|
+    t.bigint "client_id", null: false
+    t.string "name", null: false
+    t.string "status", limit: 10, default: "draft", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["client_id"], name: "index_catalogs_on_client_id"
+  end
+
+  create_table "catalogs_products", id: false, force: :cascade do |t|
+    t.bigint "catalog_id", null: false
+    t.bigint "product_id", null: false
+    t.index ["catalog_id", "product_id"], name: "index_catalogs_products_on_catalog_id_and_product_id", unique: true
   end
 
   create_table "client_checkouts", force: :cascade do |t|
@@ -165,7 +180,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_28_111532) do
 
   create_table "orders", force: :cascade do |t|
     t.bigint "client_id"
-    t.bigint "project_id"
+    t.bigint "catalog_id"
     t.date "delivery_date"
     t.decimal "price", precision: 10, scale: 2, default: "0.0"
     t.integer "total_quantity", default: 0
@@ -176,9 +191,9 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_28_111532) do
     t.datetime "received_at"
     t.bigint "received_by_id"
     t.string "status", default: "cart", null: false
+    t.index ["catalog_id"], name: "index_orders_on_catalog_id"
     t.index ["client_id"], name: "index_orders_on_client_id"
     t.index ["ordered_by_id"], name: "index_orders_on_ordered_by_id"
-    t.index ["project_id"], name: "index_orders_on_project_id"
     t.index ["received_by_id"], name: "index_orders_on_received_by_id"
     t.index ["shipped_to_id"], name: "index_orders_on_shipped_to_id"
     t.index ["status"], name: "index_orders_on_status"
@@ -192,21 +207,6 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_28_111532) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["name"], name: "index_products_on_name"
-  end
-
-  create_table "products_projects", id: false, force: :cascade do |t|
-    t.bigint "project_id", null: false
-    t.bigint "product_id", null: false
-    t.index ["project_id", "product_id"], name: "index_products_projects_on_project_id_and_product_id", unique: true
-  end
-
-  create_table "projects", force: :cascade do |t|
-    t.bigint "client_id", null: false
-    t.string "name", null: false
-    t.string "status", limit: 10, default: "draft", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["client_id"], name: "index_projects_on_client_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -232,6 +232,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_28_111532) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "catalogs", "clients"
   add_foreign_key "client_checkouts", "clients"
   add_foreign_key "client_checkouts", "users"
   add_foreign_key "client_inventories", "client_product_variants"
@@ -248,10 +249,9 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_28_111532) do
   add_foreign_key "order_items", "orders"
   add_foreign_key "order_items", "products"
   add_foreign_key "orders", "addresses", column: "shipped_to_id"
+  add_foreign_key "orders", "catalogs"
   add_foreign_key "orders", "clients"
-  add_foreign_key "orders", "projects"
   add_foreign_key "orders", "users", column: "ordered_by_id"
   add_foreign_key "orders", "users", column: "received_by_id"
-  add_foreign_key "projects", "clients"
   add_foreign_key "users", "clients"
 end

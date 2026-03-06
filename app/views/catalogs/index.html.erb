@@ -3,39 +3,39 @@
   <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
     <div class="flex items-center justify-between">
       <div>
-        <h1 class="text-3xl font-bold text-gray-900">Projects</h1>
-        <p class="mt-2 text-gray-600">Manage your t-shirt design projects</p>
+        <h1 class="text-3xl font-bold text-gray-900">Catalogs</h1>
+        <p class="mt-2 text-gray-600">Manage your t-shirt design catalogs</p>
       </div>
       <div>
         <span class="bg-pink-100 text-pink-800 text-sm font-medium px-3 py-1 rounded-full">
-          <%= pluralize(@projects.count, 'project') %>
+          <%= pluralize(@catalogs.count, 'catalog') %>
         </span>
       </div>
     </div>
   </div>
 
-  <!-- Projects Grid -->
-  <% if @projects.any? %>
+  <!-- Catalogs Grid -->
+  <% if @catalogs.any? %>
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      <% @projects.each do |project| %>
+      <% @catalogs.each do |catalog| %>
         <div class="max-w-sm bg-white border border-gray-200 rounded-lg shadow hover:shadow-lg transition-shadow duration-300">
           <!-- Card Header -->
           <div class="p-6 pb-4">
             <div class="flex items-start justify-between mb-4">
               <h5 class="text-xl font-bold tracking-tight text-gray-900 line-clamp-2">
-                <%= project.name %>
+                <%= catalog.name %>
               </h5>
               <div class="flex-shrink-0 ml-2">
                 <span class="bg-gray-100 text-gray-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
-                  <%= pluralize(project.products.count, 'product') %>
+                  <%= pluralize(catalog.products.count, 'product') %>
                 </span>
               </div>
             </div>
             
             <!-- Description -->
             <div class="text-gray-700 text-sm mb-4 line-clamp-3">
-              <% if project.description.present? %>
-                <%= truncate(strip_tags(project.description.to_s), length: 120) %>
+              <% if catalog.description.present? %>
+                <%= truncate(strip_tags(catalog.description.to_s), length: 120) %>
               <% else %>
                 <span class="text-gray-400 italic">No description available</span>
               <% end %>
@@ -50,13 +50,13 @@
                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.5 8H4m0-2v13a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1V9a1 1 0 0 0-1-1h-5.032a1 1 0 0 1-.768-.36l-1.9-2.28a1 1 0 0 0-.768-.36H5a1 1 0 0 0-1 1Z"/>
               </svg>
               <span class="text-sm font-medium text-gray-900">
-                <%= project.products.count %> 
-                <%= project.products.count == 1 ? 'Product' : 'Products' %>
+                <%= catalog.products.count %> 
+                <%= catalog.products.count == 1 ? 'Product' : 'Products' %>
               </span>
             </div>
             
             <!-- CTA Button -->
-            <%= link_to project_path(project), 
+            <%= link_to catalog_path(catalog), 
                         class: "inline-flex items-center w-full justify-center px-4 py-2 text-sm font-medium text-center text-white bg-pink-700 rounded-lg hover:bg-pink-800 focus:ring-4 focus:outline-none focus:ring-pink-300 transition-colors duration-200" do %>
               View Details
               <svg class="rtl:rotate-180 w-3.5 h-3.5 ms-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
@@ -74,8 +74,8 @@
         <svg class="mx-auto h-12 w-12 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
         </svg>
-        <h3 class="text-lg font-medium text-gray-900 mb-2">No projects available</h3>
-        <p class="text-gray-500">Your projects will appear here when they are assigned to you.</p>
+        <h3 class="text-lg font-medium text-gray-900 mb-2">No catalogs available</h3>
+        <p class="text-gray-500">Your catalogs will appear here when they are assigned to you.</p>
       </div>
     </div>
   <% end %>

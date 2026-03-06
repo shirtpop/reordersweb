@@ -1,6 +1,6 @@
 class StorefrontController < BaseController
   def index
-    @catalogs = current_client.projects.active.includes(:products)
+    @catalogs = current_client.catalogs.active.includes(:products)
 
     # Handle empty state - no catalogs assigned
     return if @catalogs.empty?
@@ -17,7 +17,7 @@ class StorefrontController < BaseController
 
     # Get or create cart (draft order) for this catalog
     @cart = current_client.orders.in_cart.find_or_initialize_by(
-      project_id: @selected_catalog.id,
+      catalog_id: @selected_catalog.id,
       ordered_by: current_user
     )
   end

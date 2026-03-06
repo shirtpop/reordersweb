@@ -5,8 +5,8 @@ RSpec.describe CartItems::Adder do
   let(:user) { create(:user) }
   let(:product) { create(:product) }
   let(:catalog) do
-    create(:project, client: client, status: 'active').tap do |proj|
-      create(:products_project, project: proj, product: product)
+    create(:catalog, client: client, status: 'active').tap do |proj|
+      create(:catalogs_product, catalog: proj, product: product)
     end
   end
 
@@ -37,7 +37,7 @@ RSpec.describe CartItems::Adder do
 
       it 'associates cart with the catalog' do
         cart = service.call
-        expect(cart.project).to eq(catalog)
+        expect(cart.catalog).to eq(catalog)
       end
 
       it 'associates cart with the user' do
@@ -55,7 +55,7 @@ RSpec.describe CartItems::Adder do
       let!(:existing_cart) do
         create(:order,
           client: client,
-          project: catalog,
+          catalog: catalog,
           ordered_by: user,
           status: 'cart'
         ).tap { |o| o.order_items.destroy_all } # Clear default items
@@ -119,7 +119,7 @@ RSpec.describe CartItems::Adder do
       let!(:existing_cart) do
         create(:order,
           client: client,
-          project: catalog,
+          catalog: catalog,
           ordered_by: user,
           status: 'cart'
         ).tap { |o| o.order_items.destroy_all }
@@ -219,7 +219,7 @@ RSpec.describe CartItems::Adder do
         # Create existing cart with existing item to trigger item.save! code path
         existing_cart = create(:order,
           client: client,
-          project: catalog,
+          catalog: catalog,
           ordered_by: user,
           status: 'cart'
         ).tap { |o| o.order_items.destroy_all }
