@@ -37,11 +37,10 @@ module CartItems
 
       @items_params.each do |_key, item_params|
         # Handle both string and symbol keys
-        params = item_params.with_indifferent_access
-        quantity = params[:quantity].to_i
+        quantity = item_params[:quantity].to_i
         next if quantity <= 0
 
-        add_or_update_item(params, quantity)
+        add_or_update_item(item_params, quantity)
       end
     end
 
