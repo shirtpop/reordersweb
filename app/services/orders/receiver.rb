@@ -101,6 +101,7 @@ module Orders
 
     def mark_order_as_received!
       order.update!(
+        status: :received,
         received_at: Time.current,
         received_by_id: user.id
       )

@@ -8,5 +8,13 @@ module Admin
     def show
       @order = Order.find(params[:id])
     end
+
+    def mark_as_processing
+      @order = Order.find(params[:id])
+      @order.status_processing!
+      redirect_to admin_order_path(@order), notice: "Order marked as processing."
+    rescue ActiveRecord::RecordInvalid => e
+      redirect_to admin_order_path(@order), alert: "Failed to update order: #{e.message}"
+    end
   end
 end
