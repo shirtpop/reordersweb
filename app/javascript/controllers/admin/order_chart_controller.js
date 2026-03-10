@@ -4,7 +4,7 @@ export default class extends Controller {
   static targets = ["chart"]
   static values = {
     data: Object,
-    range: { type: Number, default: 30 }
+    range: { type: Number, default: 7 }
   }
 
   connect() {

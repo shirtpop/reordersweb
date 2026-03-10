@@ -7,16 +7,16 @@ module Admin
       @week_start = @today.beginning_of_week
       @last_week_start = @week_start - 1.week
       @last_week_end = @week_start - 1.day
-      @thirty_days_ago = @today - 30.days
+      @seven_days_ago = @today - 7.days
 
-      # Daily trend data for chart (last 30 days)
-      @daily_order_counts = calculate_daily_order_counts(@thirty_days_ago, @today)
+      # Daily trend data for chart (default: last 7 days)
+      @daily_order_counts = calculate_daily_order_counts(@seven_days_ago, @today)
 
       # Comparison metrics
-      @orders_today = submitted_orders.where(created_at: @today.beginning_of_day..@today.end_of_day).count
-      @orders_yesterday = submitted_orders.where(created_at: @yesterday.beginning_of_day..@yesterday.end_of_day).count
-      @orders_this_week = submitted_orders.where(created_at: @week_start.beginning_of_day..@today.end_of_day).count
-      @orders_last_week = submitted_orders.where(created_at: @last_week_start.beginning_of_day..@last_week_end.end_of_day).count
+      @orders_today = submitted_orders.where(submitted_at: @today.beginning_of_day..@today.end_of_day).count
+      @orders_yesterday = submitted_orders.where(submitted_at: @yesterday.beginning_of_day..@yesterday.end_of_day).count
+      @orders_this_week = submitted_orders.where(submitted_at: @week_start.beginning_of_day..@today.end_of_day).count
+      @orders_last_week = submitted_orders.where(submitted_at: @last_week_start.beginning_of_day..@last_week_end.end_of_day).count
 
       # Status-based metrics
       @orders_by_status = calculate_orders_by_status
@@ -25,7 +25,7 @@ module Admin
       # Recent orders (expanded to 12)
       @recent_orders = Order.where.not(status: "cart")
                             .includes(:client, :catalog)
-                            .order(created_at: :desc)
+                            .order(submitted_at: :desc)
                             .limit(12)
 
       # Keep existing pending receipt alert
@@ -55,8 +55,8 @@ module Admin
 
     def calculate_daily_order_counts(start_date, end_date)
       counts = submitted_orders
-        .where(created_at: start_date.beginning_of_day..end_date.end_of_day)
-        .group("DATE(created_at)")
+        .where(submitted_at: start_date.beginning_of_day..end_date.end_of_day)
+        .group("DATE(submitted_at)")
         .count
 
       # Fill in missing dates with 0

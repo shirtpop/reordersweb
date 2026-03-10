@@ -39,6 +39,7 @@ class Order < ApplicationRecord
   accepts_nested_attributes_for :order_items, allow_destroy: true
 
   before_create :set_shipped_address
+  before_save :set_submitted_at
   # Only send notifications for submitted orders, not cart/draft orders
   after_commit :send_notifications, on: :create, if: -> { status_submitted? || status_received? }
 
@@ -59,5 +60,12 @@ class Order < ApplicationRecord
 
   def set_shipped_address
     self.shipped_to_id = client&.shipping_address_id
+  end
+
+  def set_submitted_at
+    # Set submitted_at when order transitions from cart to submitted status
+    if status_changed? && !status_cart? && status_was == "cart" && submitted_at.nil?
+      self.submitted_at = Time.current
+    end
   end
 end

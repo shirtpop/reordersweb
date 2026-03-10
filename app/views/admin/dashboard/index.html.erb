@@ -56,7 +56,9 @@
 
   <!-- Order Trend Chart -->
   <div class="w-full p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700"
-       data-controller="order-chart">
+       data-controller="order-chart"
+       data-order-chart-data-value="<%= @daily_order_counts.to_json %>"
+       data-order-chart-range-value="7">
     <div class="mb-4 flex items-center justify-between">
       <div>
         <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Order Volume Trend</h3>
@@ -68,15 +70,15 @@
         <button data-action="click->order-chart#changeRange"
                 data-range="7"
                 class="px-3 py-1.5 text-xs font-medium rounded-lg border transition-colors
-                       text-gray-700 bg-white border-gray-300 hover:bg-gray-50
-                       dark:text-gray-300 dark:bg-gray-700 dark:border-gray-600 dark:hover:bg-gray-600">
+                       text-white bg-blue-600 border-blue-600
+                       dark:bg-blue-500 dark:border-blue-500">
           7D
         </button>
         <button data-action="click->order-chart#changeRange"
                 data-range="30"
                 class="px-3 py-1.5 text-xs font-medium rounded-lg border transition-colors
-                       text-white bg-blue-600 border-blue-600
-                       dark:bg-blue-500 dark:border-blue-500">
+                       text-gray-700 bg-white border-gray-300 hover:bg-gray-50
+                       dark:text-gray-300 dark:bg-gray-700 dark:border-gray-600 dark:hover:bg-gray-600">
           30D
         </button>
         <button data-action="click->order-chart#changeRange"
@@ -104,8 +106,6 @@
     </div>
 
     <div data-order-chart-target="chart"
-         data-order-chart-data-value="<%= @daily_order_counts.to_json %>"
-         data-order-chart-range-value="30"
          class="w-full h-[300px]">
     </div>
   </div>
