@@ -1,0 +1,60 @@
+<div class="w-full p-4 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+  <div class="mb-4 flex items-center justify-between">
+    <div>
+      <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Recent Orders</h3>
+      <p class="text-sm text-gray-500 dark:text-gray-400">Latest 12 submitted orders</p>
+    </div>
+    <%= link_to "View all →", admin_orders_path, class: "text-sm font-medium text-blue-600 hover:underline dark:text-blue-400" %>
+  </div>
+
+  <div class="overflow-x-auto">
+    <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+      <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+        <tr>
+          <th scope="col" class="px-4 py-3">Order #</th>
+          <th scope="col" class="px-4 py-3">Client</th>
+          <th scope="col" class="px-4 py-3">Catalog</th>
+          <th scope="col" class="px-4 py-3">Status</th>
+          <th scope="col" class="px-4 py-3">Date</th>
+          <th scope="col" class="px-4 py-3">
+            <span class="sr-only">Actions</span>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if recent_orders.any? %>
+          <% recent_orders.each do |order| %>
+            <tr class="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700">
+              <td class="px-4 py-3 font-medium text-gray-900 dark:text-white">
+                <%= link_to "##{order.id}", admin_order_path(order), class: "text-blue-600 hover:underline dark:text-blue-400" %>
+              </td>
+              <td class="px-4 py-3">
+                <%= order.client.company_name %>
+              </td>
+              <td class="px-4 py-3">
+                <%= order.catalog&.name || "N/A" %>
+              </td>
+              <td class="px-4 py-3">
+                <span class="px-2 py-1 text-xs font-medium rounded-full <%= status_badge_class(order.status) %>">
+                  <%= order.status.titleize %>
+                </span>
+              </td>
+              <td class="px-4 py-3 text-gray-500 dark:text-gray-400">
+                <%= time_ago_in_words(order.created_at) %> ago
+              </td>
+              <td class="px-4 py-3 text-right">
+                <%= link_to "View", admin_order_path(order), class: "font-medium text-blue-600 hover:underline dark:text-blue-400" %>
+              </td>
+            </tr>
+          <% end %>
+        <% else %>
+          <tr>
+            <td colspan="6" class="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
+              No orders yet
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

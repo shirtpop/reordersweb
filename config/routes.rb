@@ -34,6 +34,7 @@ Rails.application.routes.draw do
 
   namespace :admin do
     root to: "dashboard#index", as: :root
+    get "dashboard/chart_data", to: "dashboard#chart_data"
     resources :clients do
       resources :products, only: [ :index, :show ], controller: "client_products"
       resource :product_assignments, only: [ :show ], controller: "client_product_assignments"

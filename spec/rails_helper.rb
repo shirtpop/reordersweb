@@ -74,6 +74,9 @@ RSpec.configure do |config|
 
   config.include FactoryBot::Syntax::Methods
 
+  # Devise test helpers
+  config.include Devise::Test::IntegrationHelpers, type: :request
+
   # ViewComponent helpers for component specs
   config.include ViewComponent::TestHelpers, type: :component
   config.include Rails::Dom::Testing::Assertions, type: :component
