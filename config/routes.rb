@@ -44,7 +44,11 @@ Rails.application.routes.draw do
       get :new_wizard, on: :collection
     end
     resources :users
-    resources :orders, only: [ :index, :show ]
+    resources :orders, only: [ :index, :show ] do
+      member do
+        post :mark_as_processing
+      end
+    end
     resources :products do
       member do
         post :duplicate
