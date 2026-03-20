@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe Orders::Receiver do
   describe '.call!' do
-    let(:order) { create(:order) }
+    let(:order) { create(:order, :with_catalog_line_items) }
     let(:client) { order.client }
     let(:user) { client.users.first }
     it 'calls the instance method' do
@@ -21,7 +21,7 @@ RSpec.describe Orders::Receiver do
 
   describe '#call!' do
     context 'when receiving an order successfully' do
-      let(:order) { create(:order) }
+      let(:order) { create(:order, :with_catalog_line_items) }
       let(:client) { order.client }
       let(:user) { client.users.first }
       let(:product) { order.catalog.products.first }
@@ -115,7 +115,7 @@ RSpec.describe Orders::Receiver do
     end
 
     context 'when an error occurs during processing' do
-      let(:order) { create(:order) }
+      let(:order) { create(:order, :with_catalog_line_items) }
       let(:user) { order.client.users.first }
 
       before do

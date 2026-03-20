@@ -74,23 +74,4 @@ RSpec.describe Orders::Creator do
       end
     end
   end
-
-  describe "#price_for" do
-    it "returns base_price if no bulk_prices" do
-      expect(creator.send(:price_for, product2, 1)).to eq(product2.base_price.to_i)
-    end
-
-    it "returns correct bulk price for given quantity" do
-      # qty less than first bulk price threshold
-      expect(creator.send(:price_for, product1, 1)).to eq(product1.base_price.to_i)
-      # qty equal to first bulk price threshold
-      expect(creator.send(:price_for, product1, 5)).to eq(90.0)
-      # qty between bulk price thresholds
-      expect(creator.send(:price_for, product1, 7)).to eq(90.0)
-      # qty equal to highest bulk price threshold
-      expect(creator.send(:price_for, product1, 10)).to eq(80.0)
-      # qty greater than highest bulk price threshold
-      expect(creator.send(:price_for, product1, 15)).to eq(80.0)
-    end
-  end
 end

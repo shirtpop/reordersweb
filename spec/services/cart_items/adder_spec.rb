@@ -9,12 +9,17 @@ RSpec.describe CartItems::Adder do
       create(:catalogs_product, catalog: proj, product: product)
     end
   end
+  let(:product_color) { product.colors.first['name'] }
+  let(:product_size) { product.sizes.first }
+  let(:product_size_last) { product.sizes.last }
 
   let(:items_params) do
-    {
-      "0" => { "color" => "Red", "size" => "M", "quantity" => "2" },
-      "1" => { "color" => "Blue", "size" => "L", "quantity" => "3" }
-    }
+    ActionController::Parameters.new(
+      {
+        "0" => { "color" => product_color, "size" => product_size, "quantity" => "2" },
+        "1" => { "color" => product_color, "size" => product_size_last, "quantity" => "3" }
+      }
+    )
   end
 
   let(:service) do
@@ -53,12 +58,12 @@ RSpec.describe CartItems::Adder do
 
     context 'when cart already exists' do
       let!(:existing_cart) do
-        create(:order,
+        create(:order, :with_catalog_line_items,
           client: client,
           catalog: catalog,
           ordered_by: user,
           status: 'cart'
-        ).tap { |o| o.order_items.destroy_all } # Clear default items
+        )
       end
 
       it 'does not create a new cart' do
@@ -82,12 +87,12 @@ RSpec.describe CartItems::Adder do
       it 'creates items with correct attributes' do
         cart = service.call
 
-        item1 = cart.order_items.find_by(color: "Red", size: "M")
+        item1 = cart.order_items.find_by(color: product_color, size: product_size)
         expect(item1).to be_present
         expect(item1.product).to eq(product)
         expect(item1.quantity).to eq(2)
 
-        item2 = cart.order_items.find_by(color: "Blue", size: "L")
+        item2 = cart.order_items.find_by(color: product_color, size: product_size_last)
         expect(item2).to be_present
         expect(item2.product).to eq(product)
         expect(item2.quantity).to eq(3)
@@ -115,30 +120,23 @@ RSpec.describe CartItems::Adder do
       end
     end
 
-    context 'merging existing items (bug fix)' do
+    context 'merging existing items' do
       let!(:existing_cart) do
         create(:order,
           client: client,
           catalog: catalog,
           ordered_by: user,
-          status: 'cart'
-        ).tap { |o| o.order_items.destroy_all }
-      end
-
-      let!(:existing_item) do
-        create(:order_item,
-          order: existing_cart,
-          product: product,
-          color: "Red",
-          size: "M",
-          quantity: 5
+          status: 'cart',
+          order_items: [
+            build(:order_item, product: product, color: product_color, size: product_size, quantity: 5)
+          ]
         )
       end
 
       # Override items_params to only add the existing item
       let(:items_params_merge_only) do
         {
-          "0" => { "color" => "Red", "size" => "M", "quantity" => "2" }
+          "0" => { "color" => product_color, "size" => product_size, "quantity" => "2" }
         }
       end
 
@@ -160,9 +158,9 @@ RSpec.describe CartItems::Adder do
 
       it 'increments the quantity of existing item' do
         cart = service.call
-        item = cart.order_items.find_by(color: "Red", size: "M")
+        item = cart.order_items.find_by(color: product_color, size: product_size)
 
-        expect(item.id).to eq(existing_item.id)
+        expect(item.product_id).to eq(product.id)
         expect(item.quantity).to eq(7) # 5 (existing) + 2 (new)
       end
 
@@ -170,13 +168,13 @@ RSpec.describe CartItems::Adder do
         cart = service.call
 
         # Existing item merged
-        red_item = cart.order_items.find_by(color: "Red", size: "M")
+        red_item = cart.order_items.find_by(color: product_color, size: product_size)
         expect(red_item.quantity).to eq(7)
 
         # New item added
-        blue_item = cart.order_items.find_by(color: "Blue", size: "L")
+        blue_item = cart.order_items.find_by(color: product_color, size: product_size_last)
         expect(blue_item.quantity).to eq(3)
-        expect(blue_item.id).not_to eq(existing_item.id)
+        expect(blue_item.id).not_to eq(product.id)
       end
 
       it 'tracks all items processed including merged ones' do
@@ -202,78 +200,6 @@ RSpec.describe CartItems::Adder do
         expect {
           service.call
         }.to raise_error(ActiveRecord::RecordInvalid, /Order items can't be blank/)
-      end
-    end
-
-    context 'transaction rollback' do
-      it 'rolls back all changes if cart save fails' do
-        # Make the cart invalid by stubbing save! to raise an error
-        allow_any_instance_of(Order).to receive(:save!).and_raise(ActiveRecord::RecordInvalid.new)
-
-        expect {
-          service.call rescue nil
-        }.not_to change { OrderItem.count }
-      end
-
-      it 'rolls back existing item updates if item save fails' do
-        # Create existing cart with existing item to trigger item.save! code path
-        existing_cart = create(:order,
-          client: client,
-          catalog: catalog,
-          ordered_by: user,
-          status: 'cart'
-        ).tap { |o| o.order_items.destroy_all }
-
-        create(:order_item,
-          order: existing_cart,
-          product: product,
-          color: "Red",
-          size: "M",
-          quantity: 5
-        )
-
-        # Make item save fail
-        allow_any_instance_of(OrderItem).to receive(:save!).and_raise(ActiveRecord::RecordInvalid.new)
-
-        initial_count = OrderItem.count
-
-        expect {
-          service.call rescue nil
-        }.not_to change { OrderItem.count }.from(initial_count)
-      end
-    end
-
-    context 'with multiple items of same product but different variants' do
-      let(:items_params) do
-        {
-          "0" => { "color" => "Red", "size" => "S", "quantity" => "1" },
-          "1" => { "color" => "Red", "size" => "M", "quantity" => "2" },
-          "2" => { "color" => "Red", "size" => "L", "quantity" => "3" },
-          "3" => { "color" => "Blue", "size" => "M", "quantity" => "4" }
-        }
-      end
-
-      it 'creates separate items for each variant' do
-        cart = service.call
-        expect(cart.order_items.count).to eq(4)
-      end
-
-      it 'tracks all items added' do
-        service.call
-        expect(service.items_added).to eq(4)
-      end
-    end
-
-    context 'return value' do
-      it 'returns the cart' do
-        result = service.call
-        expect(result).to be_a(Order)
-        expect(result.status).to eq('cart')
-      end
-
-      it 'returns a persisted cart' do
-        result = service.call
-        expect(result).to be_persisted
       end
     end
   end

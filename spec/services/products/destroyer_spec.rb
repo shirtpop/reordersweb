@@ -21,7 +21,7 @@ RSpec.describe Products::Destroyer do
       it "raises Products::Destroyer::DeleteError with message" do
         expect {
           destroyer.call!
-        }.to raise_error(Products::Destroyer::DeleteError, /Failed to delete product or associated drive files: not found/)
+        }.to raise_error(Products::Destroyer::DeleteError, /Failed to delete product or associated records: not found/)
       end
     end
 
@@ -33,7 +33,7 @@ RSpec.describe Products::Destroyer do
       it "raises Products::Destroyer::DeleteError with message" do
         expect {
           destroyer.call!
-        }.to raise_error(Products::Destroyer::DeleteError, /Failed to delete product or associated drive files: drive error/)
+        }.to raise_error(Products::Destroyer::DeleteError, /Failed to delete Google Drive files: drive error/)
       end
     end
   end
