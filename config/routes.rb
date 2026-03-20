@@ -17,10 +17,10 @@ Rails.application.routes.draw do
 
   # Storefront routes (new customer-facing e-commerce experience)
   get "/shop" => "storefront#index", as: :storefront
-  resources :products, only: [:show]  # Product detail pages for ordering
-  resource :cart, only: [:show], controller: "cart"  # Shopping cart
-  resources :cart_items, only: [:create, :update, :destroy]  # Add/update/remove from cart
-  resource :checkout, only: [:show, :create], controller: "order_checkout"  # Order checkout flow (different from inventory checkout)
+  resources :products, only: [ :show ]  # Product detail pages for ordering
+  resource :cart, only: [ :show ], controller: "cart"  # Shopping cart
+  resources :cart_items, only: [ :create, :update, :destroy ]  # Add/update/remove from cart
+  resource :checkout, only: [ :show, :create ], controller: "order_checkout"  # Order checkout flow (different from inventory checkout)
 
   devise_for :users, controllers: {
     sessions: "users/sessions",
@@ -62,7 +62,7 @@ Rails.application.routes.draw do
       get :adjustments
       get :search_products
       post :save_adjustments
-      resources :checkouts, only: [ :index, :show, :new, :create ]
+      resources :checkouts, only: [ :index, :show, :new, :create ], as: :inventory_checkouts
       resources :products do
         collection do
           get :barcodes

@@ -1,110 +1,96 @@
-<div class="space-y-6">
-  <%= render "shared/inventory_header" %>
+<div class="container mx-auto px-4 py-8 max-w-7xl space-y-8">
+  <nav class="flex" aria-label="Breadcrumb">
+    <%= link_to product_path(@product), class: "inline-flex items-center gap-2 text-sm font-semibold text-gray-600 hover:text-pink-600 transition-colors" do %>
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+      </svg>
+      Back to product
+    <% end %>
+  </nav>
 
-  <!-- Product Information Header -->
-  <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-    <div class="flex items-center justify-between mb-4">
-      <div>
-        <%= link_to product_path(@product), class: "text-sm text-pink-600 hover:text-pink-800 inline-flex items-center mb-2" do %>
-          <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-          </svg>
-          Back to Product
-        <% end %>
-        <h2 class="text-2xl font-bold text-gray-900"><%= @product.name %></h2>
-      </div>
+  <div class="rounded-2xl border-2 border-gray-200 bg-white shadow-lg overflow-hidden">
+    <div class="bg-gradient-to-r from-pink-600 to-rose-600 px-6 py-8 md:px-10 md:py-10 text-white">
+      <h1 class="text-2xl md:text-3xl font-bold mb-2"><%= @product.name %></h1>
+      <p class="text-pink-100 text-sm md:text-base">Movement history for this variant</p>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-      <div class="bg-gray-50 rounded-lg p-4">
-        <div class="text-sm text-gray-500">SKU</div>
-        <div class="text-lg font-semibold text-gray-900 font-mono"><%= @product_variant.sku || 'N/A' %></div>
+    <div class="p-6 md:p-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div class="rounded-xl border-2 border-gray-100 bg-gradient-to-br from-gray-50 to-white p-4 shadow-sm">
+        <div class="text-xs font-semibold uppercase tracking-wide text-gray-500">SKU</div>
+        <div class="text-lg font-bold text-gray-900 font-mono mt-1"><%= @product_variant.sku || "N/A" %></div>
       </div>
-
-      <div class="bg-gray-50 rounded-lg p-4">
-        <div class="text-sm text-gray-500">Color</div>
-        <div class="text-lg font-semibold text-gray-900"><%= @product_variant.color %></div>
+      <div class="rounded-xl border-2 border-gray-100 bg-gradient-to-br from-gray-50 to-white p-4 shadow-sm">
+        <div class="text-xs font-semibold uppercase tracking-wide text-gray-500">Color</div>
+        <div class="text-lg font-bold text-gray-900 mt-1"><%= @product_variant.color %></div>
       </div>
-
-      <div class="bg-gray-50 rounded-lg p-4">
-        <div class="text-sm text-gray-500">Size</div>
-        <div class="text-lg font-semibold text-gray-900"><%= @product_variant.size %></div>
+      <div class="rounded-xl border-2 border-gray-100 bg-gradient-to-br from-gray-50 to-white p-4 shadow-sm">
+        <div class="text-xs font-semibold uppercase tracking-wide text-gray-500">Size</div>
+        <div class="text-lg font-bold text-gray-900 mt-1"><%= @product_variant.size %></div>
       </div>
-
-      <div class="bg-gray-50 rounded-lg p-4">
-        <div class="text-sm text-gray-500">Current Stock</div>
-        <div class="text-lg font-semibold text-gray-900">
-          <span class="<%= @inventory.quantity > 0 ? 'text-green-600' : 'text-red-600' %>">
-            <%= @inventory.quantity %>
-          </span>
+      <div class="rounded-xl border-2 border-pink-100 bg-gradient-to-br from-pink-50 to-rose-50 p-4 shadow-sm">
+        <div class="text-xs font-semibold uppercase tracking-wide text-pink-800">Current stock</div>
+        <div class="text-2xl font-bold mt-1 <%= @inventory.quantity > 0 ? "text-emerald-700" : "text-rose-700" %> tabular-nums">
+          <%= @inventory.quantity %>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Movement History Table -->
-  <div class="bg-white rounded-lg shadow-sm border border-gray-200">
-    <div class="px-6 py-4 border-b border-gray-200">
-      <div class="flex items-center justify-between">
-        <h3 class="text-lg font-semibold text-gray-900">Movement History</h3>
-        <div class="text-sm text-gray-500">
-          <%== pagy_info(@pagy) %>
-        </div>
+  <div class="rounded-2xl border-2 border-gray-200 bg-white shadow-md overflow-hidden">
+    <div class="px-6 py-5 border-b-2 border-gray-100 bg-gradient-to-r from-gray-50 to-gray-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+      <h2 class="text-xl font-bold text-gray-900 flex items-center gap-2">
+        <span class="w-1 h-7 rounded-full bg-gradient-to-b from-pink-600 to-rose-600" aria-hidden="true"></span>
+        Movement history
+      </h2>
+      <div class="text-sm text-gray-600">
+        <%== pagy_info(@pagy) %>
       </div>
     </div>
 
     <div class="overflow-x-auto">
       <table class="min-w-full divide-y divide-gray-200">
-        <thead class="bg-gray-50">
-          <tr>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Date & Time
-            </th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Movement Type
-            </th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Quantity
-            </th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Adjusted By
-            </th>
+        <thead>
+          <tr class="bg-gray-50/80">
+            <th scope="col" class="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Date &amp; time</th>
+            <th scope="col" class="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Movement type</th>
+            <th scope="col" class="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Quantity</th>
+            <th scope="col" class="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Adjusted by</th>
           </tr>
         </thead>
-        <tbody class="bg-white divide-y divide-gray-200">
+        <tbody class="divide-y divide-gray-100 bg-white">
           <% if @inventory_movements.any? %>
             <% @inventory_movements.each do |movement| %>
-              <tr class="hover:bg-gray-50">
+              <tr class="hover:bg-pink-50/30 transition-colors">
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                   <%= movement.created_at.strftime("%b %d, %Y %I:%M %p") %>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
                   <% if Client::InventoryMovement::INCREASE_MOVEMENTS.include?(movement.movement_type.to_sym) %>
-                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200">
                       <%= movement.movement_type.humanize %>
                     </span>
                   <% else %>
-                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-rose-100 text-rose-800 border border-rose-200">
                       <%= movement.movement_type.humanize %>
                     </span>
                   <% end %>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold">
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-bold tabular-nums">
                   <% if Client::InventoryMovement::INCREASE_MOVEMENTS.include?(movement.movement_type.to_sym) %>
-                    <span class="text-green-600">+<%= movement.quantity %></span>
+                    <span class="text-emerald-600">+<%= movement.quantity %></span>
                   <% else %>
-                    <span class="text-red-600"><%= movement.quantity %></span>
+                    <span class="text-rose-600"><%= movement.quantity %></span>
                   <% end %>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
                   <%= movement.user.email %>
                 </td>
               </tr>
             <% end %>
           <% else %>
             <tr>
-              <td colspan="5" class="px-6 py-8 text-center text-sm text-gray-500">
-                No movement history found
+              <td colspan="4" class="px-6 py-12 text-center text-sm text-gray-500">
+                No movement history yet
               </td>
             </tr>
           <% end %>
@@ -112,12 +98,11 @@
       </table>
     </div>
 
-    <!-- Pagination -->
     <% if @pagy.pages > 1 %>
-      <div class="px-6 py-4 border-t border-gray-200">
-        <%== pagy_nav(@pagy, 
-          link_extra: 'class="relative inline-flex items-center px-4 py-2 text-sm font-medium border border-gray-300 bg-white text-gray-700 hover:bg-gray-50"',
-          page_active_extra: 'class="z-10 relative inline-flex items-center px-4 py-2 text-sm font-medium border border-pink-500 bg-pink-50 text-pink-600"'
+      <div class="px-6 py-4 border-t-2 border-gray-100 bg-gray-50/50">
+        <%== pagy_nav(@pagy,
+          link_extra: 'class="inline-flex items-center px-4 py-2 text-sm font-semibold border-2 border-gray-200 rounded-xl bg-white text-gray-700 hover:border-pink-300 hover:text-pink-700 transition-all"',
+          page_active_extra: 'class="z-10 inline-flex items-center px-4 py-2 text-sm font-semibold border-2 border-pink-500 rounded-xl bg-gradient-to-r from-pink-50 to-rose-50 text-pink-700"'
         ) %>
       </div>
     <% end %>
