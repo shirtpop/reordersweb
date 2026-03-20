@@ -3,7 +3,7 @@ class OrdersController < BaseController
   def index
     # Only show submitted orders (exclude cart/draft orders)
     @pagy, @orders = pagy(current_client.orders.submitted
-                                       .includes(:catalog, order_items: :product)
+                                       .includes(:catalog)
                                        .order(id: :desc))
   end
 
@@ -21,7 +21,11 @@ class OrdersController < BaseController
   end
 
   def received
-    Orders::Receiver.call!(order: @order, user: current_user)
+    Orders::Receiver.call!(
+      order: @order,
+      user: current_user,
+      apply_inventory: current_client.inventory_enabled?
+    )
     redirect_to @order, notice: "Order was successfully received."
 
   rescue Orders::Receiver::Error => e

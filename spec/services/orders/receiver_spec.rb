@@ -13,7 +13,7 @@ RSpec.describe Orders::Receiver do
       described_class.call!(order: order, user: user)
 
       aggregate_failures do
-        expect(described_class).to have_received(:new).with(order: order, user: user)
+        expect(described_class).to have_received(:new).with(order: order, user: user, apply_inventory: true)
         expect(receiver).to have_received(:call!)
       end
     end
@@ -110,6 +110,25 @@ RSpec.describe Orders::Receiver do
           inventory.reload
           expected_quantity = initial_quantity + order.order_items.first.quantity
           expect(inventory.quantity).to eq(expected_quantity)
+        end
+      end
+
+      context 'when apply_inventory is false' do
+        let(:order) { create(:order, :with_catalog_line_items, status: :processing) }
+        let(:user) { order.client.users.first }
+
+        it 'marks order as received without creating inventory or movements' do
+          expect {
+            described_class.call!(order: order, user: user, apply_inventory: false)
+          }.to change(Client::Inventory, :count).by(0)
+            .and change(Client::InventoryMovement, :count).by(0)
+
+          order.reload
+          aggregate_failures do
+            expect(order.status).to eq('received')
+            expect(order.received_at).to be_present
+            expect(order.received_by_id).to eq(user.id)
+          end
         end
       end
     end

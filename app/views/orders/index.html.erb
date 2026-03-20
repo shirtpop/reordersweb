@@ -51,10 +51,13 @@
                 </div>
 
                 <!-- Order Info -->
-                <div>
-                  <h3 class="text-lg font-bold text-gray-900 mb-1">
-                    Order #<%= order.id.to_s.rjust(6, '0') %>
-                  </h3>
+                <div class="min-w-0">
+                  <div class="flex flex-wrap items-center gap-2 mb-1">
+                    <h3 class="text-lg font-bold text-gray-900">
+                      Order #<%= order.id.to_s.rjust(6, '0') %>
+                    </h3>
+                    <%= render "orders/status_badge", order: order %>
+                  </div>
                   <p class="text-sm text-gray-600 flex items-center gap-2">
                     <svg class="w-4 h-4 text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
@@ -69,24 +72,6 @@
                 </div>
               </div>
 
-              <!-- Products Preview -->
-              <div class="flex flex-wrap gap-2">
-                <% order.order_items.includes(:product).group_by(&:product).first(3).each do |product, items| %>
-                  <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-r from-pink-100 to-rose-100 text-pink-800 text-sm font-semibold border border-pink-300 shadow-sm">
-                    <%= product&.name || 'Product' %>
-                    <span class="bg-pink-600 text-white rounded-full px-2 py-0.5 text-xs">
-                      <%= items.sum(&:quantity) %>
-                    </span>
-                  </span>
-                <% end %>
-                <% if order.order_items.select(:product_id).distinct.count > 3 %>
-                  <span class="inline-flex items-center px-3 py-1.5 rounded-lg bg-gray-100 text-gray-600 text-sm font-semibold">
-                    +<%= order.order_items.select(:product_id).distinct.count - 3 %> more
-                  </span>
-                <% end %>
-              </div>
-
-              <!-- Arrow Icon -->
               <div class="flex-shrink-0">
                 <svg class="w-6 h-6 text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>

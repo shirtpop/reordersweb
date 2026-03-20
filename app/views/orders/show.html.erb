@@ -38,29 +38,27 @@
         </div>
 
         <div class="flex flex-col sm:flex-row gap-3">
-          <% if @current_client.inventory_enabled %>
-            <% if @order.received? %>
-              <div class="inline-flex items-center gap-2 px-4 py-2 bg-green-500 rounded-lg font-semibold shadow-lg">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                </svg>
-                Received
-              </div>
-            <% elsif @order.status_processing? %>
-              <div class="inline-flex items-center gap-2 px-4 py-2 bg-blue-500 rounded-lg font-semibold shadow-lg">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
-                </svg>
-                Processing
-              </div>
-            <% elsif @order.status_submitted? %>
-              <div class="inline-flex items-center gap-2 px-4 py-2 bg-yellow-500 rounded-lg font-semibold shadow-lg">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                </svg>
-                Submitted
-              </div>
-            <% end %>
+          <% if @order.received? %>
+            <div class="inline-flex items-center gap-2 px-4 py-2 bg-green-500 rounded-lg font-semibold shadow-lg">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+              Received
+            </div>
+          <% elsif @order.status_processing? %>
+            <div class="inline-flex items-center gap-2 px-4 py-2 bg-blue-500 rounded-lg font-semibold shadow-lg">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+              </svg>
+              Processing
+            </div>
+          <% elsif @order.status_submitted? %>
+            <div class="inline-flex items-center gap-2 px-4 py-2 bg-yellow-500 rounded-lg font-semibold shadow-lg">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+              Submitted
+            </div>
           <% end %>
         </div>
       </div>
@@ -188,34 +186,34 @@
             Order Again
           <% end %>
 
-          <!-- Inventory Actions -->
-          <% if @current_client.inventory_enabled %>
-            <% if @order.status_processing? && !@order.received? %>
-              <%= button_to "Mark as Received",
-                  received_order_path(@order),
-                  method: :post,
-                  class: "w-full inline-flex items-center justify-center gap-2 px-5 py-3 bg-white border-2 border-green-600 rounded-lg font-bold text-green-600 hover:bg-green-50 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200",
-                  data: {
-                    turbo_confirm: "Are you sure you want to mark this order as received? This will update the inventory."
-                  } %>
+          <!-- Receipt actions (inventory updates only when inventory is enabled for the client) -->
+          <% if @order.status_processing? && !@order.received? %>
+            <%= button_to "Mark as Received",
+                received_order_path(@order),
+                method: :post,
+                class: "w-full inline-flex items-center justify-center gap-2 px-5 py-3 bg-white border-2 border-green-600 rounded-lg font-bold text-green-600 hover:bg-green-50 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200",
+                data: {
+                  turbo_confirm: @current_client.inventory_enabled? ? "Are you sure you want to mark this order as received? This will update the inventory." : "Are you sure you want to mark this order as received?"
+                } %>
+            <% if @current_client.inventory_enabled? %>
               <p class="text-xs text-gray-500 text-center mt-1">
                 This will update the inventory
               </p>
-            <% elsif @order.status_submitted? %>
-              <div class="w-full px-5 py-3 bg-yellow-50 border-2 border-yellow-300 rounded-lg">
-                <div class="flex items-start gap-2">
-                  <svg class="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                  </svg>
-                  <div>
-                    <p class="text-sm font-bold text-yellow-800">Order Submitted</p>
-                    <p class="text-xs text-yellow-700 mt-1">
-                      Your order has been submitted and is awaiting processing. You'll be able to mark it as received once it's being processed.
-                    </p>
-                  </div>
+            <% end %>
+          <% elsif @order.status_submitted? %>
+            <div class="w-full px-5 py-3 bg-yellow-50 border-2 border-yellow-300 rounded-lg">
+              <div class="flex items-start gap-2">
+                <svg class="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <div>
+                  <p class="text-sm font-bold text-yellow-800">Order Submitted</p>
+                  <p class="text-xs text-yellow-700 mt-1">
+                    Your order has been submitted and is awaiting processing. You'll be able to mark it as received once it's being processed.
+                  </p>
                 </div>
               </div>
-            <% end %>
+            </div>
           <% end %>
         </div>
       </div>

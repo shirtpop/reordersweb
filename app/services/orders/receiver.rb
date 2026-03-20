@@ -6,37 +6,40 @@ module Orders
     class InventoryLockError < Error; end
     class BusinessRuleError < Error; end
 
-    def self.call!(order:, user:)
-      new(order:, user:).call!
+    def self.call!(order:, user:, apply_inventory: true)
+      new(order:, user:, apply_inventory:).call!
     end
 
     attr_reader :order, :user
 
-    def initialize(order:, user:)
+    def initialize(order:, user:, apply_inventory: true)
       @order = order
       @user = user
+      @apply_inventory = apply_inventory
     end
 
     def call!
       raise BusinessRuleError, "Order already received" if order.received_at.present?
 
       ActiveRecord::Base.transaction do
-        preload_caches!
+        if @apply_inventory
+          preload_caches!
 
-        order.order_items.each do |item|
-          client_product = find_or_create_client_product(item)
-          client_variant = find_or_create_client_variant(client_product, item)
-          inventory = find_or_create_inventory(client_variant)
+          order.order_items.each do |item|
+            client_product = find_or_create_client_product(item)
+            client_variant = find_or_create_client_variant(client_product, item)
+            inventory = find_or_create_inventory(client_variant)
 
-          inventory.with_lock do
-            inventory.inventory_movements.create!(
-              user: user,
-              movement_type: :delivered_in,
-              quantity: item.quantity,
-              order_item: item
-            )
+            inventory.with_lock do
+              inventory.inventory_movements.create!(
+                user: user,
+                movement_type: :delivered_in,
+                quantity: item.quantity,
+                order_item: item
+              )
 
-            inventory.increment!(:quantity, item.quantity)
+              inventory.increment!(:quantity, item.quantity)
+            end
           end
         end
 
