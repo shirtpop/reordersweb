@@ -20,7 +20,6 @@ Rails.application.routes.draw do
   resources :products, only: [ :show ]  # Product detail pages for ordering
   resource :cart, only: [ :show ], controller: "cart"  # Shopping cart
   resources :cart_items, only: [ :create, :update, :destroy ]  # Add/update/remove from cart
-  resource :checkout, only: [ :show, :create ], controller: "order_checkout"  # Order checkout flow (different from inventory checkout)
 
   devise_for :users, controllers: {
     sessions: "users/sessions",
@@ -82,13 +81,13 @@ Rails.application.routes.draw do
     end
   end
   resources :orders, only: [ :index, :show, :create ] do
+    resource :checkout, only: [ :show, :create ], controller: "order_checkouts"
     member do
       post :received
       post :duplicate
     end
   end
   resources :catalogs, only: [ :index, :show ]
-  resources :checkouts, only: [ :index, :show, :new, :create ]
 
   post "drive_files/:attachable_type/:attachable_id", to: "admin/drive_files#create", as: :drive_files
   delete "drive_files/:attachable_type/:attachable_id/:id", to: "admin/drive_files#destroy", as: :drive_file

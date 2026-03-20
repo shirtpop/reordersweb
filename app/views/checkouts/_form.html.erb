@@ -4,7 +4,7 @@
     <p class="mt-1 text-sm text-gray-600">Fill in recipient information and add items to checkout</p>
   </div>
 
-  <%= form_with model: checkout, url: checkouts_path, method: :post, class: "space-y-6", data: { controller: "checkout-form", action: "submit->checkout-form#preventSubmit", turbo: false } do |form| %>
+  <%= form_with model: checkout, url: inventory_checkouts_path, method: :post, class: "space-y-6", data: { controller: "checkout-form", action: "submit->checkout-form#preventSubmit", turbo: false } do |form| %>
     <!-- Recipient Information Card -->
     <div class="bg-white shadow-sm rounded-lg border border-gray-200 overflow-hidden">
       <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
@@ -144,7 +144,7 @@
 
     <!-- Form Actions -->
     <div class="flex items-center justify-between">
-      <%= link_to checkouts_path, class: "inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500", data: { turbo_frame: "_top" } do %>
+      <%= link_to inventory_checkouts_path, class: "inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500", data: { turbo_frame: "_top" } do %>
         <svg class="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
         </svg>

@@ -1,23 +1,21 @@
-class OrderCheckoutController < BaseController
+class OrderCheckoutsController < BaseController
   def show
-    # Get the cart (draft order) for checkout
-    @cart = current_client.orders.in_cart
-                         .includes(order_items: { product: :drive_files })
-                         .find_by(ordered_by: current_user)
+    @cart = cart_order_scope
+              .includes(order_items: { product: :drive_files })
+              .find(params[:order_id])
 
-    # Redirect if cart is empty or doesn't exist
-    if @cart.nil? || @cart.order_items.empty?
+    if @cart.order_items.empty?
       redirect_to cart_path, alert: "Your cart is empty. Please add items before checking out."
       return
     end
 
-    # Initialize delivery date to 3 weeks from now (minimum lead time)
-    @cart.delivery_date ||= Date.today + 21.days
+    @cart.delivery_date ||= Date.current + 21.days
+  rescue ActiveRecord::RecordNotFound
+    redirect_to cart_path, alert: "Cart not found. Please try again."
   end
 
   def create
-    # Get the cart
-    @cart = current_client.orders.in_cart.find_by!(ordered_by: current_user)
+    @cart = cart_order_scope.find(params[:order_id])
 
     # Validate cart has items
     if @cart.order_items.empty?
@@ -46,6 +44,10 @@ class OrderCheckoutController < BaseController
   end
 
   private
+
+  def cart_order_scope
+    current_client.orders.in_cart.where(ordered_by: current_user)
+  end
 
   def checkout_params
     params.require(:order).permit(:delivery_date)

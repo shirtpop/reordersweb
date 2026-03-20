@@ -18,7 +18,7 @@ class CheckoutsController < BaseController
     creator = Checkouts::Creator.new(user: current_user, checkout: current_client.checkouts.new(checkout_params))
     creator.call!
 
-    redirect_to checkouts_path, notice: "Checkout created successfully."
+    redirect_to inventory_checkouts_path, notice: "Checkout created successfully."
 
   rescue Checkouts::Creator::Error => e
     @checkout = creator.checkout
