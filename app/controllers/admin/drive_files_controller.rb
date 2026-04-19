@@ -3,37 +3,34 @@ module Admin
     before_action :set_attachable
     before_action :set_drive_file, only: [ :destroy ]
 
-    ALLOWED_ATTACHABLE_TYPES = %w[Product Client].freeze
+    ALLOWED_ATTACHABLE_TYPES = %w[Product ProductColor ProductColorImage Client].freeze
 
     def create
       GoogleDrive::Uploader.new(file: drive_file_params[:file], attachable: @attachable).call!
 
       render turbo_stream: turbo_stream.replace(
-            "images_container_#{@attachable.class.name.downcase}_#{@attachable.id}",
-            partial: "shared/images_list",
-            locals: { attachable: @attachable }
+            images_container_id,
+            partial: images_list_partial,
+            locals: images_locals
           )
     rescue GoogleDrive::Uploader::UploadError => e
       render turbo_stream: turbo_stream.replace(
-            "images_container_#{@attachable.class.name.downcase}_#{@attachable.id}",
+            images_container_id,
             partial: "shared/error_message",
-            locals: { message: "Failed to upload file: " + @drive_file.errors.full_messages.join(", ") }
+            locals: { message: "Failed to upload file: " + e.message }
           )
     end
 
     def destroy
       @drive_file.destroy!
-      render turbo_stream: [
-          turbo_stream.remove("drive_file_#{@drive_file.id}"),
-          turbo_stream.replace(
-            "images_container_#{@attachable.class.name.downcase}_#{@attachable.id}",
-            partial: "shared/images_list",
-            locals: { attachable: @attachable }
+      render turbo_stream: turbo_stream.replace(
+            images_container_id,
+            partial: images_list_partial,
+            locals: images_locals
           )
-        ]
     rescue ActiveRecord::RecordNotFound, GoogleDrive::Errors::DeleteError => e
       render turbo_stream: turbo_stream.replace(
-            "images_container_#{@attachable.class.name.downcase}_#{@attachable.id}",
+            images_container_id,
             partial: "shared/error_message",
             locals: { message: e.message }
           )
@@ -55,6 +52,18 @@ module Admin
 
     def set_drive_file
       @drive_file = @attachable.drive_files.find(params[:id])
+    end
+
+    def images_container_id
+      "images_container_#{@attachable.class.name.downcase}_#{@attachable.id}"
+    end
+
+    def images_list_partial
+      @attachable.is_a?(ProductColorImage) ? "admin/products/color_image_slot_frame" : "shared/images_list"
+    end
+
+    def images_locals
+      @attachable.is_a?(ProductColorImage) ? { color_image: @attachable } : { attachable: @attachable }
     end
   end
 end

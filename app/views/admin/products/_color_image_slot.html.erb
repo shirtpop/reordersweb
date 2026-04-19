@@ -1,0 +1,33 @@
+<div data-controller="drive-upload"
+     data-drive-upload-attachable-type-value="ProductColorImage"
+     data-drive-upload-attachable-id-value="<%= color_image.id %>"
+     class="border border-gray-200 dark:border-gray-700 rounded-lg p-3 flex flex-col">
+
+  <span class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-2 capitalize">
+    <%= color_image.angle %>
+  </span>
+
+  <%= render "admin/products/color_image_slot_frame", color_image: color_image %>
+
+  <%= form_with url: drive_files_path(attachable_type: "ProductColorImage", attachable_id: color_image.id),
+                html: { multipart: true, data: { drive_upload_target: "form" } },
+                method: :post,
+                local: true do |f| %>
+    <%= f.file_field :file,
+          accept: "image/*",
+          class: "sr-only",
+          id: "angle-upload-#{color_image.id}",
+          data: { action: "change->drive-upload#handleFiles", drive_upload_target: "fileInput" } %>
+  <% end %>
+
+  <div data-drive-upload-target="progressContainer" class="hidden mt-1">
+    <div class="bg-gray-200 dark:bg-gray-700 rounded-full h-1">
+      <div data-drive-upload-target="progressBar" class="bg-blue-600 h-1 rounded-full transition-all" style="width: 0%"></div>
+    </div>
+    <p data-drive-upload-target="progressText" class="text-xs text-gray-500 dark:text-gray-400 mt-1">Uploading...</p>
+  </div>
+
+  <div data-drive-upload-target="errorContainer" class="hidden mt-1">
+    <p data-drive-upload-target="errorMessage" class="text-xs text-red-600 dark:text-red-400"></p>
+  </div>
+</div>

@@ -27,40 +27,48 @@ export default class extends Controller {
   }
 
   addColor() {
-    const template = this.colorTemplateTarget.content.cloneNode(true)
-    this.colorsContainerTarget.appendChild(template)
-    
-    // Sync color picker with text input for the newly added row
-    const colorRow = this.colorsContainerTarget.lastElementChild
-    this.syncColorInputs(colorRow)
+    const timestamp = Date.now()
+    const templateHTML = this.colorTemplateTarget.innerHTML.replace(/NEW_RECORD/g, timestamp)
+
+    this.colorsContainerTarget.insertAdjacentHTML("beforeend", templateHTML)
+
+    const newRow = this.colorsContainerTarget.lastElementChild
+
+    this.syncColorInputs(newRow)
   }
 
   removeColor(event) {
-    event.target.closest('.color-row').remove()
+    const row = event.target.closest(".color-row")
+    const destroyField = row.querySelector("[data-product-form-target~='colorDestroyField']")
+    const idField = row.querySelector("input[name*='[id]']")
+
+    if (idField && idField.value) {
+      // Persisted record: mark for destruction and hide
+      if (destroyField) destroyField.value = "1"
+      row.style.display = "none"
+    } else {
+      row.remove()
+    }
   }
 
   // Private methods
   syncExistingColorInputs() {
-    this.colorRowTargets.forEach(row => {
-      this.syncColorInputs(row)
-    })
+    this.colorRowTargets.forEach(row => this.syncColorInputs(row))
   }
 
   syncColorInputs(colorRow) {
-    const colorInput = colorRow.querySelector('input[type="color"]')
-    const textInput = colorRow.querySelector('input[name="product[colors][][hex_color]"]')
+    const colorPicker = colorRow.querySelector("[data-product-form-target~='colorPicker']")
+    const hexInput = colorRow.querySelector("[data-product-form-target~='colorHexInput']")
 
-    if (colorInput && textInput) {
-      // Update text input when color picker changes
-      colorInput.addEventListener('input', (e) => {
-        textInput.value = e.target.value.toUpperCase()
+    if (colorPicker && hexInput) {
+      colorPicker.addEventListener("input", (e) => {
+        hexInput.value = e.target.value.toUpperCase()
       })
-      
-      // Update color picker when text input changes (if valid hex)
-      textInput.addEventListener('input', (e) => {
+
+      hexInput.addEventListener("input", (e) => {
         const hexValue = e.target.value.trim()
         if (this.isValidHexColor(hexValue)) {
-          colorInput.value = hexValue
+          colorPicker.value = hexValue
         }
       })
     }

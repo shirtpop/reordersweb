@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_03_10_124352) do
+ActiveRecord::Schema[8.0].define(version: 2026_04_19_081952) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -203,6 +203,24 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_10_124352) do
     t.index ["submitted_at"], name: "index_orders_on_submitted_at"
   end
 
+  create_table "product_color_images", force: :cascade do |t|
+    t.bigint "product_color_id", null: false
+    t.integer "angle", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["product_color_id", "angle"], name: "index_product_color_images_on_product_color_id_and_angle", unique: true
+    t.index ["product_color_id"], name: "index_product_color_images_on_product_color_id"
+  end
+
+  create_table "product_colors", force: :cascade do |t|
+    t.bigint "product_id", null: false
+    t.string "name", null: false
+    t.string "hex_color"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["product_id"], name: "index_product_colors_on_product_id"
+  end
+
   create_table "products", force: :cascade do |t|
     t.string "name", null: false
     t.jsonb "price_info", default: {}
@@ -257,5 +275,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_10_124352) do
   add_foreign_key "orders", "clients"
   add_foreign_key "orders", "users", column: "ordered_by_id"
   add_foreign_key "orders", "users", column: "received_by_id"
+  add_foreign_key "product_color_images", "product_colors"
+  add_foreign_key "product_colors", "products"
   add_foreign_key "users", "clients"
 end

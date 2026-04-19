@@ -168,29 +168,24 @@ export default class extends Controller {
 
   increment(event) {
     event.preventDefault()
-    // Find the input field in the same parent container
-    const button = event.currentTarget
-    const container = button.closest('td')
-    const input = container.querySelector('[data-quantity-grid-target="quantityInput"]')
+    const input = event.currentTarget.closest('[data-size-cell]')
+      ?.querySelector('[data-quantity-grid-target="quantityInput"]')
 
     if (input) {
-      const currentValue = parseInt(input.value || 0)
-      input.value = currentValue + 1
+      input.value = parseInt(input.value || 0) + 1
       this.updateTotals()
     }
   }
 
   decrement(event) {
     event.preventDefault()
-    // Find the input field in the same parent container
-    const button = event.currentTarget
-    const container = button.closest('td')
-    const input = container.querySelector('[data-quantity-grid-target="quantityInput"]')
+    const input = event.currentTarget.closest('[data-size-cell]')
+      ?.querySelector('[data-quantity-grid-target="quantityInput"]')
 
     if (input) {
-      const currentValue = parseInt(input.value || 0)
-      if (currentValue > 0) {
-        input.value = currentValue - 1
+      const current = parseInt(input.value || 0)
+      if (current > 0) {
+        input.value = current - 1
         this.updateTotals()
       }
     }

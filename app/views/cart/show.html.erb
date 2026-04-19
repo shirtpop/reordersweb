@@ -52,10 +52,10 @@
                          id="cart_item_<%= item.id %>">
                       <div class="flex items-center gap-4">
                         <!-- Color indicator -->
-                        <% color_data = product.colors.find { |c| c['name'] == item.color } %>
+                        <% color_data = product.product_colors.find { |c| c.name == item.color } %>
                         <% if color_data %>
                           <div class="w-8 h-8 rounded-full border-2 border-gray-300 shadow-sm"
-                               style="background-color: <%= color_data['hex_color'] %>"
+                               style="background-color: <%= color_data.hex_color %>"
                                title="<%= item.color %>"></div>
                         <% end %>
 

@@ -11,9 +11,12 @@ class Product < ApplicationRecord
 
   has_many :catalogs_products, dependent: :delete_all
   has_many :catalogs, through: :catalogs_products
+  has_many :product_colors, dependent: :destroy
+
+  accepts_nested_attributes_for :product_colors, allow_destroy: true, reject_if: :all_blank
 
   validates :name, presence: true
-  validates :colors, presence: true
+  validates :product_colors, presence: true
   validate :validate_bulk_prices
   validate :validate_max_drive_files
 
@@ -22,7 +25,7 @@ class Product < ApplicationRecord
   self.max_drive_files = 2
 
   def color_names
-    Array(colors).map { |c| c["name"] }.join(", ")
+    product_colors.map(&:name).join(", ")
   end
 
   def minimum_order

@@ -13,13 +13,23 @@ FactoryBot.define do
 
     sizes { Product::SIZES.sample(5) }
 
-    colors do
-      [
-        {
-          name: Faker::Color.color_name,
-          hex: Faker::Color.hex_color
-        }
-      ]
+    after(:build) do |product|
+      product.product_colors.build(
+        name: Faker::Color.color_name,
+        hex_color: Faker::Color.hex_color
+      ) if product.product_colors.empty?
+    end
+
+    trait :with_colors do
+      after(:build) do |product|
+        product.product_colors.clear
+        3.times do |i|
+          product.product_colors.build(
+            name: Faker::Color.color_name,
+            hex_color: Faker::Color.hex_color
+          )
+        end
+      end
     end
 
     trait :with_bulk_prices do

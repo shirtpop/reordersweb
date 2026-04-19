@@ -17,7 +17,7 @@ module Admin
       @product = Product.new(product_params)
 
       if @product.save
-        redirect_to admin_products_path, notice: "Product was successfully created."
+        redirect_to admin_product_path(@product.reload, tab: "images"), notice: "Product was successfully created."
       else
         render :new
       end
@@ -27,7 +27,7 @@ module Admin
 
     def update
       if @product.update(product_params)
-        redirect_to admin_products_path, notice: "Product was successfully updated."
+        redirect_to admin_product_path(@product), notice: "Product was successfully updated."
       else
         render :edit
       end
@@ -59,7 +59,7 @@ module Admin
         :name, :description, :minimum_order, :base_price,
         sizes: [],
         bulk_prices: [ :qty, :price ],
-        colors: [ :name, :hex_color ]
+        product_colors_attributes: [ :id, :name, :hex_color, :_destroy ]
       )
     end
   end

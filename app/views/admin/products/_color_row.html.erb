@@ -1,0 +1,34 @@
+<div class="color-row border border-gray-200 dark:border-gray-700 rounded-lg p-4 mb-3" data-product-form-target="colorRow">
+  <%= f.hidden_field :id %>
+  <%= f.hidden_field :_destroy, value: "0", data: { product_form_target: "colorDestroyField" } %>
+
+  <div class="flex items-end space-x-3">
+    <div class="flex-1">
+      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Color Name</label>
+      <%= f.text_field :name,
+          placeholder: "Red",
+          class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" %>
+    </div>
+
+    <div class="flex-1">
+      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Hex Color</label>
+      <div class="flex items-center space-x-2">
+        <input type="color"
+               value="<%= f.object.hex_color.presence || '#FF0000' %>"
+               class="h-10 w-16 border border-gray-300 rounded cursor-pointer"
+               data-product-form-target="colorPicker">
+        <%= f.text_field :hex_color,
+            placeholder: "#FF0000",
+            class: "flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white",
+            data: { product_form_target: "colorHexInput" } %>
+      </div>
+    </div>
+
+    <button type="button"
+            class="px-3 py-2 text-red-600 hover:text-red-800 text-sm font-medium"
+            data-action="click->product-form#removeColor">
+      Remove
+    </button>
+  </div>
+
+</div>

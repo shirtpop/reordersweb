@@ -134,51 +134,20 @@
   <div class="border-t pt-6">
     <div class="flex items-center justify-between mb-4">
       <h3 class="text-lg font-medium text-gray-900 dark:text-white">Available Colors</h3>
-      <button type="button" 
+      <button type="button"
               class="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md text-blue-600 bg-blue-100 hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:bg-blue-900 dark:text-blue-200 dark:hover:bg-blue-800"
               data-product-form-target="addColorBtn"
               data-action="click->product-form#addColor">
         + Add Color
       </button>
     </div>
-    
+
     <div data-product-form-target="colorsContainer">
-      <% colors = @product.colors || [] %>
-      <% if colors.any? %>
-        <% colors.each_with_index do |color, index| %>
-          <div class="flex items-end space-x-3 mb-3 color-row" data-product-form-target="colorRow">
-            <div class="flex-1">
-              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Color Name</label>
-              <input type="text" 
-                     name="product[colors][][name]" 
-                     value="<%= color['name'] %>"
-                     placeholder="Red"
-                     class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-            </div>
-            <div class="flex-1">
-              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Hex Color</label>
-              <div class="flex items-center space-x-2">
-                <input type="color" 
-                 name="hex_color_picker" 
-                 value="<%= color['hex_color'] || '#FF0000' %>"
-                 class="h-10 w-16 border border-gray-300 rounded cursor-pointer">
-                <input type="text" 
-                       name="product[colors][][hex_color]" 
-                       value="<%= color['hex_color'] %>"
-                       placeholder="#FF0000"
-                       class="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-              </div>
-            </div>
-            <button type="button" 
-                    class="px-3 py-2 text-red-600 hover:text-red-800 text-sm font-medium"
-                    data-action="click->product-form#removeColor">
-              Remove
-            </button>
-          </div>
-        <% end %>
+      <%= form.fields_for :product_colors do |color_form| %>
+        <%= render "admin/products/color_row", f: color_form %>
       <% end %>
     </div>
-    <%= display_field_errors(@product, :colors) %>
+    <%= display_field_errors(@product, :product_colors) %>
   </div>
 
   <!-- Form Actions -->
@@ -221,32 +190,8 @@
   </template>
 
   <template data-product-form-target="colorTemplate">
-    <div class="flex items-end space-x-3 mb-3 color-row" data-product-form-target="colorRow">
-      <div class="flex-1">
-        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Color Name</label>
-        <input type="text" 
-               name="product[colors][][name]" 
-               placeholder="Red"
-               class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-      </div>
-      <div class="flex-1">
-        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Hex Color</label>
-        <div class="flex items-center space-x-2">
-          <input type="color" 
-                 name="hex_color_picker" 
-                 value="#FF0000"
-                 class="h-10 w-16 border border-gray-300 rounded cursor-pointer">
-          <input type="text" 
-                 name="product[colors][][hex_color]" 
-                 placeholder="#FF0000"
-                 class="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-        </div>
-      </div>
-      <button type="button" 
-              class="px-3 py-2 text-red-600 hover:text-red-800 text-sm font-medium"
-              data-action="click->product-form#removeColor">
-        Remove
-      </button>
-    </div>
+    <%= form.fields_for :product_colors, ProductColor.new, child_index: "NEW_RECORD" do |color_form| %>
+      <%= render "admin/products/color_row", f: color_form %>
+    <% end %>
   </template>
 <% end %>

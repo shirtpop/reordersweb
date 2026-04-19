@@ -9,7 +9,7 @@ RSpec.describe CartItems::Adder do
       create(:catalogs_product, catalog: proj, product: product)
     end
   end
-  let(:product_color) { product.colors.first['name'] }
+  let(:product_color) { product.product_colors.first.name }
   let(:product_size) { product.sizes.first }
   let(:product_size_last) { product.sizes.last }
 

@@ -68,10 +68,10 @@
                   <% items.each do |item| %>
                     <div class="flex justify-between items-center text-sm">
                       <div class="flex items-center gap-2">
-                        <% color_data = product.colors.find { |c| c['name'] == item.color } %>
+                        <% color_data = product.product_colors.find { |c| c.name == item.color } %>
                         <% if color_data %>
                           <div class="w-5 h-5 rounded-full border border-gray-300"
-                               style="background-color: <%= color_data['hex_color'] %>"></div>
+                               style="background-color: <%= color_data.hex_color %>"></div>
                         <% end %>
                         <span class="font-medium text-gray-700"><%= item.color %> • Size <%= item.size %></span>
                       </div>

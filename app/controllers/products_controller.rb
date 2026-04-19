@@ -132,7 +132,9 @@ class ProductsController < BaseController
 
     # Find the catalog and product (admin Product, not Client::Product)
     @catalog = current_client.catalogs.active.find(catalog_id)
-    @product = @catalog.products.includes(:drive_files).find(params[:id])
+    @product = @catalog.products
+                       .includes(:drive_files, product_colors: { product_color_images: :drive_files })
+                       .find(params[:id])
 
     # Get or create cart for this catalog
     @cart = current_client.orders.in_cart.find_or_initialize_by(

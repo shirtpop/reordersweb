@@ -85,11 +85,11 @@
         <div class="mb-6">
           <h3 class="text-sm font-semibold text-gray-700 mb-3">Available Colors:</h3>
           <div class="flex flex-wrap gap-2">
-            <% @product.colors.each do |color| %>
+            <% @product.product_colors.each do |color| %>
               <div class="flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-2 border border-gray-200">
                 <div class="w-6 h-6 rounded-full border-2 border-white shadow-md"
-                     style="background-color: <%= color['hex_color'] %>"></div>
-                <span class="text-sm font-medium text-gray-700"><%= color['name'].capitalize %></span>
+                     style="background-color: <%= color.hex_color %>"></div>
+                <span class="text-sm font-medium text-gray-700"><%= color.name.capitalize %></span>
               </div>
             <% end %>
           </div>
@@ -130,102 +130,118 @@
         </div>
       </div>
 
-      <!-- Quantity Grid Table -->
-      <div class="overflow-x-auto bg-white rounded-xl border-2 border-gray-200 shadow-sm">
-        <table class="min-w-full divide-y divide-gray-200">
-          <thead class="sticky top-0 z-20 bg-gradient-to-r from-gray-100 via-pink-50 to-gray-100 shadow-md">
-            <tr>
-              <th class="px-6 py-4 sticky left-0 z-30 bg-gradient-to-r from-gray-100 to-pink-50 border-r-2 border-pink-200">
-                <span class="text-xs font-bold text-gray-700 uppercase tracking-widest">Size / Color</span>
-              </th>
-              <% @product.colors.each do |color| %>
-                <th class="px-4 py-4 text-center min-w-[120px] group">
-                  <div class="flex flex-col items-center gap-2">
-                    <div class="w-12 h-12 rounded-full border-4 border-white shadow-xl ring-2 ring-gray-300 group-hover:ring-pink-500 transition-all duration-200 transform group-hover:scale-110"
-                         style="background-color: <%= color['hex_color'] %>"></div>
-                    <span class="text-xs font-semibold text-gray-700 group-hover:text-pink-700 transition-colors"><%= color['name'].capitalize %></span>
-                  </div>
-                </th>
+      <!-- Color Card Grid -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <% @product.product_colors.each_with_index do |color, color_idx| %>
+          <%
+            images_by_angle = color.product_color_images.each_with_object({}) do |pci, h|
+              h[pci.angle] = pci.drive_file if pci.drive_file
+            end
+            hero_image = images_by_angle["front"] || images_by_angle.values.first
+            angle_labels = { "front" => "Front", "back" => "Back", "left" => "Left", "right" => "Right" }
+          %>
+          <div class="bg-white rounded-2xl border-2 border-gray-200 shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden flex flex-col"
+               data-controller="color-card">
+
+            <!-- Hero Image -->
+            <div class="relative aspect-square bg-gradient-to-br from-gray-100 to-gray-200">
+              <% if hero_image %>
+                <img src="<%= hero_image.preview_url %>"
+                     alt="<%= color.name.capitalize %>"
+                     referrerpolicy="no-referrer"
+                     data-color-card-target="heroImage"
+                     class="w-full h-full object-cover transition-opacity duration-200">
+              <% else %>
+                <div class="w-full h-full flex items-center justify-center" data-color-card-target="heroPlaceholder">
+                  <div class="w-20 h-20 rounded-full border-4 border-white shadow-xl"
+                       style="background-color: <%= color.hex_color %>"></div>
+                </div>
               <% end %>
-              <th class="px-6 py-4 text-center sticky right-0 z-30 bg-gradient-to-r from-pink-50 to-gray-100 border-l-2 border-pink-200">
-                <span class="text-xs font-bold text-gray-700 uppercase tracking-widest">Row Total</span>
-              </th>
-            </tr>
-          </thead>
-          <tbody class="bg-white divide-y divide-gray-200">
-            <% @product.sizes.each_with_index do |size, size_idx| %>
-              <tr class="hover:bg-gray-50 transition-colors">
-                <td class="px-6 py-4 whitespace-nowrap font-bold text-gray-900 sticky left-0 bg-white z-10 border-r border-gray-200">
-                  <%= size %>
-                </td>
-                <% @product.colors.each_with_index do |color, color_idx| %>
-                  <td class="px-4 py-4 group-hover:bg-pink-50 transition-colors duration-200">
-                    <div class="flex items-center justify-center border-2 border-gray-300 rounded-lg bg-white shadow-sm hover:shadow-md transition-all duration-200 w-fit mx-auto">
-                      <!-- Decrement button -->
+              <!-- Color badge -->
+              <div class="absolute top-3 right-3 flex items-center gap-1.5 bg-white/90 backdrop-blur-sm rounded-full px-2.5 py-1 shadow-sm">
+                <div class="w-3.5 h-3.5 rounded-full border border-gray-200 flex-shrink-0"
+                     style="background-color: <%= color.hex_color %>"></div>
+                <span class="text-xs font-semibold text-gray-700"><%= color.name.capitalize %></span>
+              </div>
+            </div>
+
+            <!-- Angle Thumbnail Strip -->
+            <% visible_angles = ProductColorImage.angles.keys.select { |a| images_by_angle[a] } %>
+            <% if visible_angles.size > 1 %>
+              <div class="flex gap-2 p-3 border-b border-gray-100 bg-gray-50">
+                <% visible_angles.each_with_index do |angle, i| %>
+                  <% img = images_by_angle[angle] %>
+                  <button type="button"
+                          data-action="click->color-card#switchAngle"
+                          data-url="<%= img.preview_url %>"
+                          data-color-card-target="angleThumbnail"
+                          title="<%= angle_labels[angle] %>"
+                          class="w-14 h-14 flex-shrink-0 rounded-lg overflow-hidden border-2 transition-all duration-150 hover:border-pink-400 focus:outline-none focus:ring-2 focus:ring-pink-400 <%= i == 0 ? 'border-pink-500 ring-2 ring-pink-500' : 'border-transparent' %>">
+                    <img src="<%= img.preview_url %>"
+                         alt="<%= angle_labels[angle] %>"
+                         referrerpolicy="no-referrer"
+                         class="w-full h-full object-cover">
+                  </button>
+                <% end %>
+              </div>
+            <% end %>
+
+            <!-- Size Inputs -->
+            <div class="p-4 flex-1">
+              <div class="grid grid-cols-2 gap-4">
+                <% @product.sizes.each_with_index do |size, size_idx| %>
+                  <div class="rounded-md border-2 border-gray-200 bg-gray-50 p-3 transition-colors duration-150 hover:border-pink-200 hover:bg-pink-50"
+                       data-size-cell>
+                    <p class="text-xs font-semibold text-gray-400 text-center mb-2.5 uppercase tracking-wider"><%= size %></p>
+                    <div class="flex items-center bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm">
                       <button type="button"
                               data-action="click->quantity-grid#decrement"
-                              class="px-3 py-2 text-gray-600 hover:text-pink-700 hover:bg-gradient-to-r hover:from-pink-50 hover:to-rose-50 rounded-l-lg transition-all duration-200">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path>
+                              class="flex-1 h-9 flex items-center justify-center text-gray-400 hover:text-pink-600 hover:bg-pink-50 active:bg-pink-100 transition-colors duration-150">
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M20 12H4"></path>
                         </svg>
                       </button>
-
-                      <!-- Quantity input -->
                       <%= number_field_tag "items[#{size_idx}_#{color_idx}][quantity]",
-                             0,
-                             class: "w-16 text-center border-x-2 border-gray-300 py-2 font-semibold text-gray-900 focus:outline-none focus:ring-2 focus:ring-pink-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none",
+                             nil,
+                             class: "w-10 h-9 text-center text-sm font-bold text-gray-900 focus:outline-none border-x border-gray-200 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none",
                              min: 0,
                              placeholder: "0",
                              data: {
                                quantity_grid_target: "quantityInput",
                                action: "input->quantity-grid#updateTotals",
                                size: size,
-                               color: color['name'],
+                               color: color.name,
                                row: size,
-                               col: color['name']
+                               col: color.name
                              } %>
-
-                      <!-- Increment button -->
                       <button type="button"
                               data-action="click->quantity-grid#increment"
-                              class="px-3 py-2 text-gray-600 hover:text-pink-700 hover:bg-gradient-to-r hover:from-pink-50 hover:to-rose-50 rounded-r-lg transition-all duration-200">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                              class="flex-1 h-9 flex items-center justify-center text-gray-400 hover:text-pink-600 hover:bg-pink-50 active:bg-pink-100 transition-colors duration-150">
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path>
                         </svg>
                       </button>
                     </div>
                     <%= hidden_field_tag "items[#{size_idx}_#{color_idx}][size]", size %>
-                    <%= hidden_field_tag "items[#{size_idx}_#{color_idx}][color]", color['name'] %>
-                  </td>
+                    <%= hidden_field_tag "items[#{size_idx}_#{color_idx}][color]", color.name %>
+                  </div>
                 <% end %>
-                <td class="px-6 py-4 text-center font-bold text-lg text-gray-700 bg-gray-50 sticky right-0 z-10 border-l border-gray-200"
-                    data-quantity-grid-target="rowTotal"
-                    data-row="<%= size %>">
-                  0
-                </td>
-              </tr>
-            <% end %>
+              </div>
+            </div>
 
-            <!-- Column Totals Row -->
-            <tr class="bg-gradient-to-r from-gray-100 to-gray-200 font-bold border-t-2 border-gray-300">
-              <td class="px-6 py-4 text-sm text-gray-800 sticky left-0 bg-gray-200 z-10 border-r border-gray-300">
-                Column Total
-              </td>
-              <% @product.colors.each do |color| %>
-                <td class="px-4 py-4 text-center text-base text-gray-800"
+            <!-- Card Color Total -->
+            <div class="border-t border-gray-100 px-4 py-3 bg-gradient-to-r from-gray-50 to-pink-50 flex justify-between items-center">
+              <span class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Color Total</span>
+              <span class="text-lg font-bold text-pink-600"
                     data-quantity-grid-target="colTotal"
-                    data-col="<%= color['name'] %>">
-                  0
-                </td>
-              <% end %>
-              <td class="px-6 py-4 text-center text-2xl font-bold text-pink-600 bg-gray-200 sticky right-0 z-10 border-l border-gray-300"
-                  data-quantity-grid-target="grandTotal">
-                0
-              </td>
-            </tr>
-          </tbody>
-        </table>
+                    data-col="<%= color.name %>">0</span>
+            </div>
+          </div>
+        <% end %>
       </div>
+
+      <!-- Grand Total (hidden, used for validation) -->
+      <span class="hidden" data-quantity-grid-target="grandTotal">0</span>
 
       <!-- Pricing & Feedback Section -->
       <div class="mt-6 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-6 border-2 border-blue-200">
