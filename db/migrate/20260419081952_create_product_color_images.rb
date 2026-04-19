@@ -2,7 +2,7 @@ class CreateProductColorImages < ActiveRecord::Migration[8.0]
   def change
     create_table :product_color_images do |t|
       t.references :product_color, null: false, foreign_key: true
-      t.integer :angle, null: false
+      t.string :angle, limit: 5, null: false
 
       t.timestamps
     end

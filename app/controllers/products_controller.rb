@@ -1,5 +1,5 @@
 class ProductsController < BaseController
-  before_action :set_product, only: [ :edit, :update ]
+  before_action :set_product, only: [ :edit, :update, :delete_image ]
 
   def index
     scope = params[:q].present? ? current_client.client_products.search_by_name(params[:q]) : current_client.client_products

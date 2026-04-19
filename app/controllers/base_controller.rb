@@ -2,11 +2,16 @@ class BaseController < ApplicationController
   before_action :check_user
   before_action :set_current_client
   before_action :check_inventories_access
+  before_action :cart_items_count
 
   INVENTORIES_ENABLED_CONTROLLER = [ "inventories", "inventory_movements" ]
 
   def current_client
     @current_client
+  end
+
+  def cart_items_count
+    @cart_items_count ||= current_user&.client&.orders&.in_cart&.where(ordered_by: current_user)&.joins(:order_items)&.sum("order_items.quantity") || 0
   end
 
   def check_inventories_access

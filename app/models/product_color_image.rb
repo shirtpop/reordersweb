@@ -3,7 +3,7 @@ class ProductColorImage < ApplicationRecord
 
   belongs_to :product_color
 
-  enum :angle, { front: 0, back: 1, left: 2, right: 3 }
+  enum :angle, { front: "front", back: "back", left: "left", right: "right" }
 
   validates :angle, presence: true, uniqueness: { scope: :product_color_id }
 

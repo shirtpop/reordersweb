@@ -14,11 +14,5 @@ class StorefrontController < BaseController
 
     # Get products for selected catalog
     @products = @selected_catalog.products.includes(:drive_files)
-
-    # Get or create cart (draft order) for this catalog
-    @cart = current_client.orders.in_cart.find_or_initialize_by(
-      catalog_id: @selected_catalog.id,
-      ordered_by: current_user
-    )
   end
 end
