@@ -20,7 +20,7 @@
           </span>
           <!-- Order ID -->
           <span class="text-sm text-gray-500 dark:text-gray-400">
-            Order #<%= @order.id.to_s.rjust(6, '0') %>
+            <%= @order.order_number %>
           </span>
         </div>
       </div>

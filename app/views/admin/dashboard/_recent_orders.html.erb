@@ -26,7 +26,7 @@
           <% recent_orders.each do |order| %>
             <tr class="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700">
               <td class="px-4 py-3 font-medium text-gray-900 dark:text-white">
-                <%= link_to "##{order.id}", admin_order_path(order), class: "text-blue-600 hover:underline dark:text-blue-400" %>
+                <%= link_to order.order_number, admin_order_path(order), class: "text-blue-600 hover:underline dark:text-blue-400" %>
               </td>
               <td class="px-4 py-3">
                 <%= order.client.company_name %>

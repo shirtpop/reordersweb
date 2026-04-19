@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_04_19_081952) do
+ActiveRecord::Schema[8.0].define(version: 2026_04_19_144047) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -192,8 +192,10 @@ ActiveRecord::Schema[8.0].define(version: 2026_04_19_081952) do
     t.bigint "received_by_id"
     t.string "status", default: "cart", null: false
     t.datetime "submitted_at"
+    t.string "order_number", null: false
     t.index ["catalog_id"], name: "index_orders_on_catalog_id"
     t.index ["client_id"], name: "index_orders_on_client_id"
+    t.index ["order_number"], name: "index_orders_on_order_number", unique: true
     t.index ["ordered_by_id"], name: "index_orders_on_ordered_by_id"
     t.index ["received_by_id"], name: "index_orders_on_received_by_id"
     t.index ["shipped_to_id"], name: "index_orders_on_shipped_to_id"

@@ -16,7 +16,7 @@
         <li class="flex items-center justify-between bg-white dark:bg-gray-800 rounded-md px-3 py-2 border border-amber-100 dark:border-amber-800">
           <div class="flex items-center space-x-3">
             <span class="text-sm font-medium text-gray-900 dark:text-white">
-              <%= link_to "##{order.id}", admin_order_path(order), class: "text-blue-600 hover:underline dark:text-blue-400" %>
+              <%= link_to order.order_number, admin_order_path(order), class: "text-blue-600 hover:underline dark:text-blue-400" %>
             </span>
             <span class="text-sm text-gray-600 dark:text-gray-400"><%= order.client.company_name %></span>
           </div>

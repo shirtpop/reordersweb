@@ -39,6 +39,7 @@ class Order < ApplicationRecord
   accepts_nested_attributes_for :order_items, allow_destroy: true
 
   before_create :set_shipped_address
+  before_create :set_order_number
   before_save :set_submitted_at
   # Only send notifications for submitted orders, not cart/draft orders
   after_commit :send_notifications, on: :create, if: -> { status_submitted? || status_received? }
@@ -56,6 +57,19 @@ class Order < ApplicationRecord
   def send_notifications
     OrderMailer.with(order_id: self.id).client_confirmation.deliver_later
     OrderMailer.with(order_id: self.id).admin_notification.deliver_later
+  end
+
+  def set_order_number
+    self.class.transaction do
+      # Advisory lock scoped to this transaction prevents concurrent duplicates
+      self.class.connection.execute("SELECT pg_advisory_xact_lock(hashtext('order_number_generation'))")
+      now = Time.current
+      month_start = now.beginning_of_month
+      month_end = now.end_of_month
+      count = self.class.where(created_at: month_start..month_end).count
+      seq = (count + 1).to_s.rjust(4, "0")
+      self.order_number = "O#{now.strftime('%Y%m%d')}#{seq}"
+    end
   end
 
   def set_shipped_address

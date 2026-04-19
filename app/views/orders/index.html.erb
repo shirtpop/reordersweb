@@ -37,7 +37,7 @@
   <!-- Orders Cards -->
   <% if @orders.any? %>
     <div class="space-y-4">
-      <% @orders.each do |order| %>
+      <% @orders.each_with_index do |order, idx| %>
         <%= link_to order_path(order), class: "block" do %>
           <div class="bg-white rounded-xl shadow-md hover:shadow-xl border-2 border-gray-200 hover:border-pink-300 p-6 transition-all duration-300 transform hover:-translate-y-1">
 
@@ -46,7 +46,7 @@
               <div class="flex items-center gap-6">
                 <div class="flex-shrink-0 w-16 h-16 bg-gradient-to-br from-pink-600 to-rose-600 rounded-xl shadow-lg flex items-center justify-center">
                   <span class="text-white font-bold text-lg">
-                    #<%= order.id.to_s.last(4) %>
+                    <%= idx + 1 %>
                   </span>
                 </div>
 
@@ -54,7 +54,7 @@
                 <div class="min-w-0">
                   <div class="flex flex-wrap items-center gap-2 mb-1">
                     <h3 class="text-lg font-bold text-gray-900">
-                      Order #<%= order.id.to_s.rjust(6, '0') %>
+                      <%= order.order_number %>
                     </h3>
                     <%= render "orders/status_badge", order: order %>
                   </div>
