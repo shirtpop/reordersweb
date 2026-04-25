@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_04_19_144047) do
+ActiveRecord::Schema[8.0].define(version: 2026_04_23_141037) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -174,7 +174,9 @@ ActiveRecord::Schema[8.0].define(version: 2026_04_19_144047) do
     t.integer "quantity", default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "product_color_id"
     t.index ["order_id"], name: "index_order_items_on_order_id"
+    t.index ["product_color_id"], name: "index_order_items_on_product_color_id"
     t.index ["product_id"], name: "index_order_items_on_product_id"
   end
 
@@ -220,6 +222,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_04_19_144047) do
     t.string "hex_color"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "minimum_order", default: 0, null: false
     t.index ["product_id"], name: "index_product_colors_on_product_id"
   end
 
@@ -271,6 +274,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_04_19_144047) do
   add_foreign_key "clients", "addresses"
   add_foreign_key "clients", "addresses", column: "shipping_address_id"
   add_foreign_key "order_items", "orders"
+  add_foreign_key "order_items", "product_colors"
   add_foreign_key "order_items", "products"
   add_foreign_key "orders", "addresses", column: "shipped_to_id"
   add_foreign_key "orders", "catalogs"

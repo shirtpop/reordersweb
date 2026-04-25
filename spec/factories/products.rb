@@ -6,7 +6,7 @@ FactoryBot.define do
     price_info do
       {
         base_price: Faker::Commerce.price(range: 10.0..20.0),
-        minimum_order: Faker::Number.between(from: 1, to: 10),
+        minimum_order: 6,
         bulk_prices: nil
       }
     end
@@ -14,19 +14,31 @@ FactoryBot.define do
     sizes { Product::SIZES.sample(5) }
 
     after(:build) do |product|
-      product.product_colors.build(
-        name: Faker::Color.color_name,
-        hex_color: Faker::Color.hex_color
-      ) if product.product_colors.empty?
+      if product.product_colors.empty?
+        product.product_colors.build(
+          name: Faker::Color.color_name,
+          hex_color: Faker::Color.hex_color,
+          minimum_order: product.minimum_order.to_i
+        )
+      end
     end
 
     trait :with_colors do
+      price_info do
+        {
+          base_price: Faker::Commerce.price(range: 10.0..20.0),
+          minimum_order: 12,
+          bulk_prices: nil
+        }
+      end
+
       after(:build) do |product|
         product.product_colors.clear
-        3.times do |i|
+        3.times do
           product.product_colors.build(
             name: Faker::Color.color_name,
-            hex_color: Faker::Color.hex_color
+            hex_color: Faker::Color.hex_color,
+            minimum_order: 4
           )
         end
       end

@@ -59,7 +59,7 @@ module Admin
         :name, :description, :minimum_order, :base_price,
         sizes: [],
         bulk_prices: [ :qty, :price ],
-        product_colors_attributes: [ :id, :name, :hex_color, :_destroy ]
+        product_colors_attributes: [ :id, :name, :hex_color, :minimum_order, :_destroy ]
       )
     end
   end

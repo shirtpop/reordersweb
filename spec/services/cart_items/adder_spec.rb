@@ -26,7 +26,6 @@ RSpec.describe CartItems::Adder do
     described_class.new(
       client: client,
       user: user,
-      catalog: catalog,
       product: product,
       items_params: items_params
     )
@@ -38,11 +37,6 @@ RSpec.describe CartItems::Adder do
         expect {
           service.call
         }.to change { client.orders.in_cart.count }.by(1)
-      end
-
-      it 'associates cart with the catalog' do
-        cart = service.call
-        expect(cart.catalog).to eq(catalog)
       end
 
       it 'associates cart with the user' do
@@ -144,7 +138,6 @@ RSpec.describe CartItems::Adder do
         described_class.new(
           client: client,
           user: user,
-          catalog: catalog,
           product: product,
           items_params: items_params_merge_only
         )

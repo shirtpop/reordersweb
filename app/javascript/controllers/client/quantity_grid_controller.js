@@ -9,7 +9,8 @@ export default class extends Controller {
     "totalQuantity",
     "pricePerUnit",
     "estimatedTotal",
-    "feedbackMessage"
+    "feedbackMessage",
+    "colorMinimum"
   ]
 
   connect() {
@@ -26,10 +27,12 @@ export default class extends Controller {
       this.bulkPrices = []
     }
 
-    console.log("Quantity Grid Controller connected", {
-      basePrice: this.basePrice,
-      minimumOrder: this.minimumOrder,
-      bulkPrices: this.bulkPrices
+    // Build per-color minimum order map
+    this.colorMinimums = {}
+    this.colorMinimumTargets.forEach(input => {
+      const color = input.dataset.color
+      const min = parseInt(input.value || 0)
+      if (min > 0) this.colorMinimums[color] = min
     })
   }
 
@@ -124,10 +127,32 @@ export default class extends Controller {
     let message = ""
     let messageClass = ""
 
-    // Priority 1: Check minimum order requirement
-    if (this.minimumOrder > 0 && totalQuantity > 0 && totalQuantity < this.minimumOrder) {
-      const remaining = this.minimumOrder - totalQuantity
-      message = `⚠️ Add ${remaining} more unit${remaining === 1 ? '' : 's'} to meet minimum order requirement (${this.minimumOrder} units total)`
+    // Priority 1: Per-color and total minimum checks
+    const violations = []
+
+    this.colTotalTargets.forEach(target => {
+      const color = target.dataset.col
+      const colorTotal = parseInt(target.textContent || 0)
+      const colorMin = this.colorMinimums[color] || 0
+
+      if (colorMin > 0) {
+        // Required color — must be ordered and meet its own minimum
+        if (colorTotal < colorMin) {
+          violations.push(`${color}: add ${colorMin - colorTotal} more (required min ${colorMin})`)
+        }
+      } else if (this.minimumOrder > 0 && colorTotal > 0 && colorTotal < this.minimumOrder) {
+        // Optional color ordered below the product minimum run size
+        violations.push(`${color}: add ${this.minimumOrder - colorTotal} more (min ${this.minimumOrder} per color)`)
+      }
+    })
+
+    // Total must meet the product minimum
+    if (this.minimumOrder > 0 && totalQuantity < this.minimumOrder) {
+      violations.push(`total: add ${this.minimumOrder - totalQuantity} more (min ${this.minimumOrder} overall)`)
+    }
+
+    if (violations.length > 0) {
+      message = `⚠️ Minimum not met: ${violations.join(" · ")}`
       messageClass = "text-amber-600 font-semibold bg-amber-50 border border-amber-200 rounded-lg px-4 py-3"
     }
     // Priority 2: Check if close to next bulk pricing tier
@@ -194,17 +219,44 @@ export default class extends Controller {
   validateBeforeSubmit(event) {
     const total = parseInt(this.grandTotalTarget?.textContent || 0)
 
-    // Check if any items selected
-    if (total === 0) {
+    // Check per-color and total minimum requirements
+    const violations = []
+
+    this.colTotalTargets.forEach(target => {
+      const color = target.dataset.col
+      const colorTotal = parseInt(target.textContent || 0)
+      const colorMin = this.colorMinimums[color] || 0
+
+      if (colorMin > 0) {
+        if (colorTotal < colorMin) {
+          violations.push(`• ${color}: ${colorTotal} selected, required minimum is ${colorMin}`)
+        }
+      } else if (this.minimumOrder > 0 && colorTotal > 0 && colorTotal < this.minimumOrder) {
+        violations.push(`• ${color}: ${colorTotal} selected, minimum per color is ${this.minimumOrder}`)
+      }
+    })
+
+    if (this.minimumOrder > 0 && total < this.minimumOrder) {
+      violations.push(`• Total: ${total} selected, overall minimum is ${this.minimumOrder}`)
+    }
+
+    if (violations.length > 0) {
       event.preventDefault()
-      alert("Please select at least one item to add to cart.")
+      alert(`⚠️ Minimum order requirements not met:\n\n${violations.join("\n")}`)
       return false
     }
 
-    // Check minimum order requirement
-    if (this.minimumOrder > 0 && total < this.minimumOrder) {
+    // Nothing selected and no minimum violations (product has no required colors or minimums)
+    if (total === 0) {
       event.preventDefault()
-      alert(`⚠️ Minimum order quantity is ${this.minimumOrder} units.\n\nYou have selected ${total} units.\n\nPlease add ${this.minimumOrder - total} more units to proceed.`)
+      const hasRequiredColors = Object.keys(this.colorMinimums).length > 0
+      if (hasRequiredColors) {
+        alert(`⚠️ Please enter quantities for all required colors to meet their minimum orders.`)
+      } else if (this.minimumOrder > 0) {
+        alert(`⚠️ Please enter at least ${this.minimumOrder} units to add to cart.`)
+      } else {
+        alert("Please select at least one item to add to cart.")
+      }
       return false
     }
 

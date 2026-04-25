@@ -80,8 +80,8 @@ Rails.application.routes.draw do
       resources :inventory_movements, only: [ :index ]
     end
   end
+  resource :checkout, only: [ :show, :create ], controller: "order_checkouts"
   resources :orders, only: [ :index, :show, :create ] do
-    resource :checkout, only: [ :show, :create ], controller: "order_checkouts"
     member do
       post :received
       post :duplicate

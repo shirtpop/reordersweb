@@ -13,6 +13,6 @@ class StorefrontController < BaseController
     end
 
     # Get products for selected catalog
-    @products = @selected_catalog.products.includes(:drive_files)
+    @products = @selected_catalog.products.includes(:drive_files, :product_colors)
   end
 end

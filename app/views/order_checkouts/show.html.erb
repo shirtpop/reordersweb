@@ -4,7 +4,7 @@
   <div class="grid lg:grid-cols-3 gap-8">
     <!-- Checkout Form (Left Column) -->
     <div class="lg:col-span-2">
-      <%= form_with model: @cart, url: order_checkout_path(@cart), method: :post, class: "bg-white rounded-xl shadow-lg border border-gray-200 p-8" do |form| %>
+      <%= form_with model: @cart, url: checkout_path, method: :post, class: "bg-white rounded-xl shadow-lg border border-gray-200 p-8" do |form| %>
 
         <h2 class="text-2xl font-bold text-gray-900 mb-6">Delivery Details</h2>
 

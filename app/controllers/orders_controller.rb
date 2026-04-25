@@ -3,7 +3,7 @@ class OrdersController < BaseController
   def index
     # Only show submitted orders (exclude cart/draft orders)
     @pagy, @orders = pagy(current_client.orders.submitted
-                                       .includes(:catalog)
+                                       .includes(:catalog, :ordered_by, :received_by)
                                        .order(id: :desc))
   end
 

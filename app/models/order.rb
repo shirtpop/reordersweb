@@ -2,6 +2,7 @@ class Order < ApplicationRecord
   belongs_to :client
   belongs_to :catalog, optional: true
   belongs_to :ordered_by, class_name: "User", optional: true
+  belongs_to :received_by, class_name: "User", optional: true
   belongs_to :shipped_to, class_name: "Address", optional: true
 
   has_many :order_items, dependent: :destroy
@@ -17,7 +18,6 @@ class Order < ApplicationRecord
 
   # Scopes for filtering orders
   scope :submitted, -> { where.not(status: "cart") }  # Exclude cart/draft orders
-  scope :in_cart, -> { status_cart }
   scope :pending_receipt, -> {
     where.not(status: %w[cart received cancelled])
       .where(received_at: nil)
@@ -25,7 +25,8 @@ class Order < ApplicationRecord
   }
 
   scope :search_by_keyword, ->(keyword) {
-    joins(:client, :catalog, order_items: :product)
+    joins(:client, order_items: :product)
+      .left_joins(:catalog)
       .where("clients.company_name ILIKE :keyword OR
               clients.personal_name ILIKE :keyword OR
               catalogs.name ILIKE :keyword OR
@@ -41,8 +42,7 @@ class Order < ApplicationRecord
   before_create :set_shipped_address
   before_create :set_order_number
   before_save :set_submitted_at
-  # Only send notifications for submitted orders, not cart/draft orders
-  after_commit :send_notifications, on: :create, if: -> { status_submitted? || status_received? }
+  after_commit :send_notifications, if: -> { status_submitted? }
 
   def total_price
     order_items.sum { |item| item.total_price }

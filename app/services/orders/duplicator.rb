@@ -30,10 +30,7 @@ module Orders
     end
 
     def find_or_create_cart
-      @client.orders.in_cart.find_or_initialize_by(
-        catalog_id: @original_order.catalog_id,
-        ordered_by: @user
-      )
+      @user.in_cart_order || @client.orders.build(status: :cart, ordered_by: @user)
     end
 
     def validate_products

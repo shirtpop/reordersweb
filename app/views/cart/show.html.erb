@@ -1,7 +1,7 @@
 <div class="container mx-auto px-4 py-8 max-w-6xl">
   <h1 class="text-3xl font-bold text-gray-900 mb-8">Shopping Cart</h1>
 
-  <% if @cart_data.empty? %>
+  <% if @sorted_items.empty? %>
     <!-- Empty Cart State -->
     <div class="bg-white rounded-lg shadow-sm border border-gray-200 text-center py-20">
       <svg class="w-24 h-24 mx-auto text-gray-300 mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -13,141 +13,79 @@
     </div>
 
   <% else %>
-    <div class="space-y-12">
-      <% @cart_data.each do |data| %>
-        <% cart = data[:cart] %>
-        <% sorted_items = data[:sorted_items] %>
-        <% calculator = data[:calculator] %>
-
-        <div>
-          <!-- Catalog heading -->
-          <div class="flex items-center gap-3 mb-4">
-            <div class="h-1 w-6 bg-pink-500 rounded"></div>
-            <h2 class="text-xl font-semibold text-gray-800"><%= cart.catalog.name %></h2>
-          </div>
-
-          <div class="grid lg:grid-cols-3 gap-8">
-            <!-- Cart Items (Left Column) -->
-            <div class="lg:col-span-2 space-y-4">
-              <% (sorted_items || cart.order_items).group_by(&:product).each do |product, items| %>
-                <div class="bg-white rounded-2xl shadow-md hover:shadow-xl border-2 border-gray-200 hover:border-pink-300 p-6 transition-all duration-300 transform hover:-translate-y-1">
-                  <div class="flex gap-6">
-                    <!-- Product Image with Glow Ring -->
-                    <div class="flex-shrink-0 relative group">
-                      <% if product.drive_files.any? %>
-                        <%= image_tag product.drive_files.first.preview_url,
-                            alt: product.name,
-                            class: "w-36 h-36 object-cover rounded-xl border-2 border-gray-200 shadow-lg group-hover:shadow-2xl transition-shadow duration-300",
-                            referrerpolicy: "no-referrer" %>
-                        <div class="absolute -inset-1 bg-gradient-to-r from-pink-600 to-rose-600 rounded-xl opacity-0 group-hover:opacity-20 blur-lg transition-opacity duration-300 -z-10"></div>
-                      <% else %>
-                        <div class="w-36 h-36 bg-gray-100 rounded-xl flex items-center justify-center border-2 border-gray-200">
-                          <svg class="w-12 h-12 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                          </svg>
-                        </div>
-                      <% end %>
-                    </div>
-
-                    <!-- Product Details -->
-                    <div class="flex-grow">
-                      <h3 class="text-xl font-bold text-gray-900 mb-3 group-hover:text-pink-700 transition-colors"><%= product.name %></h3>
-
-                      <!-- Item Variants -->
-                      <div class="space-y-2">
-                        <% items.each do |item| %>
-                          <div class="flex justify-between items-center py-3 px-4 bg-gray-50 rounded-lg border border-gray-200"
-                               data-controller="cart-item"
-                               id="cart_item_<%= item.id %>">
-                            <div class="flex items-center gap-4">
-                              <!-- Color indicator -->
-                              <% color_data = product.product_colors.find { |c| c.name == item.color } %>
-                              <% if color_data %>
-                                <div class="w-8 h-8 rounded-full border-2 border-gray-300 shadow-sm"
-                                     style="background-color: <%= color_data.hex_color %>"
-                                     title="<%= item.color %>"></div>
-                              <% end %>
-
-                              <div>
-                                <span class="font-semibold text-gray-900"><%= item.color %></span>
-                                <span class="text-gray-500 mx-2">•</span>
-                                <span class="font-semibold text-gray-900">Size <%= item.size %></span>
-                              </div>
-                            </div>
-
-                            <div class="flex items-center gap-3">
-                              <!-- Quantity controls -->
-                              <%= form_with model: item, url: cart_item_path(item), method: :patch,
-                                  data: { "cart-item-target": "form" },
-                                  class: "flex items-center gap-2" do |f| %>
-
-                                <div class="flex items-center border-2 border-gray-300 rounded-xl bg-white shadow-md hover:shadow-lg transition-shadow duration-200">
-                                  <button type="button"
-                                          data-action="click->cart-item#decrement"
-                                          class="px-4 py-3 text-gray-600 hover:text-pink-700 hover:bg-gradient-to-r hover:from-pink-50 hover:to-rose-50 rounded-l-xl transition-all duration-200">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path>
-                                    </svg>
-                                  </button>
-
-                                  <%= f.number_field :quantity,
-                                      value: item.quantity,
-                                      min: 0,
-                                      data: {
-                                        "cart-item-target": "quantityInput",
-                                        action: "input->cart-item#updateQuantity"
-                                      },
-                                      class: "w-20 text-center border-x-2 border-gray-300 py-3 font-bold text-pink-600 text-lg focus:outline-none focus:ring-2 focus:ring-pink-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" %>
-
-                                  <button type="button"
-                                          data-action="click->cart-item#increment"
-                                          class="px-4 py-3 text-gray-600 hover:text-pink-700 hover:bg-gradient-to-r hover:from-pink-50 hover:to-rose-50 rounded-r-xl transition-all duration-200">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-                                    </svg>
-                                  </button>
-                                </div>
-                                <%= f.hidden_field :order_id, value: cart.id %>
-                              <% end %>
-
-                              <!-- Remove button -->
-                              <%= button_to cart_item_path(item),
-                                  method: :delete,
-                                  class: "text-red-600 hover:text-red-700 hover:bg-red-50 p-2 rounded-lg transition-colors",
-                                  data: { turbo_confirm: "Remove this item from cart?" },
-                                  title: "Remove item" do %>
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                                </svg>
-                              <% end %>
-                            </div>
-                          </div>
-                        <% end %>
-                      </div>
-                    </div>
+    <div class="grid lg:grid-cols-3 gap-8">
+      <!-- Cart Items (Left Column) -->
+      <div class="lg:col-span-2 space-y-4">
+        <% @sorted_items.group_by(&:product).each do |product, items| %>
+          <div class="bg-white rounded-2xl shadow-md hover:shadow-xl border-2 border-gray-200 hover:border-pink-300 p-6 transition-all duration-300 transform hover:-translate-y-1">
+            <div class="flex gap-6">
+              <!-- Product Image with Glow Ring -->
+              <div class="flex-shrink-0 relative group">
+                <% if product.drive_files.any? %>
+                  <%= image_tag product.drive_files.first.preview_url,
+                      alt: product.name,
+                      class: "w-36 h-36 object-cover rounded-xl border-2 border-gray-200 shadow-lg group-hover:shadow-2xl transition-shadow duration-300",
+                      referrerpolicy: "no-referrer" %>
+                  <div class="absolute -inset-1 bg-gradient-to-r from-pink-600 to-rose-600 rounded-xl opacity-0 group-hover:opacity-20 blur-lg transition-opacity duration-300 -z-10"></div>
+                <% else %>
+                  <div class="w-36 h-36 bg-gray-100 rounded-xl flex items-center justify-center border-2 border-gray-200">
+                    <svg class="w-12 h-12 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                    </svg>
                   </div>
-                </div>
-              <% end %>
-            </div>
-
-            <!-- Order Summary (Right Column - Sticky) -->
-            <div class="lg:col-span-1">
-              <%= render "cart/order_summary", cart: cart, calculator: calculator %>
-            </div>
-          </div>
-
-          <!-- Mobile Summary (inline, not fixed — avoids overlap with multiple carts) -->
-          <div class="mt-4 bg-white border-t-2 border-pink-200 p-4 shadow-md rounded-b-2xl md:hidden">
-            <div class="flex items-center justify-between gap-4">
-              <div>
-                <p class="text-xs text-gray-600">Total</p>
-                <p class="text-2xl font-bold text-pink-600">$<%= sprintf("%.2f", calculator.total_price) %></p>
+                <% end %>
               </div>
-              <%= link_to "Checkout", order_checkout_path(cart), class: "btn-primary flex-1" %>
+
+              <!-- Product Details -->
+              <div class="flex-grow">
+                <div class="flex justify-between items-start mb-3">
+                  <h3 class="text-xl font-bold text-gray-900 group-hover:text-pink-700 transition-colors"><%= product.name %></h3>
+                  <%= button_to cart_item_path(product), method: :delete,
+                      class: "p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors duration-200",
+                      title: "Remove product from cart",
+                      data: { turbo_confirm: "Remove all #{product.name} items from your cart?" } do %>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                    </svg>
+                  <% end %>
+                </div>
+
+                <!-- Minimum order summary -->
+                <% color_minimums = product.product_colors.select { |pc| pc.minimum_order.to_i > 0 } %>
+                <% if product.minimum_order.to_i > 0 || color_minimums.any? %>
+                  <div class="mb-3 flex flex-wrap gap-2 items-center">
+                    <% if product.minimum_order.to_i > 0 %>
+                      <span class="inline-flex items-center gap-1 text-xs font-semibold text-indigo-700 bg-indigo-50 border border-indigo-200 rounded-full px-2.5 py-1">
+                        Min. total: <%= product.minimum_order %> units
+                      </span>
+                    <% end %>
+                    <% color_minimums.each do |pc| %>
+                      <span class="inline-flex items-center gap-1.5 text-xs font-semibold text-amber-700 bg-amber-50 border border-amber-200 rounded-full px-2.5 py-1">
+                        <span class="w-2.5 h-2.5 rounded-full flex-shrink-0" style="background-color: <%= pc.hex_color %>"></span>
+                        <%= pc.name.capitalize %>: min <%= pc.minimum_order %>
+                      </span>
+                    <% end %>
+                  </div>
+                <% end %>
+
+                <!-- Item Variants -->
+                <div class="space-y-2">
+                  <% items.each do |item| %>
+                    <%= render "cart_items/item", item: item, product: product, cart: @cart %>
+                  <% end %>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      <% end %>
+        <% end %>
+      </div>
+
+      <!-- Order Summary (Right Column - Sticky) -->
+      <div class="lg:col-span-1">
+        <%= render "cart/order_summary", cart: @cart, calculator: @calculator %>
+      </div>
     </div>
+
+    <%= render "cart/mobile_summary", cart: @cart, calculator: @calculator %>
   <% end %>
 </div>

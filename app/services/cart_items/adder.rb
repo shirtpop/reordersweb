@@ -2,10 +2,9 @@ module CartItems
   class Adder
     attr_reader :cart, :items_added
 
-    def initialize(client:, user:, catalog:, product:, items_params:)
+    def initialize(client:, user:, product:, items_params:)
       @client = client
       @user = user
-      @catalog = catalog
       @product = product
       @items_params = items_params
       @items_added = 0
@@ -24,11 +23,8 @@ module CartItems
     private
 
     def find_or_create_cart
-      @cart = @client.orders.in_cart.find_or_initialize_by(
-        catalog_id: @catalog.id,
-        ordered_by: @user
-      )
-      # Reload order_items for existing carts to ensure we have the latest data
+      @cart = @user.in_cart_order ||
+              @client.orders.build(status: :cart, ordered_by: @user)
       @cart.order_items.reload if @cart.persisted?
     end
 

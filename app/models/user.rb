@@ -29,6 +29,8 @@ class User < ApplicationRecord
     []
   end
 
+  def in_cart_order = orders.status_cart.first
+
   private
 
   def admin_cannot_belong_to_client

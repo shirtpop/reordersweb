@@ -11,7 +11,7 @@ class BaseController < ApplicationController
   end
 
   def cart_items_count
-    @cart_items_count ||= current_user&.client&.orders&.in_cart&.where(ordered_by: current_user)&.joins(:order_items)&.sum("order_items.quantity") || 0
+    @cart_items_count ||= current_user&.in_cart_order&.order_items&.sum(:quantity) || 0
   end
 
   def check_inventories_access

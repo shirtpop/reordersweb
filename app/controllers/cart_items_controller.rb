@@ -1,13 +1,13 @@
 class CartItemsController < BaseController
   def create
-    catalog = current_client.catalogs.active.find(params[:catalog_id])
-    product = catalog.products.find(params[:product_id])
+    product = Product.joins(:catalogs)
+                     .merge(Catalog.active.where(id: params[:catalog_id], client_id: current_client.id))
+                     .find(params[:product_id])
 
     # Use service to add items to cart
     adder = CartItems::Adder.new(
       client: current_client,
       user: current_user,
-      catalog: catalog,
       product: product,
       items_params: params[:items]
     )
@@ -18,7 +18,7 @@ class CartItemsController < BaseController
     respond_to do |format|
       format.turbo_stream {
         flash.now[:notice] = "Added #{added_count} item(s) to cart!"
-        @catalog_id = catalog.id
+        @catalog_id = params[:catalog_id]
         @item_count = added_count
       }
       format.json {
@@ -53,12 +53,24 @@ class CartItemsController < BaseController
   end
 
   def update
-    @item = OrderItem.joins(:order)
-                     .merge(Order.in_cart.where(client: current_client, id: params[:order_item][:order_id]))
-                     .find(params[:id])
+    @item = current_user.in_cart_order.order_items.find(params[:id])
     new_quantity = params[:order_item][:quantity].to_i
 
-    # Validate quantity
+    violations = minimum_order_violations_for_update(@item, new_quantity)
+
+    if violations.any?
+      respond_to do |format|
+        format.turbo_stream {
+          flash.now[:alert] = violations.join(" ")
+          @cart = @item.order.reload
+          @calculator = Orders::Calculator.new(order: @cart)
+          render :update
+        }
+        format.html { redirect_to cart_path, alert: violations.join(" ") }
+      end
+      return
+    end
+
     if new_quantity <= 0
       @item.destroy!
       message = "Item removed from cart"
@@ -97,17 +109,27 @@ class CartItemsController < BaseController
   end
 
   def destroy
-    # Find the order item within the current user's cart orders
-    @item = current_client.orders.in_cart
-                         .where(ordered_by: current_user)
-                         .joins(:order_items)
-                         .find_by!(order_items: { id: params[:id] })
-                         .order_items.find(params[:id])
+    cart = current_user.in_cart_order
+    raise ActiveRecord::RecordNotFound unless cart
 
-    @item.destroy!
+    items = cart.order_items.where(product_id: params[:id])
+    raise ActiveRecord::RecordNotFound if items.empty?
 
-    redirect_to cart_path, notice: "Item removed from cart"
+    items.destroy_all
+
+    redirect_to cart_path, notice: "Product removed from cart"
   rescue ActiveRecord::RecordNotFound
     redirect_to cart_path, alert: "Item not found in cart"
+  end
+
+  private
+
+  def minimum_order_violations_for_update(item, new_quantity)
+    simulated_items = current_user.in_cart_order.order_items.where(product_id: item.product_id).map do |oi|
+                            qty = oi.id == item.id ? new_quantity : oi.quantity
+                            Orders::MinimumOrderValidator::Item.new(item.product, oi.color, qty)
+                          end
+
+    Orders::MinimumOrderValidator.new(order_items: simulated_items).violations
   end
 end

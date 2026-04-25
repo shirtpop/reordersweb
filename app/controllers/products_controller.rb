@@ -136,12 +136,6 @@ class ProductsController < BaseController
                        .includes(:drive_files, product_colors: { product_color_images: :drive_files })
                        .find(params[:id])
 
-    # Get or create cart for this catalog
-    @cart = current_client.orders.in_cart.find_or_initialize_by(
-      catalog_id: @catalog.id,
-      ordered_by: current_user
-    )
-
     # Render storefront view instead of default
     render "products/storefront_show"
   rescue ActiveRecord::RecordNotFound

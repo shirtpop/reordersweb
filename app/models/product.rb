@@ -19,6 +19,7 @@ class Product < ApplicationRecord
   validates :product_colors, presence: true
   validate :validate_bulk_prices
   validate :validate_max_drive_files
+  validate :validate_minimum_order_matches_colors
 
   has_rich_text :description
 
@@ -41,6 +42,17 @@ class Product < ApplicationRecord
   end
 
   private
+
+  def validate_minimum_order_matches_colors
+    active_colors = product_colors.reject(&:marked_for_destruction?)
+    color_sum = active_colors.sum { |pc| pc.minimum_order.to_i }
+
+    return if color_sum == 0 && minimum_order.to_i == 0
+
+    if minimum_order.to_i != color_sum
+      errors.add(:minimum_order, "must equal the sum of all color minimum orders (expected #{color_sum})")
+    end
+  end
 
   def validate_bulk_prices
     return if bulk_prices.blank?

@@ -29,18 +29,6 @@
             <!-- Shimmer Overlay -->
             <div class="absolute inset-0 bg-gradient-to-tr from-transparent via-white/20 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
           </div>
-
-          <!-- Thumbnail Strip (if multiple images) -->
-          <% if @product.drive_files.count > 1 %>
-            <div class="grid grid-cols-4 gap-3">
-              <% @product.drive_files.first(4).each do |drive_file| %>
-                <%= image_tag drive_file.preview_url,
-                    alt: @product.name,
-                    class: "w-full aspect-square object-cover rounded-lg cursor-pointer hover:opacity-75 transition-opacity shadow-sm",
-                    referrerpolicy: "no-referrer" %>
-              <% end %>
-            </div>
-          <% end %>
         <% else %>
           <!-- Placeholder if no images -->
           <div class="aspect-square bg-gray-100 rounded-xl flex items-center justify-center mb-4">
@@ -140,6 +128,10 @@
             hero_image = images_by_angle["front"] || images_by_angle.values.first
             angle_labels = { "front" => "Front", "back" => "Back", "left" => "Left", "right" => "Right" }
           %>
+          <input type="hidden"
+                 data-quantity-grid-target="colorMinimum"
+                 data-color="<%= color.name %>"
+                 value="<%= color.minimum_order.to_i %>">
           <div class="bg-white rounded-2xl border-2 border-gray-200 shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden flex flex-col"
                data-controller="color-card">
 
@@ -150,7 +142,7 @@
                      alt="<%= color.name.capitalize %>"
                      referrerpolicy="no-referrer"
                      data-color-card-target="heroImage"
-                     class="w-full h-full object-cover transition-opacity duration-200">
+                     class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
               <% else %>
                 <div class="w-full h-full flex items-center justify-center" data-color-card-target="heroPlaceholder">
                   <div class="w-20 h-20 rounded-full border-4 border-white shadow-xl"
@@ -227,6 +219,12 @@
                   </div>
                 <% end %>
               </div>
+            </div>
+
+            <!-- Per-color minimum order indicator -->
+            <div class="border-t border-amber-100 px-4 py-2 bg-amber-50 flex justify-between items-center">
+              <span class="text-xs font-semibold text-amber-700 uppercase tracking-wide">Min. order</span>
+              <span class="text-sm font-bold text-amber-700"><%= color.minimum_order.positive? ? color.minimum_order : @product.minimum_order %> units</span>
             </div>
 
             <!-- Card Color Total -->

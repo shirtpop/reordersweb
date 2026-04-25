@@ -112,15 +112,16 @@
                   </div>
 
                   <!-- Colors available -->
+                  <% colors = product.product_colors.to_a %>
                   <div class="flex gap-1 mb-3">
-                    <% product.product_colors.first(2).each do |color| %>
+                    <% colors.first(2).each do |color| %>
                       <div class="w-6 h-6 rounded-full border-2 border-white shadow-sm"
                            style="background-color: <%= color.hex_color %>"
                            title="<%= color.name %>"></div>
                     <% end %>
-                    <% if product.product_colors.count > 2 %>
+                    <% if colors.size > 2 %>
                       <div class="w-6 h-6 rounded-full border-2 border-white shadow-sm bg-gray-100 flex items-center justify-center">
-                        <span class="text-[10px] font-semibold text-gray-600">+<%= product.product_colors.count - 2 %></span>
+                        <span class="text-[10px] font-semibold text-gray-600">+<%= colors.size - 2 %></span>
                       </div>
                     <% end %>
                   </div>

@@ -155,21 +155,6 @@
                           class: "#{current_page?(storefront_path) || current_page?(root_path) ? 'block py-2 px-3 text-pink-800 md:text-pink-700 md:p-0 rounded-lg' : 'block py-2 px-3 text-gray-900 rounded-lg transition-all duration-200 hover:bg-gradient-to-r hover:from-pink-50 hover:to-rose-50 md:hover:bg-transparent md:hover:text-pink-700 md:hover:scale-105 md:p-0'}" %>
             </li>
             <li>
-              <%= link_to cart_path, class: "#{current_page?(cart_path) ? 'block py-2 px-3 text-pink-800 md:text-pink-700 md:p-0 rounded-lg' : 'block py-2 px-3 text-gray-900 rounded-lg transition-all duration-200 hover:bg-gradient-to-r hover:from-pink-50 hover:to-rose-50 md:hover:bg-transparent md:hover:text-pink-700 md:hover:scale-105 md:p-0'} relative" do %>
-                <span class="flex items-center gap-2">
-                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
-                  </svg>
-                  Cart
-                  <% if @cart_items_count > 0 %>
-                    <span class="bg-gradient-to-br from-pink-600 to-rose-600 text-white text-xs font-bold rounded-full h-6 w-6 flex items-center justify-center shadow-lg animate-pulse">
-                      <%= @cart_items_count %>
-                    </span>
-                  <% end %>
-                </span>
-              <% end %>
-            </li>
-            <li>
               <%= link_to "Orders", orders_path,
                           class: "#{current_page?(orders_path) ? 'block py-2 px-3 text-pink-800 rounded-lg md:text-pink-700 md:p-0' : 'block py-2 px-3 text-gray-900 rounded-lg transition-all duration-200 hover:bg-gradient-to-r hover:from-pink-50 hover:to-rose-50 md:hover:bg-transparent md:hover:text-pink-700 md:hover:scale-105 md:p-0'}" %>
             </li>

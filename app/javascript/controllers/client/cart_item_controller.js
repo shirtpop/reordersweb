@@ -8,10 +8,6 @@ export default class extends Controller {
 
   connect() {
     this.timeout = null
-    console.log("Cart item controller connected", {
-      hasForm: this.hasFormTarget,
-      hasInput: this.hasQuantityInputTarget
-    })
   }
 
   disconnect() {
@@ -21,12 +17,10 @@ export default class extends Controller {
   }
 
   updateQuantity(event) {
-    // Clear existing timeout
     if (this.timeout) {
       clearTimeout(this.timeout)
     }
 
-    // Validate quantity
     const quantity = parseInt(this.quantityInputTarget.value || 0)
 
     if (quantity < 0) {
@@ -34,9 +28,6 @@ export default class extends Controller {
       return
     }
 
-    console.log("Updating quantity to:", quantity)
-
-    // Debounce the form submission
     this.timeout = setTimeout(() => {
       this.submitForm()
     }, this.debounceValue)
@@ -60,16 +51,11 @@ export default class extends Controller {
 
   submitForm() {
     if (this.hasFormTarget) {
-      console.log("Submitting form")
-      // Use requestSubmit() to trigger form validations and events
-      // Falls back to submit() if requestSubmit is not available
       if (typeof this.formTarget.requestSubmit === 'function') {
         this.formTarget.requestSubmit()
       } else {
         this.formTarget.submit()
       }
-    } else {
-      console.error("Form target not found")
     }
   }
 }
