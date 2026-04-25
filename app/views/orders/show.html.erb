@@ -241,12 +241,20 @@
             </span>
           </div>
 
-          <div class="flex justify-between items-center py-2">
+          <div class="flex justify-between items-center py-2 border-b border-gray-100">
             <span class="text-sm font-medium text-gray-600">Products</span>
             <span class="px-3 py-1 bg-pink-100 text-pink-800 rounded-full text-sm font-bold">
               <%= @order.order_items.group_by(&:product_id).count %>
             </span>
           </div>
+
+          <% if @order.invoice_url.present? %>
+            <div class="flex justify-between items-center py-2">
+              <span class="text-sm font-medium text-gray-600">Invoice</span>
+              <%= link_to "View Invoice", @order.invoice_url, target: "_blank", rel: "noopener noreferrer",
+                  class: "inline-flex items-center gap-1 text-sm font-bold text-pink-600 hover:text-pink-700 hover:underline" %>
+            </div>
+          <% end %>
         </div>
       </div>
 

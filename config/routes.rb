@@ -43,7 +43,7 @@ Rails.application.routes.draw do
       get :new_wizard, on: :collection
     end
     resources :users
-    resources :orders, only: [ :index, :show ] do
+    resources :orders, only: [ :index, :show, :update ] do
       member do
         post :mark_as_processing
       end
