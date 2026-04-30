@@ -13,7 +13,6 @@
         <tr>
           <th scope="col" class="px-4 py-3">Order #</th>
           <th scope="col" class="px-4 py-3">Client</th>
-          <th scope="col" class="px-4 py-3">Catalog</th>
           <th scope="col" class="px-4 py-3">Status</th>
           <th scope="col" class="px-4 py-3">Date</th>
           <th scope="col" class="px-4 py-3">
@@ -32,15 +31,12 @@
                 <%= order.client.company_name %>
               </td>
               <td class="px-4 py-3">
-                <%= order.catalog&.name || "N/A" %>
-              </td>
-              <td class="px-4 py-3">
                 <span class="px-2 py-1 text-xs font-medium rounded-full <%= status_badge_class(order.status) %>">
                   <%= order.status.titleize %>
                 </span>
               </td>
               <td class="px-4 py-3 text-gray-500 dark:text-gray-400">
-                <%= time_ago_in_words(order.created_at) %> ago
+                <%= time_ago_in_words(order.submitted_at) %> ago
               </td>
               <td class="px-4 py-3 text-right">
                 <%= link_to "View", admin_order_path(order), class: "font-medium text-blue-600 hover:underline dark:text-blue-400" %>

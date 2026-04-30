@@ -47,10 +47,10 @@ class Product < ApplicationRecord
     active_colors = product_colors.reject(&:marked_for_destruction?)
     color_sum = active_colors.sum { |pc| pc.minimum_order.to_i }
 
-    return if color_sum == 0 && minimum_order.to_i == 0
+    return if color_sum == 0
 
-    if minimum_order.to_i != color_sum
-      errors.add(:minimum_order, "must equal the sum of all color minimum orders (expected #{color_sum})")
+    if minimum_order.to_i < color_sum
+      errors.add(:minimum_order, "must be at least the sum of all color minimum orders (minimum #{color_sum})")
     end
   end
 
