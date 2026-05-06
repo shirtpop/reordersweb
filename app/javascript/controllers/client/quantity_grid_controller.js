@@ -136,9 +136,8 @@ export default class extends Controller {
       const colorMin = this.colorMinimums[color] || 0
 
       if (colorMin > 0) {
-        // Required color — must be ordered and meet its own minimum
-        if (colorTotal < colorMin) {
-          violations.push(`${color}: add ${colorMin - colorTotal} more (required min ${colorMin})`)
+        if (colorTotal > 0 && colorTotal < colorMin) {
+          violations.push(`${color}: add ${colorMin - colorTotal} more (min ${colorMin})`)
         }
       } else if (this.minimumOrder > 0 && colorTotal > 0 && colorTotal < this.minimumOrder) {
         // Optional color ordered below the product minimum run size
@@ -228,8 +227,8 @@ export default class extends Controller {
       const colorMin = this.colorMinimums[color] || 0
 
       if (colorMin > 0) {
-        if (colorTotal < colorMin) {
-          violations.push(`• ${color}: ${colorTotal} selected, required minimum is ${colorMin}`)
+        if (colorTotal > 0 && colorTotal < colorMin) {
+          violations.push(`• ${color}: ${colorTotal} selected, minimum is ${colorMin}`)
         }
       } else if (this.minimumOrder > 0 && colorTotal > 0 && colorTotal < this.minimumOrder) {
         violations.push(`• ${color}: ${colorTotal} selected, minimum per color is ${this.minimumOrder}`)

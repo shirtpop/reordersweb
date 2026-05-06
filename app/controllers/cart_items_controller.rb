@@ -4,7 +4,6 @@ class CartItemsController < BaseController
                      .merge(Catalog.active.where(id: params[:catalog_id], client_id: current_client.id))
                      .find(params[:product_id])
 
-    # Use service to add items to cart
     adder = CartItems::Adder.new(
       client: current_client,
       user: current_user,
@@ -76,7 +75,6 @@ class CartItemsController < BaseController
       message = "Item removed from cart"
     else
       @item.update!(quantity: new_quantity)
-      message = "Quantity updated"
     end
 
     respond_to do |format|
