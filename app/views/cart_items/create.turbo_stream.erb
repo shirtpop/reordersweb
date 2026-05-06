@@ -1,3 +1,7 @@
+<%= turbo_stream.replace "floating-cart" do %>
+  <%= render "shared/floating_cart" %>
+<% end %>
+
 <%= turbo_stream.prepend "flash-messages" do %>
   <div data-controller="flash-message" data-flash-message-auto-dismiss-value="true" class="fixed top-4 right-4 z-50 animate-slide-in-right">
     <div class="bg-green-50 border-l-4 border-green-500 rounded-lg shadow-lg p-4 max-w-md">

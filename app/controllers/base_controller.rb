@@ -13,6 +13,7 @@ class BaseController < ApplicationController
   def cart_items_count
     @cart_items_count ||= current_user&.in_cart_order&.order_items&.sum(:quantity) || 0
   end
+  helper_method :cart_items_count
 
   def check_inventories_access
     return true unless INVENTORIES_ENABLED_CONTROLLER.include?(controller_name)

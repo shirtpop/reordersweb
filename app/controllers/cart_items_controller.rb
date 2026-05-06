@@ -13,6 +13,7 @@ class CartItemsController < BaseController
 
     @cart = adder.call
     added_count = adder.items_added
+    @cart_items_count = nil
 
     respond_to do |format|
       format.turbo_stream {
