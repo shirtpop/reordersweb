@@ -16,6 +16,7 @@ class Product < ApplicationRecord
   accepts_nested_attributes_for :product_colors, allow_destroy: true, reject_if: :all_blank
 
   validates :name, presence: true
+  validates :minimum_order, numericality: { greater_than: 0, only_integer: true }
   validates :product_colors, presence: true
   validate :validate_bulk_prices
   validate :validate_max_drive_files
@@ -27,14 +28,6 @@ class Product < ApplicationRecord
 
   def color_names
     product_colors.map(&:name).join(", ")
-  end
-
-  def minimum_order
-    super || 0
-  end
-
-  def base_price
-    super || 0.0
   end
 
   def bulk_prices

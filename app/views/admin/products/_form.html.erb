@@ -59,6 +59,7 @@
       <div>
         <%= form.label :minimum_order, class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" %>
         <%= form.number_field :minimum_order,
+            placeholder: 0,
             required: true,
             min: 1,
             class: field_error_class(@product, :minimum_order, "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white") %>
@@ -73,7 +74,7 @@
               required: true,
               step: "0.01",
               min: "0",
-              placeholder: "35.00",
+              placeholder: "5.00",
               class: field_error_class(@product, :base_price, "w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white") %>
         </div>
         <%= display_field_errors(@product, :base_price) %>
