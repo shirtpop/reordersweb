@@ -1,8 +1,8 @@
-<%= form_with model: product, url: product.persisted? ? product_path(product) : products_path, local: true, class: "space-y-6", data: { controller: "client-product-form", turbo: false } do |form| %>
+<%= form_with model: product, url: product.persisted? ? product_path(product) : products_path, local: true, class: "space-y-8", data: { controller: "client-product-form", turbo: false } do |form| %>
   <% if product.errors[:base].any? %>
-    <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
-      <h4 class="font-medium">Please fix the following errors:</h4>
-      <ul class="mt-2 list-disc list-inside">
+    <div class="bg-red-50 border-2 border-red-200 text-red-700 px-4 py-3 rounded-xl">
+      <h4 class="font-semibold">Please fix the following errors:</h4>
+      <ul class="mt-2 list-disc list-inside text-sm">
         <% product.errors[:base].each do |message| %>
           <li><%= message %></li>
         <% end %>
@@ -11,25 +11,27 @@
   <% end %>
 
   <!-- Basic Product Information -->
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-    <div class="md:col-span-2 relative" data-controller="product-autocomplete">
-      <%= form.label :name, class: "block text-sm font-medium text-gray-700 mb-2" %>
+  <div>
+    <h3 class="text-sm font-semibold text-gray-900 mb-4 flex items-center gap-2">
+      <span class="w-1 h-5 rounded-full bg-gradient-to-b from-pink-600 to-rose-600" aria-hidden="true"></span>
+      Product Information
+    </h3>
+    <div class="relative" data-controller="product-autocomplete">
+      <%= form.label :name, class: "block text-sm font-medium text-gray-700 mb-1.5" %>
       <%= form.text_field :name,
           required: true,
-          data: { 
+          placeholder: "Enter product name",
+          data: {
             product_autocomplete_target: "nameField",
             action: "input->product-autocomplete#search keyup->product-autocomplete#handleKeyup"
           },
-          class: field_error_class(product, :name, "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-pink-500 focus:border-pink-500") %>
+          class: field_error_class(product, :name, "w-full px-3 py-2.5 border-2 border-gray-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-pink-200 focus:border-pink-400 transition-all duration-200") %>
       <%= display_field_errors(product, :name) %>
-      
-      <!-- Hidden field for selected product ID -->
+
       <%= form.hidden_field :product_id, data: { product_autocomplete_target: "productIdField" } %>
-      
-      <!-- Autocomplete dropdown -->
-      <div data-product-autocomplete-target="dropdown" class="hidden absolute z-10 w-full bg-white border border-gray-300 rounded-md shadow-lg mt-1 max-h-60 overflow-y-auto">
+
+      <div data-product-autocomplete-target="dropdown" class="hidden absolute z-10 w-full bg-white border-2 border-gray-200 rounded-xl shadow-lg mt-1 max-h-60 overflow-y-auto">
         <div data-product-autocomplete-target="results" class="py-1">
-          <!-- Results will be populated here -->
         </div>
       </div>
     </div>
@@ -37,48 +39,59 @@
 
   <!-- Description -->
   <div>
-    <%= form.label :description, class: "block text-sm font-medium text-gray-700 mb-2" %>
-    <%= form.rich_text_area :description, 
-        class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-pink-500 focus:border-pink-500" %>
+    <h3 class="text-sm font-semibold text-gray-900 mb-4 flex items-center gap-2">
+      <span class="w-1 h-5 rounded-full bg-gradient-to-b from-pink-600 to-rose-600" aria-hidden="true"></span>
+      Description
+    </h3>
+    <%= form.label :description, class: "block text-sm font-medium text-gray-700 mb-1.5" %>
+    <div class="trix-editor-wrapper border-2 border-gray-200 rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-pink-200 focus-within:border-pink-400 transition-all duration-200">
+      <%= form.rich_text_area :description %>
+    </div>
     <%= display_field_errors(product, :description) %>
   </div>
 
   <!-- Product Variants -->
-  <div class="border-t pt-6">
+  <div>
     <div class="flex items-center justify-between mb-4">
-      <h3 class="text-lg font-medium text-gray-900">Product Variants</h3>
-      <button type="button" 
-              class="inline-flex items-center px-3 py-2 text-sm font-medium text-white bg-pink-600 border border-transparent rounded-lg hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500"
+      <h3 class="text-sm font-semibold text-gray-900 flex items-center gap-2">
+        <span class="w-1 h-5 rounded-full bg-gradient-to-b from-pink-600 to-rose-600" aria-hidden="true"></span>
+        Product Variants
+      </h3>
+      <button type="button"
+              class="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-gradient-to-r from-pink-600 to-rose-600 rounded-xl hover:from-pink-700 hover:to-rose-700 shadow-md transition-all duration-200"
               data-action="click->client-product-form#addVariant">
-        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
         </svg>
         Add Variant
       </button>
     </div>
 
-    <div data-client-product-form-target="variantsContainer">
+    <div data-client-product-form-target="variantsContainer" class="space-y-3">
       <%= form.fields_for :product_variants do |variant_form| %>
-        <div class="variant-row border border-gray-200 rounded-lg p-4 mb-4" data-client-product-form-target="variantRow">
+        <div class="variant-row border-2 border-gray-100 rounded-xl p-4 bg-gray-50/50" data-client-product-form-target="variantRow">
           <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div>
-              <%= variant_form.label :color, "Color", class: "block text-sm font-medium text-gray-700 mb-1" %>
-              <%= variant_form.text_field :color, 
-                  class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-pink-500 focus:border-pink-500" %>
+              <%= variant_form.label :color, "Color", class: "block text-sm font-medium text-gray-700 mb-1.5" %>
+              <%= variant_form.text_field :color,
+                  placeholder: "e.g. Black",
+                  class: "w-full px-3 py-2 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-200 focus:border-pink-400 transition-all duration-200 text-sm" %>
             </div>
             <div>
-              <%= variant_form.label :size, "Size", class: "block text-sm font-medium text-gray-700 mb-1" %>
-              <%= variant_form.text_field :size, 
-                  class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-pink-500 focus:border-pink-500" %>
+              <%= variant_form.label :size, "Size", class: "block text-sm font-medium text-gray-700 mb-1.5" %>
+              <%= variant_form.text_field :size,
+                  placeholder: "e.g. M",
+                  class: "w-full px-3 py-2 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-200 focus:border-pink-400 transition-all duration-200 text-sm" %>
             </div>
             <div>
-              <%= variant_form.label :sku, "SKU", class: "block text-sm font-medium text-gray-700 mb-1" %>
-              <%= variant_form.text_field :sku, 
-                  class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-pink-500 focus:border-pink-500" %>
+              <%= variant_form.label :sku, "SKU", class: "block text-sm font-medium text-gray-700 mb-1.5" %>
+              <%= variant_form.text_field :sku,
+                  placeholder: "e.g. BLK-M-001",
+                  class: "w-full px-3 py-2 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-200 focus:border-pink-400 transition-all duration-200 text-sm" %>
             </div>
             <div class="flex items-end">
-              <button type="button" 
-                      class="w-full px-3 py-2 text-red-600 hover:text-red-800 text-sm font-medium border border-red-300 rounded-md hover:bg-red-50"
+              <button type="button"
+                      class="w-full px-3 py-2 text-sm font-semibold text-red-600 border-2 border-red-200 rounded-xl hover:bg-red-50 hover:border-red-300 transition-all duration-200"
                       data-action="click->client-product-form#removeVariant">
                 Remove
               </button>
@@ -92,29 +105,32 @@
 
     <!-- Template for new variants -->
     <template data-client-product-form-target="variantTemplate">
-      <div class="variant-row border border-gray-200 rounded-lg p-4 mb-4" data-client-product-form-target="variantRow">
+      <div class="variant-row border-2 border-gray-100 rounded-xl p-4 bg-gray-50/50" data-client-product-form-target="variantRow">
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Color</label>
-            <input type="text" 
+            <label class="block text-sm font-medium text-gray-700 mb-1.5">Color</label>
+            <input type="text"
                    name="client_product[product_variants_attributes][INDEX][color]"
-                   class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-pink-500 focus:border-pink-500" />
+                   placeholder="e.g. Black"
+                   class="w-full px-3 py-2 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-200 focus:border-pink-400 transition-all duration-200 text-sm" />
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Size</label>
-            <input type="text" 
+            <label class="block text-sm font-medium text-gray-700 mb-1.5">Size</label>
+            <input type="text"
                    name="client_product[product_variants_attributes][INDEX][size]"
-                   class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-pink-500 focus:border-pink-500" />
+                   placeholder="e.g. M"
+                   class="w-full px-3 py-2 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-200 focus:border-pink-400 transition-all duration-200 text-sm" />
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">SKU</label>
-            <input type="text" 
+            <label class="block text-sm font-medium text-gray-700 mb-1.5">SKU</label>
+            <input type="text"
                    name="client_product[product_variants_attributes][INDEX][sku]"
-                   class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-pink-500 focus:border-pink-500" />
+                   placeholder="e.g. BLK-M-001"
+                   class="w-full px-3 py-2 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-200 focus:border-pink-400 transition-all duration-200 text-sm" />
           </div>
           <div class="flex items-end">
-            <button type="button" 
-                    class="w-full px-3 py-2 text-red-600 hover:text-red-800 text-sm font-medium border border-red-300 rounded-md hover:bg-red-50"
+            <button type="button"
+                    class="w-full px-3 py-2 text-sm font-semibold text-red-600 border-2 border-red-200 rounded-xl hover:bg-red-50 hover:border-red-300 transition-all duration-200"
                     data-action="click->client-product-form#removeVariant">
               Remove
             </button>
@@ -126,10 +142,10 @@
   </div>
 
   <!-- Form Actions -->
-  <div class="flex items-center justify-end space-x-3 pt-6 border-t">
-    <%= link_to "Cancel", product.persisted? ? product_path(product) : products_path, 
-        class: "px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500" %>
-    <%= form.submit product.persisted? ? "Update Product" : "Create Product", 
-        class: "px-4 py-2 text-sm font-medium text-white bg-pink-600 border border-transparent rounded-lg hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500" %>
+  <div class="flex items-center justify-end gap-3 pt-6 border-t-2 border-gray-100">
+    <%= link_to "Cancel", product.persisted? ? product_path(product) : products_path,
+        class: "px-5 py-2.5 text-sm font-semibold text-gray-700 bg-white border-2 border-gray-200 rounded-xl hover:border-pink-300 hover:text-pink-700 transition-all duration-200" %>
+    <%= form.submit product.persisted? ? "Update Product" : "Create Product",
+        class: "px-5 py-2.5 text-sm font-semibold text-white bg-gradient-to-r from-pink-600 to-rose-600 rounded-xl hover:from-pink-700 hover:to-rose-700 shadow-md transition-all duration-200 cursor-pointer" %>
   </div>
 <% end %>
