@@ -54,7 +54,11 @@ Holds pending items before they become `inventory_movements`.
 
 ```ruby
 resources :checkouts, only: [:index, :show, :new, :create], as: :inventory_checkouts do
-  resources :items, only: [:create, :update, :destroy]
+  resources :items, only: [:create, :update, :destroy] do
+    collection do
+      delete :clear  # destroy all items on the draft at once
+    end
+  end
 end
 ```
 
@@ -64,6 +68,7 @@ Generated routes:
 POST   /inventories/checkouts/:checkout_id/items        → Inventories::ItemsController#create
 PATCH  /inventories/checkouts/:checkout_id/items/:id    → Inventories::ItemsController#update
 DELETE /inventories/checkouts/:checkout_id/items/:id    → Inventories::ItemsController#destroy
+DELETE /inventories/checkouts/:checkout_id/items/clear  → Inventories::ItemsController#clear
 ```
 
 ---
@@ -84,14 +89,19 @@ DELETE /inventories/checkouts/:checkout_id/items/:id    → Inventories::ItemsCo
 - Respond via Turbo Stream
 
 **`destroy`**
-- Find and destroy item scoped to `current_client`'s draft checkout
+- Find and destroy item scoped to `current_user`'s draft checkout
 - Respond via Turbo Stream: update basket count
+
+**`clear`**
+- Destroy all `checkout_items` on `current_user`'s draft checkout in one call
+- Respond via Turbo Stream: re-render the empty items section, reset basket badge to zero
 
 ### Modified: `CheckoutsController`
 
 **`new`**
-- Replace `current_client.checkouts.new` with `current_client.checkouts.find_or_initialize_by(status: :draft)`
-- Pre-populates the form with existing draft items
+- Replace `current_client.checkouts.new` with `current_client.checkouts.find_or_initialize_by(status: :draft, user: current_user)` — one draft per user, not per client
+- If the draft already has items, set a `@has_draft_items = true` flag so the view can render a notice banner: "You have an existing draft with X items. You can continue or clear it to start fresh."
+- The "clear" action destroys all `checkout_items` on the draft (a `DELETE /inventories/checkouts/:id/items` bulk action) and re-renders the empty form
 
 **`create`**
 - Delegates to `Checkouts::Creator` — see service changes below
@@ -102,7 +112,7 @@ Add one line before render:
 ```ruby
 @draft_checkout = current_client.checkouts.find_or_create_by!(status: :draft, user: current_user)
 ```
-Used by the view to build form action URLs for each variant row.
+Scoped to `current_user` (one draft per user). Used by the view to build form action URLs for each variant row.
 
 ---
 
