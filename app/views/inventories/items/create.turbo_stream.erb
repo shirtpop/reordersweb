@@ -1,0 +1,9 @@
+<%# Update the floating basket badge on all inventory pages %>
+<%= turbo_stream.replace "floating-checkout-basket" do %>
+  <%= render "shared/floating_checkout_basket" %>
+<% end %>
+
+<%# Update draft items table if user is on the checkout form %>
+<%= turbo_stream.replace "checkout-draft-items" do %>
+  <%= render "checkouts/draft_items", checkout: @checkout %>
+<% end %>
