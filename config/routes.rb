@@ -61,7 +61,13 @@ Rails.application.routes.draw do
       get :adjustments
       get :search_products
       post :save_adjustments
-      resources :checkouts, only: [ :index, :show, :new, :create ], as: :inventory_checkouts
+      resources :checkouts, only: [ :index, :show, :new, :create ], as: :inventory_checkouts do
+        resources :items, only: [ :create, :update, :destroy ] do
+          collection do
+            delete :clear
+          end
+        end
+      end
       resources :products do
         collection do
           get :barcodes
