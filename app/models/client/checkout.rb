@@ -9,7 +9,6 @@ class Client::Checkout < ApplicationRecord
 
   validates :recipient_email, :recipient_first_name, :recipient_last_name, presence: true, if: :confirmed?
   validates :recipient_email, format: { with: URI::MailTo::EMAIL_REGEXP }, if: :confirmed?
-  validates :inventory_movements, presence: { message: "at least one item must be added to the checkout" }, if: :confirmed?
 
   scope :search_by_name, ->(name) {
     where("#{table_name}.recipient_email ILIKE :name OR
