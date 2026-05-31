@@ -14,7 +14,14 @@ class BaseController < ApplicationController
   def cart_items_count
     @cart_items_count ||= current_user&.in_cart_order&.order_items&.sum(:quantity) || 0
   end
-  helper_method :cart_items_count
+
+  def checkout_basket_count
+    @checkout_basket_count ||= begin
+      draft = current_client&.checkouts&.find_by(status: :draft, user: current_user)
+      draft&.checkout_items&.sum(:quantity) || 0
+    end
+  end
+  helper_method :cart_items_count, :checkout_basket_count
 
   def checkout_basket_count
     @checkout_basket_count ||= begin

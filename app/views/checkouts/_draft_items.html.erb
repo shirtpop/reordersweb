@@ -1,3 +1,62 @@
 <div id="checkout-draft-items">
-  <%# Draft items rendered here — full implementation in Task 11 %>
+  <% if checkout.checkout_items.any? %>
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+          <tr>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">SKU</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Color</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Size</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Available</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Remove</th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+          <% checkout.checkout_items.includes(client_inventory: { client_product_variant: :client_product }).each do |item| %>
+            <% variant = item.client_inventory.client_product_variant %>
+            <% inventory = item.client_inventory %>
+            <tr>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900"><%= variant.client_product.name %></td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <span class="font-mono text-xs bg-gray-100 px-2 py-1 rounded"><%= variant.sku %></span>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900"><%= variant.color.presence || "—" %></td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900"><%= variant.size.presence || "—" %></td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><%= inventory.quantity %> units</td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <%= form_with url: item_inventory_checkouts_path(item.client_inventory_id),
+                              method: :patch,
+                              data: { controller: "cart-item", turbo_stream: true } do |f| %>
+                  <div class="flex items-center gap-1" data-cart-item-target="form">
+                    <%= f.number_field :quantity, value: item.quantity, min: 0, max: inventory.quantity,
+                          class: "w-16 px-2 py-1 border border-gray-300 rounded-md text-sm text-center focus:ring-pink-500 focus:border-pink-500",
+                          data: { "cart-item-target": "quantityInput", action: "input->cart-item#updateQuantity" } %>
+                  </div>
+                <% end %>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <%= button_to clear_items_inventory_checkouts_path(item.client_inventory_id),
+                      method: :delete,
+                      class: "p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors",
+                      data: { turbo_stream: true } do %>
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                  </svg>
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% else %>
+    <div class="px-6 py-8 text-center">
+      <svg class="mx-auto h-12 w-12 text-gray-400 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+      </svg>
+      <p class="text-sm text-gray-500">No items yet. Search by SKU above or browse products to add items.</p>
+    </div>
+  <% end %>
 </div>

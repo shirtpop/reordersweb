@@ -19,8 +19,9 @@ class ProductsController < BaseController
     if params[:catalog_id].present?
       show_storefront_product
     else
-      # Inventory view (existing behavior)
-      @product = current_client.client_products.find(params[:id])
+      # Inventory view — load product and draft checkout for basket
+      @product = current_client.client_products.includes(product_variants: :inventory).find(params[:id])
+      @draft_checkout = current_client.checkouts.find_or_create_by!(status: :draft, user: current_user)
     end
   end
 

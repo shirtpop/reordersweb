@@ -1,10 +1,10 @@
-class Inventories::ItemsController < BaseController
+class Checkouts::ItemsController < BaseController
   before_action :set_checkout
   before_action :set_item, only: [ :update, :destroy ]
 
   def create
-    inventory = current_client.inventories.find(params[:client_inventory_id])
-    quantity = [params[:quantity].to_i, 1].max
+    inventory = current_client.inventories.find(params[:id])
+    quantity = [ params[:quantity].to_i, 1 ].max
 
     existing = @checkout.checkout_items.find_by(client_inventory_id: inventory.id)
     if existing
@@ -14,13 +14,12 @@ class Inventories::ItemsController < BaseController
     end
 
     @checkout.reload
+    @checkout_basket_count = nil
     respond_to do |format|
       format.turbo_stream
     end
   rescue ActiveRecord::RecordNotFound
-    respond_to do |format|
-      format.turbo_stream { render :error, status: :not_found }
-    end
+    head :not_found
   end
 
   def update
@@ -31,6 +30,7 @@ class Inventories::ItemsController < BaseController
       @item.update!(quantity: new_quantity)
     end
     @checkout.reload
+    @checkout_basket_count = nil
     respond_to do |format|
       format.turbo_stream
     end
@@ -39,6 +39,7 @@ class Inventories::ItemsController < BaseController
   def destroy
     @item.destroy!
     @checkout.reload
+    @checkout_basket_count = nil
     respond_to do |format|
       format.turbo_stream
     end
@@ -47,6 +48,7 @@ class Inventories::ItemsController < BaseController
   def clear
     @checkout.checkout_items.destroy_all
     @checkout.reload
+    @checkout_basket_count = nil
     respond_to do |format|
       format.turbo_stream
     end
@@ -55,19 +57,11 @@ class Inventories::ItemsController < BaseController
   private
 
   def set_checkout
-    @checkout = current_client.checkouts.find_by!(
-      id: params[:checkout_id],
-      status: :draft,
-      user: current_user
-    )
-  rescue ActiveRecord::RecordNotFound
-    respond_to do |format|
-      format.turbo_stream { render :error, status: :not_found }
-    end
+    @checkout = current_client.checkouts.find_or_create_by!(status: :draft, user: current_user)
   end
 
   def set_item
-    @item = @checkout.checkout_items.find(params[:id])
+    @item = @checkout.checkout_items.find_by!(client_inventory_id: params[:id])
   rescue ActiveRecord::RecordNotFound
     respond_to do |format|
       format.turbo_stream { render :error, status: :not_found }

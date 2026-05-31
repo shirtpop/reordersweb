@@ -221,8 +221,11 @@
       <%= yield %>
     </main>
 
-    <!-- Floating Cart Button -->
-    <%= render "shared/floating_cart" %>
+    <!-- Floating Action Buttons -->
+    <div class="fixed bottom-8 right-8 z-50 flex flex-col-reverse items-end gap-3">
+      <%= render "shared/floating_cart" %>
+      <%= render "shared/floating_checkout_basket" if client_inventory_enabled? %>
+    </div>
 
     <!-- Footer -->
     <footer class="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white mt-20">

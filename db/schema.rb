@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_04_25_153205) do
+ActiveRecord::Schema[8.0].define(version: 2026_05_27_000002) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -76,6 +76,17 @@ ActiveRecord::Schema[8.0].define(version: 2026_04_25_153205) do
     t.index ["catalog_id", "product_id"], name: "index_catalogs_products_on_catalog_id_and_product_id", unique: true
   end
 
+  create_table "client_checkout_items", force: :cascade do |t|
+    t.bigint "client_checkout_id", null: false
+    t.bigint "client_inventory_id", null: false
+    t.integer "quantity", default: 1, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["client_checkout_id", "client_inventory_id"], name: "idx_checkout_items_on_checkout_and_inventory", unique: true
+    t.index ["client_checkout_id"], name: "index_client_checkout_items_on_client_checkout_id"
+    t.index ["client_inventory_id"], name: "index_client_checkout_items_on_client_inventory_id"
+  end
+
   create_table "client_checkouts", force: :cascade do |t|
     t.bigint "client_id", null: false
     t.bigint "user_id", null: false
@@ -85,7 +96,9 @@ ActiveRecord::Schema[8.0].define(version: 2026_04_25_153205) do
     t.text "notes"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "status", default: "confirmed", null: false
     t.index ["client_id"], name: "index_client_checkouts_on_client_id"
+    t.index ["status"], name: "index_client_checkouts_on_status"
     t.index ["user_id"], name: "index_client_checkouts_on_user_id"
   end
 
@@ -261,6 +274,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_04_25_153205) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "catalogs", "clients"
+  add_foreign_key "client_checkout_items", "client_checkouts"
+  add_foreign_key "client_checkout_items", "client_inventories"
   add_foreign_key "client_checkouts", "clients"
   add_foreign_key "client_checkouts", "users"
   add_foreign_key "client_inventories", "client_product_variants"

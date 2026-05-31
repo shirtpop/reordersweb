@@ -24,10 +24,10 @@ export default class extends Controller {
   }
 
   setupTurboStreamListener() {
-    // Listen for Turbo Stream renders to hide progress when upload is complete
     document.addEventListener('turbo:before-stream-render', (event) => {
-      // Check if the stream contains our images container
-      if (event.detail.newStream?.includes('images_container_client_product')) {
+      const stream = event.detail.newStream
+      const html = typeof stream === 'string' ? stream : stream?.outerHTML
+      if (html?.includes('images_container_client_product')) {
         this.hideProgress()
         this.resetFileInput()
       }

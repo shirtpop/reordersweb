@@ -12,6 +12,9 @@
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+            <% if defined?(@draft_checkout) && @draft_checkout %>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Add to Basket</th>
+            <% end %>
           </tr>
         </thead>
         <% product.product_variants.each do |variant| %>
@@ -110,9 +113,26 @@
                 </button>
               </div>
             </td>
+            <% if defined?(@draft_checkout) && @draft_checkout %>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <% if variant.inventory&.quantity.to_i > 0 %>
+                  <%= form_with url: items_inventory_checkouts_path(variant.inventory.id),
+                                method: :post,
+                                data: { turbo_stream: true },
+                                class: "flex items-center gap-2" do |f| %>
+                    <%= f.number_field :quantity, value: 1, min: 1, max: variant.inventory.quantity,
+                          class: "w-16 px-2 py-1 border border-gray-300 rounded-md text-sm text-center focus:ring-pink-500 focus:border-pink-500" %>
+                    <%= f.submit "+ Add",
+                          class: "inline-flex items-center px-3 py-1.5 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg transition-colors cursor-pointer" %>
+                  <% end %>
+                <% else %>
+                  <span class="text-xs text-red-500 font-medium">Out of stock</span>
+                <% end %>
+              </td>
+            <% end %>
           </tr>
           <tr data-variant-adjust-target="form" class="hidden bg-pink-50">
-            <td colspan="7" class="px-6 py-4">
+            <td colspan="<%= defined?(@draft_checkout) && @draft_checkout ? 8 : 7 %>" class="px-6 py-4">
               <%= form_with url: save_adjustments_inventories_path, method: :post, class: "flex flex-wrap items-end gap-4" do |f| %>
                 <input type="hidden" name="return_to" value="<%= product_path(product) %>">
                 <input type="hidden" name="adjustments[product_variants][][product_variant_id]" value="<%= variant.id %>">

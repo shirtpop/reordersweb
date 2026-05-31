@@ -62,10 +62,11 @@ Rails.application.routes.draw do
       get :search_products
       post :save_adjustments
       resources :checkouts, only: [ :index, :show, :new, :create ], as: :inventory_checkouts do
-        resources :items, only: [ :create, :update, :destroy ] do
-          collection do
-            delete :clear
-          end
+        collection do
+          delete "items/clear", to: "checkouts/items#clear", as: :clear_items
+          post   "items/:id",   to: "checkouts/items#create", as: :items
+          patch  "items/:id",   to: "checkouts/items#update", as: :item
+          delete "items/:id",   to: "checkouts/items#destroy"
         end
       end
       resources :products do
