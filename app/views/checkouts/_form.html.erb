@@ -6,7 +6,7 @@
 
   <%# Draft items notice banner %>
   <% if defined?(@has_draft_items) && @has_draft_items %>
-    <div class="mb-6 flex items-center justify-between gap-4 rounded-lg border border-indigo-200 bg-indigo-50 px-4 py-3">
+    <div id="clear-draft-items" class="mb-6 flex items-center justify-between gap-4 rounded-lg border border-indigo-200 bg-indigo-50 px-4 py-3">
       <div class="flex items-center gap-2 text-sm text-indigo-800">
         <svg class="h-5 w-5 text-indigo-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
@@ -21,7 +21,8 @@
     </div>
   <% end %>
 
-  <%= form_with model: checkout, url: inventory_checkouts_path, method: :post, class: "space-y-6" do |form| %>
+  <%= form_with model: checkout, url: inventory_checkouts_path, method: :post,
+                id: "checkout-creation-form" do |form| %>
     <!-- Recipient Information Card -->
     <div class="bg-white shadow-sm rounded-lg border border-gray-200 overflow-hidden">
       <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
@@ -53,95 +54,96 @@
         </div>
       </div>
     </div>
+  <% end %>
 
-    <!-- Items Section -->
-    <div class="bg-white shadow-sm rounded-lg border border-gray-200 overflow-hidden">
-      <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
-        <h3 class="text-lg font-medium text-gray-900">Checkout Items</h3>
-      </div>
+  <!-- Items Section (outside the form above to avoid nested forms) -->
+  <div class="bg-white shadow-sm rounded-lg border border-gray-200 overflow-hidden mt-6">
+    <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
+      <h3 class="text-lg font-medium text-gray-900">Checkout Items</h3>
+    </div>
 
-      <!-- SKU Search -->
-      <div class="p-6 border-b border-gray-200">
-        <div class="flex items-start space-x-4 mb-4">
-          <div class="max-w-md flex-1">
-            <div class="flex items-center justify-between mb-1">
-              <%= label_tag :sku_search, "Search by SKU", class: "block text-sm font-medium text-gray-700" %>
-              <span class="inline-flex items-center text-xs text-gray-500">
-                <svg class="h-4 w-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path>
-                </svg>
-                Barcode scanner ready
-              </span>
-            </div>
-            <div class="relative">
-              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                </svg>
-              </div>
-              <%= text_field_tag :sku_search, "",
-                  class: "block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-pink-500 focus:border-pink-500 sm:text-sm",
-                  placeholder: "Scan barcode or type SKU",
-                  autofocus: true,
-                  data: {
-                    "checkout-form-target": "skuInput",
-                    action: "keydown->checkout-form#handleSkuSearch"
-                  } %>
-            </div>
-            <p class="mt-1 text-xs text-gray-500">Press Enter to add item to basket</p>
-          </div>
-
-          <div class="flex flex-col space-y-2 pt-6">
-            <button type="button"
-                    class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-pink-600 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500"
-                    data-action="click->checkout-form#searchSkuButton">
-              <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+    <!-- SKU Search -->
+    <div class="p-6 border-b border-gray-200">
+      <div class="flex items-start space-x-4 mb-4">
+        <div class="max-w-md flex-1">
+          <div class="flex items-center justify-between mb-1">
+            <%= label_tag :sku_search, "Search by SKU", class: "block text-sm font-medium text-gray-700" %>
+            <span class="inline-flex items-center text-xs text-gray-500">
+              <svg class="h-4 w-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path>
               </svg>
-              Add Item
-            </button>
-            <button type="button"
-                    class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500"
-                    data-action="click->checkout-form#openProductSearchModal">
-              <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              Barcode scanner ready
+            </span>
+          </div>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
               </svg>
-              Search by Product
-            </button>
+            </div>
+            <%= text_field_tag :sku_search, "",
+                class: "block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-pink-500 focus:border-pink-500 sm:text-sm",
+                placeholder: "Scan barcode or type SKU",
+                autofocus: true,
+                data: {
+                  "checkout-form-target": "skuInput",
+                  action: "keydown->checkout-form#handleSkuSearch"
+                } %>
           </div>
+          <p class="mt-1 text-xs text-gray-500">Press Enter to add item to basket</p>
         </div>
 
-        <div data-checkout-form-target="searchError" class="hidden mt-2">
-          <p class="text-sm text-red-600"></p>
-        </div>
-        <div data-checkout-form-target="successMessage" class="hidden mt-2">
-          <div class="flex items-center text-sm text-green-600">
-            <svg class="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        <div class="flex flex-col space-y-2 pt-6">
+          <button type="button"
+                  class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-pink-600 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500"
+                  data-action="click->checkout-form#searchSkuButton">
+            <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
             </svg>
-            <span></span>
-          </div>
+            Add Item
+          </button>
+          <button type="button"
+                  class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500"
+                  data-action="click->checkout-form#openProductSearchModal">
+            <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+            </svg>
+            Search by Product
+          </button>
         </div>
       </div>
 
-      <!-- Items Table (server-rendered from draft checkout_items) -->
-      <%= render "checkouts/draft_items", checkout: checkout %>
+      <div data-checkout-form-target="searchError" class="hidden mt-2">
+        <p class="text-sm text-red-600"></p>
+      </div>
+      <div data-checkout-form-target="successMessage" class="hidden mt-2">
+        <div class="flex items-center text-sm text-green-600">
+          <svg class="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+          <span></span>
+        </div>
+      </div>
     </div>
 
-    <!-- Form Actions -->
-    <div class="flex items-center justify-between">
-      <%= link_to inventory_checkouts_path,
-            class: "inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500",
-            data: { turbo_frame: "_top" } do %>
-        <svg class="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-        </svg>
-        Cancel
-      <% end %>
-      <%= form.submit "Create Checkout",
-          class: "inline-flex items-center px-6 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-pink-600 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500" %>
-    </div>
-  <% end %>
+    <!-- Items Table (server-rendered from draft checkout_items) -->
+    <%= render "checkouts/draft_items", checkout: checkout %>
+  </div>
+
+  <!-- Form Actions (submit button linked to checkout-creation-form via HTML5 form attribute) -->
+  <div class="flex items-center justify-between mt-6">
+    <%= link_to inventory_checkouts_path,
+          class: "inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500",
+          data: { turbo_frame: "_top" } do %>
+      <svg class="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+      </svg>
+      Cancel
+    <% end %>
+    <%= submit_tag "Create Checkout",
+        form: "checkout-creation-form",
+        class: "inline-flex items-center px-6 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-pink-600 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500" %>
+  </div>
 
   <%= render "product_search_modal" %>
 </div>

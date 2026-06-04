@@ -1,0 +1,88 @@
+<%= turbo_frame_tag "product-basket-modal" do %>
+  <%= form_with url: batch_items_inventory_checkouts_path,
+                method: :post,
+                data: { action: "turbo:submit-end->product-basket#handleSubmitEnd" } do |f| %>
+
+    <%# Header %>
+    <div class="flex items-center justify-between px-5 py-4 border-b border-gray-100">
+      <h3 class="text-base font-bold text-gray-900">Add to Basket</h3>
+      <button type="button"
+              class="text-gray-400 hover:text-gray-600 transition-colors"
+              data-action="click->product-basket#close">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+
+    <%# Toolbar %>
+    <div class="flex items-center justify-between px-5 py-2.5 bg-gray-50 border-b border-gray-100">
+      <span class="text-sm font-semibold text-gray-700"><%= @product.name %></span>
+      <div class="flex gap-3">
+        <button type="button"
+                class="text-xs text-pink-600 hover:text-pink-800 font-medium underline"
+                data-action="click->product-basket#selectAllInStock">
+          Select all in stock
+        </button>
+        <button type="button"
+                class="text-xs text-gray-400 hover:text-gray-600 font-medium underline"
+                data-action="click->product-basket#clearSelection">
+          Clear
+        </button>
+      </div>
+    </div>
+
+    <%# Variant list (scrollable) %>
+    <div class="max-h-72 overflow-y-auto divide-y divide-gray-50">
+      <% @variants_by_color.each do |color, variants| %>
+        <div>
+          <div class="sticky top-0 px-5 py-1.5 bg-gray-50 text-xs font-bold text-gray-500 uppercase tracking-wide">
+            <%= color %>
+          </div>
+          <% variants.each do |variant| %>
+            <% quantity = variant.inventory&.quantity.to_i %>
+            <% out_of_stock = quantity == 0 %>
+            <div class="flex items-center gap-3 px-5 py-3 hover:bg-gray-50 <%= 'opacity-40' if out_of_stock %>" data-row>
+              <label class="flex items-center gap-3 flex-1 <%= out_of_stock ? 'cursor-not-allowed' : 'cursor-pointer' %>">
+                <%= check_box_tag "inventory_ids[]",
+                      variant.inventory&.id,
+                      false,
+                      disabled: out_of_stock,
+                      class: "w-4 h-4 rounded accent-pink-600",
+                      data: { action: "change->product-basket#updateCount" } %>
+                <span class="text-sm text-gray-800"><%= variant.size %></span>
+              </label>
+              <%= number_field_tag "quantities[#{variant.inventory&.id}]",
+                    1,
+                    min: 1,
+                    max: quantity,
+                    disabled: true,
+                    class: "w-16 px-2 py-1 text-sm text-center border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500 disabled:opacity-40 disabled:cursor-not-allowed",
+                    data: { qty_input: "" } %>
+              <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full
+                <%= if out_of_stock then 'bg-gray-100 text-gray-400'
+                    elsif quantity < 5 then 'bg-amber-100 text-amber-700'
+                    else 'bg-green-100 text-green-700' end %>">
+                <%= quantity %> in stock
+              </span>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+
+    <%# Footer %>
+    <div class="flex items-center justify-between px-5 py-4 border-t border-gray-100">
+      <span class="text-sm text-gray-400" data-count-display>
+        0 variants selected
+      </span>
+      <button type="submit"
+              disabled
+              data-submit-button
+              class="px-5 py-2 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-700 hover:to-rose-700 disabled:opacity-40 disabled:cursor-not-allowed transition-all">
+        Add to Basket
+      </button>
+    </div>
+
+  <% end %>
+<% end %>

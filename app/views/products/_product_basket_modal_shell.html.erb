@@ -1,0 +1,13 @@
+<%# Overlay + empty Turbo Frame mount point. Stimulus controller manages show/hide. %>
+<div data-controller="product-basket">
+  <div data-product-basket-target="overlay"
+       class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50"
+       data-action="click->product-basket#closeOnBackdrop">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[80vh] overflow-hidden">
+      <turbo-frame id="product-basket-modal"
+                   data-product-basket-target="frame"
+                   data-action="turbo:frame-load->product-basket#show">
+      </turbo-frame>
+    </div>
+  </div>
+</div>

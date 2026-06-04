@@ -25,6 +25,15 @@ class ProductsController < BaseController
     end
   end
 
+  def basket_modal
+    @product = current_client.client_products
+                              .includes(product_variants: :inventory)
+                              .find(params[:id])
+    @variants_by_color = @product.product_variants
+                                  .sort_by(&:color)
+                                  .group_by(&:color)
+  end
+
   def new
     @product = current_client.client_products.new
     @product.product_variants.build

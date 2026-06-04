@@ -64,6 +64,7 @@ Rails.application.routes.draw do
       resources :checkouts, only: [ :index, :show, :new, :create ], as: :inventory_checkouts do
         collection do
           delete "items/clear", to: "checkouts/items#clear", as: :clear_items
+          post   "items/batch", to: "checkouts/items#batch", as: :batch_items
           post   "items/:id",   to: "checkouts/items#create", as: :items
           patch  "items/:id",   to: "checkouts/items#update", as: :item
           delete "items/:id",   to: "checkouts/items#destroy"
@@ -76,6 +77,7 @@ Rails.application.routes.draw do
         end
 
         member do
+          get :basket_modal
           post :upload_images
           delete "delete_image/:drive_file_id", to: "products#delete_image", as: :delete_image
         end

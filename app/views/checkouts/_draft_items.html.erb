@@ -29,7 +29,7 @@
                 <%= form_with url: item_inventory_checkouts_path(item.client_inventory_id),
                               method: :patch,
                               data: { controller: "cart-item", turbo_stream: true } do |f| %>
-                  <div class="flex items-center gap-1" data-cart-item-target="form">
+                  <div class="flex items-center gap-1">
                     <%= f.number_field :quantity, value: item.quantity, min: 0, max: inventory.quantity,
                           class: "w-16 px-2 py-1 border border-gray-300 rounded-md text-sm text-center focus:ring-pink-500 focus:border-pink-500",
                           data: { "cart-item-target": "quantityInput", action: "input->cart-item#updateQuantity" } %>
@@ -37,10 +37,10 @@
                 <% end %>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
-                <%= button_to clear_items_inventory_checkouts_path(item.client_inventory_id),
+                <%= button_to item_inventory_checkouts_path(item.client_inventory_id),
                       method: :delete,
                       class: "p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors",
-                      data: { turbo_stream: true } do %>
+                      form: { data: { turbo_stream: true, turbo_confirm: "Are you sure you want to remove this item?" } } do %>
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
                   </svg>
