@@ -49,7 +49,7 @@ class OrderCheckoutsController < BaseController
       price: calculator.total_price
     )
 
-    redirect_to order_path(@cart), notice: "🎉 Order submitted successfully! We'll process your order and send you a confirmation email."
+    redirect_to order_path(@cart), notice: "🎉 Order submitted successfully! You’ll receive a confirmation email shortly."
   rescue ActiveRecord::RecordInvalid => e
     flash.now[:alert] = "Failed to submit order: #{e.message}"
     render :show, status: :unprocessable_entity

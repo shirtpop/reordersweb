@@ -19,8 +19,11 @@ module GoogleDrive
           filename: @file.original_filename,
           mime_type: @file.content_type
         )
-    rescue ActiveRecord::RecordInvalid, GoogleDrive::Errors::UploadError => e
-      raise UploadError, "Failed to upload file: #{e.record.errors.full_messages.join(', ')}"
+    rescue ActiveRecord::RecordInvalid => e
+      DriveService.delete_file(drive_file_id) if drive_file_id
+      raise UploadError, "Failed to save file record: #{e.record.errors.full_messages.join(', ')}"
+    rescue GoogleDrive::Errors::UploadError => e
+      raise UploadError, "Failed to upload file: #{e.message}"
     end
   end
 end

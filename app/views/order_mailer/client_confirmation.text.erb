@@ -1,40 +1,38 @@
-ORDER CONFIRMATION
+ORDER REQUEST CONFIRMATION
 
-Dear Valued Customer,
+<%= @client.company_name %>,
 
-Thank you for your order with <%= Rails.application.class.module_parent_name %>. We have successfully received and processed your request.
-
-ORDER SUMMARY
-───────────────────────────────────────────────────────
-Catalog: <%= @order.catalog&.name || 'Not specified' %>
-Order Date: <%= Time.current.strftime("%B %d, %Y") %>
-Delivery Date: <%= @order.delivery_date ? @order.delivery_date.strftime("%B %d, %Y") : 'To be confirmed' %>
-Total Items: <%= number_with_delimiter(@order.total_quantity) %>
+We've received your order request and we're hard at work preparing the invoice and work orders for your review.
 
 ORDER DETAILS
 ───────────────────────────────────────────────────────
+Order Date: <%= @order.created_at.strftime("%B %d, %Y") %>
+Scheduled Delivery Date: <%= @order.delivery_date ? @order.delivery_date.strftime("%B %d, %Y") : 'Not specified' %>
+Total Quantity: <%= number_with_delimiter(@order.total_quantity) %> units
+
 PRODUCT               COLOR      SIZE       QUANTITY
 ───────────────────────────────────────────────────────
 <% @order.order_items.each do |item| %>
 <%= item.product.name.ljust(20)[0..19] %> <%= (item.color.presence || 'N/A').ljust(10)[0..9] %> <%= (item.size.presence || 'Standard').ljust(10)[0..9] %> <%= number_with_delimiter(item.quantity).to_s.ljust(10) %>
 <% end %>
 
-ORDER TOTAL
-───────────────────────────────────────────────────────
-Total Quantity: <%= number_with_delimiter(@order.total_quantity) %> units
-
 NEXT STEPS
 ───────────────────────────────────────────────────────
-Your order is now being processed by our team. You will receive another notification once your order has been shipped or is ready for pickup.
+You'll receive an email once the invoice and work order(s) are ready for review. Once you approve and confirm all the details, your order will go into production.
 
 Order Reference: <%= @order.order_number %>
 
 Should you have any questions or require further assistance, please do not hesitate to contact our customer service team.
 
-We appreciate your business and look forward to serving you.
+Another email will be sent once the order is ready for pickup or is out for delivery.
 
-Best regards,
+All orders are processed and ready within 12-14 business days after payment, unless otherwise specified.
+
+Thank you for choosing ShirtPop!
 
 The Shirtpop Team
+Email: sales@shirtpop.com
+Voice & Text: 505.677.3055
+
 ───────────────────────────────────────────────────────
 This is an automated message. Please do not reply to this email.
