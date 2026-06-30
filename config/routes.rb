@@ -41,6 +41,7 @@ Rails.application.routes.draw do
         resource :products, only: [ :update ], controller: "catalog_products", as: :catalog_products
       end
       get :new_wizard, on: :collection
+      post :validate_step, on: :collection
     end
     resources :users
     resources :orders, only: [ :index, :show, :update ] do

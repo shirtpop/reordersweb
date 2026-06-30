@@ -1,0 +1,10 @@
+<div id="step_<%= step %>_errors" data-step="<%= step %>" class="mb-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md">
+  <h4 class="text-sm font-semibold text-red-800 dark:text-red-300 mb-2">Please fix the following errors:</h4>
+  <ul class="list-disc list-inside space-y-1">
+    <% errors.each do |field, messages| %>
+      <% Array(messages).each do |message| %>
+        <li class="text-sm text-red-700 dark:text-red-400"><%= field.to_s.humanize %> <%= message %></li>
+      <% end %>
+    <% end %>
+  </ul>
+</div>

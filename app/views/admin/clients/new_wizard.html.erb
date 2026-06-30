@@ -8,7 +8,7 @@
   <div class="flex items-center justify-center mb-8 space-x-2">
     <% ["Company", "User", "Catalog", "Products", "Review"].each_with_index do |label, i| %>
       <div class="flex items-center">
-        <button type="button" data-wizard-target="indicator" data-step="<%= i %>" data-action="click->wizard#goToStep"
+        <button type="button" id="step_indicator_<%= i + 1 %>" data-wizard-target="indicator" data-step="<%= i %>" data-action="click->wizard#goToStep"
                 class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium text-white <%= i == 0 ? 'bg-blue-600' : 'bg-gray-200 dark:bg-gray-700' %>">
           <span data-role="number"><%= i + 1 %></span>
           <svg data-role="check" class="w-4 h-4 hidden" fill="currentColor" viewBox="0 0 20 20">
@@ -23,10 +23,22 @@
     <% end %>
   </div>
 
+  <% if @client.errors.any? %>
+    <div id="error_explanation" class="mb-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md">
+      <h4 class="text-sm font-semibold text-red-800 dark:text-red-300 mb-2"><%= pluralize(@client.errors.count, "error") %> prevented this client from being saved:</h4>
+      <ul class="list-disc list-inside space-y-1">
+        <% @client.errors.full_messages.each do |message| %>
+          <li class="text-sm text-red-700 dark:text-red-400"><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
   <%= form_with model: [:admin, @client], method: :post, local: true, data: { turbo: false } do |form| %>
 
     <!-- Step 1: Company Info & Addresses -->
     <div data-wizard-target="step" class="bg-white dark:bg-gray-800 shadow rounded-lg p-6 space-y-6">
+      <div id="step_1_errors"></div>
       <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Company Information & Addresses</h2>
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -131,6 +143,7 @@
 
     <!-- Step 2: User Account -->
     <div data-wizard-target="step" class="bg-white dark:bg-gray-800 shadow rounded-lg p-6 space-y-6 hidden">
+      <div id="step_2_errors"></div>
       <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Client User Account</h2>
       <p class="text-sm text-gray-500 dark:text-gray-400">Create a login account for the client</p>
 
@@ -153,6 +166,7 @@
 
     <!-- Step 3: Catalog -->
     <div data-wizard-target="step" class="bg-white dark:bg-gray-800 shadow rounded-lg p-6 space-y-6 hidden">
+      <div id="step_3_errors"></div>
       <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Catalog Setup</h2>
       <p class="text-sm text-gray-500 dark:text-gray-400">Create a catalog to organize products for this client</p>
 
@@ -174,6 +188,7 @@
 
     <!-- Step 4: Products -->
     <div data-wizard-target="step" class="bg-white dark:bg-gray-800 shadow rounded-lg p-6 space-y-6 hidden">
+      <div id="step_4_errors"></div>
       <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Assign Products</h2>
       <p class="text-sm text-gray-500 dark:text-gray-400">Search and add products for this client's catalog</p>
 
@@ -204,6 +219,7 @@
 
     <!-- Step 5: Review -->
     <div data-wizard-target="step" class="bg-white dark:bg-gray-800 shadow rounded-lg p-6 space-y-6 hidden">
+      <div id="step_5_errors"></div>
       <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Review & Confirm</h2>
       <p class="text-sm text-gray-500 dark:text-gray-400">Review the information before creating the client</p>
 
@@ -234,4 +250,5 @@
       </div>
     </div>
   <% end %>
+
 </div>

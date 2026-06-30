@@ -27,6 +27,25 @@ module Admin
       @client.build_shipping_address
     end
 
+    def validate_step
+      step = params[:step].to_i
+      errors = Clients::WizardStepValidator.new(step: step, params: params).errors
+
+      if errors.empty?
+        render turbo_stream: turbo_stream.replace(
+          "step_#{step}_errors",
+          partial: "admin/clients/step_clear",
+          locals: { step: step }
+        )
+      else
+        render turbo_stream: turbo_stream.replace(
+          "step_#{step}_errors",
+          partial: "admin/clients/step_errors",
+          locals: { errors: errors, step: step }
+        )
+      end
+    end
+
     def create
       creator = Clients::Creator.new(
         client_params:,
