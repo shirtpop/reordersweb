@@ -56,6 +56,12 @@
             </p>
           </div>
         </div>
+        <% if @order.notes.present? %>
+          <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-600">
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Notes</label>
+            <p class="mt-1 text-sm text-gray-900 dark:text-white whitespace-pre-wrap"><%= @order.notes %></p>
+          </div>
+        <% end %>
       </div>
 
       <!-- Order Items Card -->
