@@ -245,13 +245,10 @@ export default class extends Controller {
       return false
     }
 
-    // Nothing selected and no minimum violations (product has no required colors or minimums)
+    // Nothing selected and no minimum violations (no color is mandatory on its own)
     if (total === 0) {
       event.preventDefault()
-      const hasRequiredColors = Object.keys(this.colorMinimums).length > 0
-      if (hasRequiredColors) {
-        alert(`⚠️ Please enter quantities for all required colors to meet their minimum orders.`)
-      } else if (this.minimumOrder > 0) {
+      if (this.minimumOrder > 0) {
         alert(`⚠️ Please enter at least ${this.minimumOrder} units to add to cart.`)
       } else {
         alert("Please select at least one item to add to cart.")

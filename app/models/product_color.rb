@@ -4,7 +4,7 @@ class ProductColor < ApplicationRecord
   has_many :product_color_images, dependent: :destroy
 
   validates :name, presence: true
-  validates :minimum_order, numericality: { only_integer: true, greater_than: 0 }
+  validates :minimum_order, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
 
   after_create :create_angle_images
 

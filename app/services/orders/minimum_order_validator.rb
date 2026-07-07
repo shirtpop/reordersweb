@@ -17,16 +17,18 @@ module Orders
         product_min = product.minimum_order.to_i
 
         product.product_colors.each do |pc|
-          qty       = ordered_qty[pc.name] || 0
+          qty = ordered_qty[pc.name] || 0
+          next if qty.zero?
+
           color_min = pc.minimum_order.to_i
 
           if color_min > 0
-            # Required color — must be ordered and meet its own minimum
+            # Color has its own minimum — once ordered, must meet it
             if qty < color_min
               result << "#{product.name} – #{pc.name}: minimum is #{color_min} units (#{qty} selected)."
             end
-          elsif product_min > 0 && qty > 0 && qty < product_min
-            # Optional color — if ordered, must meet the product minimum run size
+          elsif product_min > 0 && qty < product_min
+            # No color-specific minimum — if ordered, must meet the product minimum run size
             result << "#{product.name} – #{pc.name}: minimum per color is #{product_min} units (#{qty} selected)."
           end
         end

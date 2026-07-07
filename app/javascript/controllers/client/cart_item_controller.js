@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["quantityInput"]
+  static targets = ["form", "quantityInput"]
   static values = {
     debounce: { type: Number, default: 800 }
   }
@@ -50,10 +50,10 @@ export default class extends Controller {
   }
 
   submitForm() {
-    if (typeof this.element.requestSubmit === 'function') {
-      this.element.requestSubmit()
+    if (typeof this.formTarget.requestSubmit === 'function') {
+      this.formTarget.requestSubmit()
     } else {
-      this.element.submit()
+      this.formTarget.submit()
     }
   }
 }
