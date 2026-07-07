@@ -118,6 +118,10 @@ GEM
       railties (>= 4.1.0)
       responders
       warden (~> 1.2.3)
+    devise_masquerade (2.1.4)
+      devise (>= 4.7.0)
+      globalid (>= 0.3.6)
+      railties (>= 5.2.0)
     diff-lcs (1.6.2)
     drb (2.2.3)
     ed25519 (1.4.0)
@@ -440,6 +444,7 @@ GEM
 PLATFORMS
   aarch64-linux
   arm64-darwin-22
+  arm64-darwin-25
   x86_64-linux
 
 DEPENDENCIES
@@ -455,6 +460,7 @@ DEPENDENCIES
   capistrano3-puma (= 6.0.0.beta.1)
   csv
   devise
+  devise_masquerade
   ed25519
   exception_notification
   factory_bot_rails

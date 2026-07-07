@@ -37,6 +37,17 @@
                 </td>
                 <td class="px-6 py-4 text-right">
                   <div class="flex items-center space-x-2">
+                    <% if user.role_client? %>
+                      <%= link_to masquerade_path(user),
+                          title: "Login as this user",
+                          data: { turbo_frame: "_top" },
+                          class: "text-gray-500 hover:text-green-600 dark:text-gray-400 dark:hover:text-green-500" do %>
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l3 3m0 0l-3 3m3-3H3" />
+                        </svg>
+                        <span class="sr-only">Login as this user</span>
+                      <% end %>
+                    <% end %>
                     <%= link_to admin_user_path(user),
                         data: { turbo_frame: "user_modal" },
                         class: "font-medium text-blue-600 dark:text-blue-500 hover:underline" do %>

@@ -22,6 +22,7 @@ gem "thruster", require: false
 
 # Authentication & authorization
 gem "devise"
+gem "devise_masquerade"
 gem "bcrypt", "~> 3.1.7"
 
 # UI components & styling

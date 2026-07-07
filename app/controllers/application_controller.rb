@@ -27,6 +27,7 @@ class ApplicationController < ActionController::Base
 
   def force_password_change
     return if devise_controller? && controller_name == "registrations"
+    return if user_masquerade?
     return unless current_user.role_client? && current_user.first_time_login?
 
     redirect_to edit_user_registration_path, alert: "Please change your password."

@@ -67,6 +67,12 @@
   </head>
 
   <body class="client-theme bg-gray-50 min-h-screen flex flex-col">
+    <% if user_masquerade? %>
+      <div class="bg-yellow-400 text-yellow-900 text-sm font-medium text-center py-2 px-4 sticky top-0 z-[60]">
+        You are viewing as <%= current_user.email %>.
+        <%= link_to "Back to admin", back_masquerade_path(current_user), class: "underline hover:text-yellow-950" %>
+      </div>
+    <% end %>
     <!-- Navigation with Flowbite Navbar -->
     <nav class="sticky top-0 z-50 bg-gradient-to-r from-white via-pink-50 to-white border-b-2 border-pink-100 shadow-lg backdrop-blur-md bg-white/95">
       <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
