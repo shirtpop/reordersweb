@@ -305,6 +305,12 @@ Devise.setup do |config|
   config.responder.error_status = :unprocessable_entity
   config.responder.redirect_status = :see_other
 
+  # ==> Configuration for :masqueradable
+  # Bypass Warden callbacks (e.g. the Activatable active_for_authentication?
+  # check) when an admin signs in as another user, so admins can masquerade
+  # as clients regardless of the client's `active` status.
+  config.masquerade_bypass_warden_callback = true
+
   # ==> Configuration for :registerable
 
   # When set to false, does not sign a user in automatically after their password is

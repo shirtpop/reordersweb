@@ -44,7 +44,11 @@ Rails.application.routes.draw do
       get :new_wizard, on: :collection
       post :validate_step, on: :collection
     end
-    resources :users
+    resources :users do
+      member do
+        patch :activate
+      end
+    end
     resources :orders, only: [ :index, :show, :update ] do
       member do
         post :mark_as_processing

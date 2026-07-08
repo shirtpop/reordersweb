@@ -12,11 +12,7 @@ RSpec.describe Clients::Creator do
 
   let(:valid_user_params) do
     {
-      "0" => {
-        email: "user@example.com",
-        password: "password123",
-        password_confirmation: "password123"
-      }
+      "0" => { email: "user@example.com" }
     }
   end
 
@@ -48,12 +44,12 @@ RSpec.describe Clients::Creator do
         expect(creator).to be_success
       end
 
-      it "sends welcome email to created user" do
-        expect {
-          creator.call!
-        }.to have_enqueued_mail(UserMailer, :welcome_client).with(
-          hash_including(params: hash_including(user_id: kind_of(Integer), password: "password123"))
-        )
+      it "creates the user inactive and does not send any email yet" do
+        expect { creator.call! }.not_to have_enqueued_mail(UserMailer, :welcome_client)
+
+        user = creator.client.users.last
+        expect(user).not_to be_active
+        expect(user.role_client?).to be true
       end
     end
 
@@ -90,6 +86,24 @@ RSpec.describe Clients::Creator do
         expect(creator.success?).to be false
         expect(creator.client).not_to be_persisted
         expect(creator.client.errors[:company_name]).to include("can't be blank")
+      end
+    end
+
+    context "when multiple user emails are given" do
+      let(:valid_user_params) do
+        {
+          "0" => { email: "first@example.com" },
+          "1" => { email: "second@example.com" }
+        }
+      end
+
+      subject(:creator) { described_class.new(client_params: valid_client_params, same_as_main: true) }
+
+      it "creates one inactive user per email" do
+        expect { creator.call! }.to change(User, :count).by(2)
+
+        expect(creator.client.users.pluck(:email)).to contain_exactly("first@example.com", "second@example.com")
+        expect(creator.client.users).to all(satisfy { |u| !u.active? })
       end
     end
 

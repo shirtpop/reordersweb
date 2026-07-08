@@ -39,12 +39,42 @@ RSpec.describe Orders::MinimumOrderValidator do
       end
     end
 
-    context 'when a required color has zero quantity' do
+    context 'when a color with its own minimum is not ordered at all' do
       let(:red) { make_color(name: 'Red', minimum_order: 12) }
-      let(:product) { make_product(minimum_order: 12, colors: [red]) }
+      let(:product) { make_product(minimum_order: 0, colors: [red]) }
       let(:items) { [item(product: product, color: 'Red', quantity: 0)] }
 
-      it { is_expected.not_to be_valid }
+      it 'does not force the color to be ordered' do
+        is_expected.to be_valid
+      end
+    end
+
+    context 'when one color already meets the product minimum and another color is left unordered' do
+      let(:red) { make_color(name: 'Red', minimum_order: 12) }
+      let(:blue) { make_color(name: 'Blue', minimum_order: 10) }
+      let(:product) { make_product(minimum_order: 50, colors: [red, blue]) }
+      let(:items) { [item(product: product, color: 'Red', quantity: 50)] }
+
+      it 'does not require ordering the unordered color' do
+        is_expected.to be_valid
+      end
+    end
+
+    context 'when a color is ordered but falls short of its own minimum' do
+      let(:red) { make_color(name: 'Red', minimum_order: 12) }
+      let(:blue) { make_color(name: 'Blue', minimum_order: 10) }
+      let(:product) { make_product(minimum_order: 50, colors: [red, blue]) }
+      let(:items) do
+        [
+          item(product: product, color: 'Red', quantity: 45),
+          item(product: product, color: 'Blue', quantity: 5)
+        ]
+      end
+
+      it 'flags the color for falling short of its own minimum' do
+        violation = validator.violations.find { |v| v.include?('Blue') }
+        expect(violation).to include('minimum is 10', '5 selected')
+      end
     end
 
     context 'when quantities are split across sizes (summed per color)' do

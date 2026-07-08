@@ -16,22 +16,7 @@
       <% if client.users.any? %>
         <div class="bg-gray-50 dark:bg-gray-700 rounded-lg divide-y divide-gray-200 dark:divide-gray-600">
           <% client.users.each do |user| %>
-            <div class="flex items-center justify-between p-4">
-              <div class="flex items-center">
-                <div class="h-8 w-8 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center flex-shrink-0">
-                  <span class="text-sm font-medium text-blue-600 dark:text-blue-300"><%= user.email.first.upcase %></span>
-                </div>
-                <div class="ml-3">
-                  <p class="text-sm font-medium text-gray-900 dark:text-white"><%= user.email %></p>
-                  <p class="text-xs text-gray-500 dark:text-gray-400">
-                    <%= user.role&.humanize || 'Client' %>
-                    <% if user.last_sign_in_at %>
-                      &middot; Last signed in <%= time_ago_in_words(user.last_sign_in_at) %> ago
-                    <% end %>
-                  </p>
-                </div>
-              </div>
-            </div>
+            <%= render "admin/clients/user_row", user: user %>
           <% end %>
         </div>
       <% else %>

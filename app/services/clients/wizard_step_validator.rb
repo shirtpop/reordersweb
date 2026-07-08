@@ -48,22 +48,24 @@ module Clients
 
     def step_2_errors
       errors = {}
-      user_attrs = @params.dig(:client, :users_attributes, "0") || {}
-      email = user_attrs[:email].to_s.strip
-      password = user_attrs[:password].to_s
+      rows = (@params.dig(:client, :users_attributes) || {}).values
+      emails = rows.map { |row| row[:email].to_s.strip }.reject(&:blank?)
 
-      if email.blank?
+      if emails.empty?
         errors[:email] = [ "can't be blank" ]
-      elsif !URI::MailTo::EMAIL_REGEXP.match?(email)
-        errors[:email] = [ "is not a valid email address" ]
-      elsif User.exists?(email: email)
-        errors[:email] = [ "has already been taken" ]
+        return errors
       end
 
-      if password.blank?
-        errors[:password] = [ "can't be blank" ]
-      elsif password.length < Devise.password_length.min
-        errors[:password] = [ "is too short (minimum is #{Devise.password_length.min} characters)" ]
+      emails.each_with_index do |email, index|
+        label = "email_#{index + 1}"
+
+        if !URI::MailTo::EMAIL_REGEXP.match?(email)
+          errors[label] = [ "is not a valid email address" ]
+        elsif emails.count(email) > 1
+          errors[label] = [ "is listed more than once" ]
+        elsif User.exists?(email: email)
+          errors[label] = [ "has already been taken" ]
+        end
       end
 
       errors

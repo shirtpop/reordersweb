@@ -43,8 +43,16 @@ module Clients
 
     def create_users!
       @user_params.values.each do |user_param|
-        user = @client.users.create!(user_param.merge(client_id: @client.id))
-        UserMailer.with(user_id: user.id, password: user_param[:password]).welcome_client.deliver_later
+        email = user_param[:email].to_s.strip
+        next if email.blank?
+
+        @client.users.create!(
+          email: email,
+          role: "client",
+          client_id: @client.id,
+          password: SecureRandom.alphanumeric(20),
+          active: false
+        )
       end
     end
 

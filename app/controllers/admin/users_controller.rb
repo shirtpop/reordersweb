@@ -1,6 +1,6 @@
 module Admin
   class UsersController < BaseController
-    before_action :set_user, only: [ :show, :edit, :update, :destroy ]
+    before_action :set_user, only: [ :show, :edit, :update, :destroy, :activate ]
 
     def index
       scope = params[:q].present? ? User.where("email ILIKE ?", "%#{params[:q]}%") : User.includes(:client).order(created_at: :desc)
@@ -74,6 +74,30 @@ module Admin
           ]
         end
         format.html { redirect_to admin_users_path, notice: "User was successfully deleted." }
+      end
+    end
+
+    def activate
+      redirect_back fallback_location: admin_users_path, alert: "User is already active." and return if @user.active?
+
+      password = SecureRandom.alphanumeric(16)
+      @user.update!(active: true, password: password)
+      UserMailer.with(user_id: @user.id, password: password).welcome_client.deliver_later
+
+      respond_to do |format|
+        format.turbo_stream do
+          render turbo_stream: [
+            turbo_stream.replace("user_row_#{@user.id}", partial: "admin/clients/user_row", locals: { user: @user }),
+            turbo_stream.prepend("flash", partial: "admin/flash", locals: {
+              type: "success",
+              message: "#{@user.email} was activated and emailed their login credentials."
+            })
+          ]
+        end
+        format.html do
+          redirect_back fallback_location: admin_users_path,
+            notice: "#{@user.email} was activated and emailed their login credentials."
+        end
       end
     end
 

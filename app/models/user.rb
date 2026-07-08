@@ -20,6 +20,7 @@ class User < ApplicationRecord
   validate :admin_cannot_belong_to_client
 
   before_create :mark_as_logged_in, if: -> { role_admin? }
+  before_create :activate_by_default, if: -> { role_admin? }
 
   def self.ransackable_attributes(auth_object = nil)
     %w[email sign_in_count]
@@ -31,6 +32,14 @@ class User < ApplicationRecord
 
   def in_cart_order = orders.status_cart.first
 
+  def active_for_authentication?
+    super && (active? || Current.masquerading == true)
+  end
+
+  def inactive_message
+    active? ? super : :inactive
+  end
+
   private
 
   def admin_cannot_belong_to_client
@@ -41,5 +50,9 @@ class User < ApplicationRecord
 
   def mark_as_logged_in
     self.first_time_login = false
+  end
+
+  def activate_by_default
+    self.active = true
   end
 end

@@ -156,7 +156,7 @@ export default class extends Controller {
     const FIELD_STEP_MAP = {
       company_name: 1, personal_name: 1, phone_number: 1,
       street: 1, city: 1, state: 1, zip_code: 1,
-      email: 2, password: 2,
+      email: 2,
       catalog_name: 3,
     }
 
@@ -193,8 +193,8 @@ export default class extends Controller {
           <p class="text-sm text-gray-500">${this.escapeHtml(getValue("client[phone_number]"))}</p>
         </div>
         <div>
-          <h4 class="text-sm font-semibold text-gray-700 dark:text-gray-300">User Email</h4>
-          <p class="text-sm text-gray-900 dark:text-white">${this.escapeHtml(getValue("client[users_attributes][0][email]"))}</p>
+          <h4 class="text-sm font-semibold text-gray-700 dark:text-gray-300">User Emails</h4>
+          <p class="text-sm text-gray-900 dark:text-white">${this.escapeHtml(this.getUserEmails())}</p>
         </div>
         <div>
           <h4 class="text-sm font-semibold text-gray-700 dark:text-gray-300">Catalog</h4>
@@ -206,6 +206,14 @@ export default class extends Controller {
         </div>
       </div>
     `
+  }
+
+  getUserEmails() {
+    const emails = Array.from(this.element.querySelectorAll('input[name^="client[users_attributes]"][name$="[email]"]'))
+      .map(field => field.value.trim())
+      .filter(Boolean)
+
+    return emails.length ? emails.join(", ") : "N/A"
   }
 
   countSelectedProducts() {
