@@ -90,13 +90,13 @@ module Admin
             turbo_stream.replace("user_row_#{@user.id}", partial: "admin/clients/user_row", locals: { user: @user }),
             turbo_stream.prepend("flash", partial: "admin/flash", locals: {
               type: "success",
-              message: "#{@user.email} was activated and emailed their login credentials."
+              message: activation_notice(@user)
             })
           ]
         end
         format.html do
           redirect_back fallback_location: admin_users_path,
-            notice: "#{@user.email} was activated and emailed their login credentials."
+            notice: activation_notice(@user)
         end
       end
     end
@@ -132,6 +132,11 @@ module Admin
 
     def set_user
       @user = User.find(params[:id])
+    end
+
+    def activation_notice(user)
+      email = ERB::Util.html_escape(user.email)
+      "<!--email_off-->#{email}<!--/email_off--> was activated and emailed their login credentials.".html_safe
     end
   end
 end

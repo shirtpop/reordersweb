@@ -4,7 +4,7 @@
       <span class="text-sm font-medium text-blue-600 dark:text-blue-300"><%= user.email.first.upcase %></span>
     </div>
     <div class="ml-3">
-      <p class="text-sm font-medium text-gray-900 dark:text-white"><%= user.email %></p>
+      <p class="text-sm font-medium text-gray-900 dark:text-white"><!--email_off--><%= user.email %><!--/email_off--></p>
       <p class="text-xs text-gray-500 dark:text-gray-400">
         <%= user.role&.humanize || 'Client' %>
         <% if user.last_sign_in_at %>
