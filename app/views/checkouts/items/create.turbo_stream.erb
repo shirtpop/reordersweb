@@ -1,9 +1,18 @@
-<%# Update the floating basket badge on all inventory pages %>
-<%= turbo_stream.replace "floating-checkout-basket" do %>
-  <%= render "shared/floating_checkout_basket" %>
+<%# Update the drawer contents and trigger badge on all inventory pages %>
+<%= turbo_stream.replace "checkout-drawer-items" do %>
+  <%= render "shared/checkout_drawer_items", checkout: @checkout %>
+<% end %>
+
+<%= turbo_stream.replace "checkout-drawer-trigger" do %>
+  <%= render "shared/checkout_drawer_trigger" %>
 <% end %>
 
 <%# Update draft items table if user is on the checkout form %>
 <%= turbo_stream.replace "checkout-draft-items" do %>
   <%= render "checkouts/draft_items", checkout: @checkout %>
+<% end %>
+
+<%# Slide the drawer open to show what was just added %>
+<%= turbo_stream.append "cart-drawer-signals" do %>
+  <%= render "shared/checkout_drawer_open_signal" %>
 <% end %>

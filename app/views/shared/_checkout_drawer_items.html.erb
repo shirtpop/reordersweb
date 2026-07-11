@@ -1,0 +1,67 @@
+<div id="checkout-drawer-items">
+  <% items = checkout&.checkout_items&.includes(client_inventory: { client_product_variant: :client_product }) %>
+  <% item_count = items&.sum(:quantity) || 0 %>
+  <div class="px-6 pt-4 text-sm font-medium text-gray-700">
+    <%= pluralize(item_count, "item") %> in basket
+  </div>
+  <% if items&.any? %>
+    <ul class="divide-y divide-gray-100">
+      <% items.each do |item| %>
+        <% variant = item.client_inventory.client_product_variant %>
+        <% product = variant.client_product %>
+        <% inventory = item.client_inventory %>
+        <li class="flex gap-4 px-6 py-4">
+          <div class="w-16 h-16 rounded-lg bg-gray-100 flex-shrink-0 overflow-hidden">
+            <% if product.drive_files.first.present? %>
+              <%= image_tag product.drive_files.first.preview_url, class: "w-full h-full object-cover", referrerpolicy: "no-referrer" %>
+            <% else %>
+              <div class="w-full h-full flex items-center justify-center text-gray-300">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14M4 6h16a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V8a2 2 0 012-2z"></path>
+                </svg>
+              </div>
+            <% end %>
+          </div>
+
+          <div class="flex-1 min-w-0">
+            <p class="text-sm font-semibold text-gray-900 truncate"><%= product.name %></p>
+            <p class="text-xs text-gray-500 mt-0.5">
+              <%= [variant.color, variant.size].compact_blank.join(" · ").presence || variant.sku %>
+            </p>
+
+            <%= form_with url: item_inventory_checkouts_path(item.client_inventory_id),
+                          method: :patch,
+                          data: { controller: "cart-item", turbo_stream: true },
+                          class: "mt-2 flex items-center gap-2" do |f| %>
+              <div class="flex items-center border border-gray-200 rounded-lg">
+                <button type="button" data-action="click->cart-item#decrement"
+                        class="w-7 h-7 flex items-center justify-center text-gray-500 hover:bg-gray-50 rounded-l-lg">−</button>
+                <%= f.number_field :quantity, value: item.quantity, min: 0, max: inventory.quantity,
+                      data: { "cart-item-target": "quantityInput", action: "input->cart-item#updateQuantity" },
+                      class: "w-10 text-center text-sm border-0 focus:ring-0 p-0" %>
+                <button type="button" data-action="click->cart-item#increment"
+                        class="w-7 h-7 flex items-center justify-center text-gray-500 hover:bg-gray-50 rounded-r-lg">+</button>
+              </div>
+            <% end %>
+          </div>
+
+          <%= button_to item_inventory_checkouts_path(item.client_inventory_id),
+                method: :delete,
+                class: "self-start p-1.5 text-gray-300 hover:text-red-600 transition-colors",
+                form: { data: { turbo_stream: true } } do %>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+            </svg>
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
+  <% else %>
+    <div class="px-6 py-16 text-center">
+      <svg class="mx-auto h-10 w-10 text-gray-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+      </svg>
+      <p class="text-sm text-gray-500">Your basket is empty.</p>
+    </div>
+  <% end %>
+</div>

@@ -1,5 +1,9 @@
-<%= turbo_stream.replace "floating-checkout-basket" do %>
-  <%= render "shared/floating_checkout_basket" %>
+<%= turbo_stream.replace "checkout-drawer-items" do %>
+  <%= render "shared/checkout_drawer_items", checkout: @checkout %>
+<% end %>
+
+<%= turbo_stream.replace "checkout-drawer-trigger" do %>
+  <%= render "shared/checkout_drawer_trigger" %>
 <% end %>
 
 <%= turbo_stream.replace "checkout-draft-items" do %>
