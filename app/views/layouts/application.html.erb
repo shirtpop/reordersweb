@@ -156,23 +156,10 @@
         <!-- Navigation Links -->
         <div class="items-center justify-between hidden w-full md:flex md:w-auto md:order-1" id="navbar-user">
           <ul class="flex flex-col font-medium p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-white">
-            <li>
-              <%= link_to "Reorder", storefront_path,
-                          class: "#{current_page?(storefront_path) || current_page?(root_path) ? 'block py-2 px-3 text-pink-800 md:text-pink-700 md:p-0 rounded-lg' : 'block py-2 px-3 text-gray-900 rounded-lg transition-all duration-200 hover:bg-gradient-to-r hover:from-pink-50 hover:to-rose-50 md:hover:bg-transparent md:hover:text-pink-700 md:hover:scale-105 md:p-0'}" %>
-            </li>
-            <li>
-              <%= link_to "Orders", orders_path,
-                          class: "#{current_page?(orders_path) ? 'block py-2 px-3 text-pink-800 rounded-lg md:text-pink-700 md:p-0' : 'block py-2 px-3 text-gray-900 rounded-lg transition-all duration-200 hover:bg-gradient-to-r hover:from-pink-50 hover:to-rose-50 md:hover:bg-transparent md:hover:text-pink-700 md:hover:scale-105 md:p-0'}" %>
-            </li>
-            <% if client_inventory_enabled? %>
-              <li>
-                <%= link_to "Inventories", inventories_path,
-                            class: "#{request.path.start_with?('/inventories') && controller_name != 'checkouts' ? 'block py-2 px-3 text-pink-800 rounded-lg md:text-pink-700 md:p-0' : 'block py-2 px-3 text-gray-900 rounded-lg transition-all duration-200 hover:bg-gradient-to-r hover:from-pink-50 hover:to-rose-50 md:hover:bg-transparent md:hover:text-pink-700 md:hover:scale-105 md:p-0'}" %>
-              </li>
-              <li>
-                <%= link_to "Checkout", inventory_checkouts_path,
-                            class: "#{controller_name == 'checkouts' ? 'block py-2 px-3 text-pink-800 rounded-lg md:text-pink-700 md:p-0' : 'block py-2 px-3 text-gray-900 rounded-lg transition-all duration-200 hover:bg-gradient-to-r hover:from-pink-50 hover:to-rose-50 md:hover:bg-transparent md:hover:text-pink-700 md:hover:scale-105 md:p-0'}" %>
-              </li>
+            <% if inventory_app? %>
+              <%= render "layouts/inventory_nav" %>
+            <% else %>
+              <%= render "layouts/reorder_nav" %>
             <% end %>
           </ul>
         </div>
@@ -229,8 +216,8 @@
 
     <!-- Floating Action Buttons -->
     <div class="fixed bottom-8 right-8 z-50 flex flex-col-reverse items-end gap-3">
-      <%= render "shared/floating_cart" %>
-      <%= render "shared/floating_checkout_basket" if client_inventory_enabled? %>
+      <%= render "shared/floating_cart" unless inventory_app? %>
+      <%= render "shared/floating_checkout_basket" if client_inventory_enabled? && inventory_app? %>
     </div>
 
     <!-- Footer -->

@@ -12,4 +12,8 @@ module ApplicationHelper
   def inventories_controller?
     INVENTORIES_CONTROLLER.include?(controller_name)
   end
+
+  def inventory_app?
+    request.path.start_with?("/inventories")
+  end
 end

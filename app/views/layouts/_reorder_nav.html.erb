@@ -1,0 +1,18 @@
+<%
+  active_class = "block py-2 px-3 text-pink-800 md:text-pink-700 md:p-0 rounded-lg"
+  inactive_class = "block py-2 px-3 text-gray-900 rounded-lg transition-all duration-200 hover:bg-gradient-to-r hover:from-pink-50 hover:to-rose-50 md:hover:bg-transparent md:hover:text-pink-700 md:hover:scale-105 md:p-0"
+%>
+<li>
+  <%= link_to "Reorder", storefront_path,
+              class: (current_page?(storefront_path) || current_page?(root_path)) ? active_class : inactive_class %>
+</li>
+<li>
+  <%= link_to "Orders", orders_path,
+              class: current_page?(orders_path) ? active_class : inactive_class %>
+</li>
+<% if client_inventory_enabled? %>
+  <li>
+    <%= link_to "#{@current_client.company_name} store", inventories_path,
+                class: inactive_class, target: "_blank", rel: "noopener" %>
+  </li>
+<% end %>
