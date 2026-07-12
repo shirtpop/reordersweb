@@ -17,7 +17,7 @@ Rails.application.routes.draw do
 
   # Storefront routes (new customer-facing e-commerce experience)
   get "/shop" => "storefront#index", as: :storefront
-  resources :products, only: [ :show ]  # Product detail pages for ordering
+  resources :products, only: [ :show ], as: "storefront_product"  # Product detail pages for ordering
   resource :cart, only: [ :show ], controller: "cart"  # Shopping cart
   resources :cart_items, only: [ :create, :update, :destroy ]  # Add/update/remove from cart
 
