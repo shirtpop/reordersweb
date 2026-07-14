@@ -1,0 +1,26 @@
+<div class="px-6 py-4 border-t border-gray-200 space-y-3">
+  <h3 class="text-sm font-semibold text-gray-900">Recipient Information</h3>
+
+  <%= form_with model: checkout, url: inventory_checkouts_path, method: :post, id: "drawer-checkout-form" do |form| %>
+    <div class="grid grid-cols-2 gap-3">
+      <div>
+        <%= form.label :recipient_first_name, "First Name", class: "block text-xs font-medium text-gray-600 mb-1" %>
+        <%= form.text_field :recipient_first_name, required: true,
+              class: "block w-full px-3 py-2 text-sm border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-gray-900 focus:border-gray-900",
+              placeholder: "John" %>
+      </div>
+      <div>
+        <%= form.label :recipient_last_name, "Last Name", class: "block text-xs font-medium text-gray-600 mb-1" %>
+        <%= form.text_field :recipient_last_name, required: true,
+              class: "block w-full px-3 py-2 text-sm border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-gray-900 focus:border-gray-900",
+              placeholder: "Doe" %>
+      </div>
+    </div>
+    <div class="mt-3">
+      <%= form.label :recipient_email, "Email Address", class: "block text-xs font-medium text-gray-600 mb-1" %>
+      <%= form.email_field :recipient_email, required: true,
+            class: "block w-full px-3 py-2 text-sm border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-gray-900 focus:border-gray-900",
+            placeholder: "john.doe@example.com" %>
+    </div>
+  <% end %>
+</div>

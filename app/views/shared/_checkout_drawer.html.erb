@@ -17,14 +17,20 @@
       </button>
     </div>
 
+    <% drawer_checkout = current_draft_checkout || @current_client.checkouts.new(user: current_user) %>
+
     <div class="flex-1 overflow-y-auto">
       <%= render "shared/checkout_drawer_items", checkout: current_draft_checkout %>
+      <%= render "shared/checkout_drawer_recipient_form", checkout: drawer_checkout %>
     </div>
 
-    <div class="border-t border-gray-200 px-6 py-5">
-      <%= link_to "Review & Checkout", new_inventory_checkout_path,
-            data: { turbo_frame: "_top" },
-            class: "block w-full text-center px-4 py-3 rounded-xl font-bold text-white bg-gray-900 hover:bg-gray-800 transition-colors" %>
+    <div class="border-t border-gray-200 px-6 py-5" data-controller="checkout-confirm">
+      <button type="button" data-action="click->checkout-confirm#open"
+              class="block w-full text-center px-4 py-3 rounded-xl font-bold text-white bg-pink-600 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 transition-colors">
+        Checkout
+      </button>
+
+      <%= render "shared/checkout_confirm_modal" %>
     </div>
   </aside>
 </div>

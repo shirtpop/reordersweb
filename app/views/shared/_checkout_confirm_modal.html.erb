@@ -1,0 +1,36 @@
+<div data-checkout-confirm-target="modal"
+     class="hidden fixed inset-0 z-[90] flex items-center justify-center p-4">
+  <div class="absolute inset-0 bg-gray-900/60" data-action="click->checkout-confirm#close"></div>
+
+  <div class="relative bg-white rounded-2xl shadow-2xl max-w-md w-full p-6">
+    <h3 class="text-lg font-bold text-gray-900 mb-1">Confirm Checkout</h3>
+    <p class="text-sm text-gray-600 mb-4">Please review the details before completing this checkout.</p>
+
+    <dl class="space-y-2 text-sm mb-6 bg-gray-50 rounded-xl p-4">
+      <div class="flex justify-between gap-4">
+        <dt class="text-gray-500">Recipient</dt>
+        <dd data-checkout-confirm-target="summaryName" class="font-medium text-gray-900 text-right">—</dd>
+      </div>
+      <div class="flex justify-between gap-4">
+        <dt class="text-gray-500">Email</dt>
+        <dd data-checkout-confirm-target="summaryEmail" class="font-medium text-gray-900 text-right break-all">—</dd>
+      </div>
+      <div class="flex justify-between gap-4">
+        <dt class="text-gray-500">Items</dt>
+        <dd data-checkout-confirm-target="summaryItemCount" class="font-medium text-gray-900 text-right">—</dd>
+      </div>
+    </dl>
+
+    <div class="flex items-center gap-3">
+      <button type="button" data-action="click->checkout-confirm#close"
+              class="flex-1 px-4 py-2.5 rounded-xl font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 transition-colors">
+        Cancel
+      </button>
+      <button type="submit" form="drawer-checkout-form"
+              data-checkout-confirm-target="confirmButton"
+              class="flex-1 px-4 py-2.5 rounded-xl font-bold text-white bg-pink-600 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 transition-colors disabled:opacity-50">
+        Confirm & Checkout
+      </button>
+    </div>
+  </div>
+</div>

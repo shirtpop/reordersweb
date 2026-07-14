@@ -2,7 +2,7 @@
   <% items = checkout&.checkout_items&.includes(client_inventory: { client_product_variant: :client_product }) %>
   <% item_count = items&.sum(:quantity) || 0 %>
   <div class="px-6 pt-4 text-sm font-medium text-gray-700">
-    <%= pluralize(item_count, "item") %> in basket
+    <span id="checkout-drawer-item-count"><%= pluralize(item_count, "item") %></span> in basket
   </div>
   <% if items&.any? %>
     <ul class="divide-y divide-gray-100">

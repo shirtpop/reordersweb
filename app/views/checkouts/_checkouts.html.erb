@@ -6,14 +6,6 @@
         <h2 class="text-xl font-semibold text-gray-900">Checkouts</h2>
         <p class="text-sm text-gray-600 mt-1">Manage and track all checkout records</p>
       </div>
-      <div class="flex items-center space-x-2">
-        <%= link_to new_inventory_checkout_path, class: "inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-pink-600 border border-transparent rounded-lg hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500", data: { turbo_frame: "_top" } do %>
-          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-          </svg>
-          New Checkout
-        <% end %>
-      </div>
     </div>
     
     <!-- Search Form -->
@@ -170,13 +162,7 @@
       <% if params[:q].present? %>
         <p class="text-gray-500 mb-4">Try adjusting your search criteria.</p>
       <% else %>
-        <p class="text-gray-500 mb-4">Start by creating your first checkout.</p>
-      <% end %>
-      <%= link_to new_inventory_checkout_path, class: "inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-pink-600 border border-transparent rounded-lg hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500", data: { turbo_frame: "_top" } do %>
-        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-        </svg>
-        Create Checkout
+        <p class="text-gray-500 mb-4">Add items to your basket from the product catalog to start a checkout.</p>
       <% end %>
     </div>
   <% end %>
