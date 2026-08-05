@@ -10,6 +10,7 @@ module Products
       begin
         duplicated_product = @product.dup
         duplicated_product.name = "Copy of " + @product.name
+        duplicated_product.description = @product.description
 
         color_mapping = build_color_mapping(duplicated_product)
         duplicated_product.save!

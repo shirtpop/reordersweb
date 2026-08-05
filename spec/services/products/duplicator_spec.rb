@@ -39,6 +39,11 @@ RSpec.describe Products::Duplicator do
         duplicate_names = new_product.product_colors.pluck(:name).sort
         expect(duplicate_names).to eq(original_names)
       end
+
+      it "copies the rich text description to the duplicate" do
+        new_product = duplicator.call!
+        expect(new_product.description.to_plain_text).to eq(product.description.to_plain_text)
+      end
     end
 
     context "when GoogleDrive::Copier raises CopyError" do
