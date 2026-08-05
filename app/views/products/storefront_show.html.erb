@@ -206,10 +206,12 @@
             </div>
 
             <!-- Per-color minimum order indicator -->
-            <div class="border-t border-amber-100 px-4 py-2 bg-amber-50 flex justify-between items-center">
-              <span class="text-xs font-semibold text-amber-700 uppercase tracking-wide">Min. order</span>
-              <span class="text-sm font-bold text-amber-700"><%= color.minimum_order.positive? ? color.minimum_order : @product.minimum_order %> units</span>
-            </div>
+            <% if color.minimum_order.positive? %>
+              <div class="border-t border-amber-100 px-4 py-2 bg-amber-50 flex justify-between items-center">
+                <span class="text-xs font-semibold text-amber-700 uppercase tracking-wide">Min. order</span>
+                  <span class="text-sm font-bold text-amber-700"><%= color.minimum_order %> units</span>
+              </div>
+            <% end %>
 
             <!-- Card Color Total -->
             <div class="border-t border-gray-100 px-4 py-3 bg-gradient-to-r from-gray-50 to-pink-50 flex justify-between items-center">
