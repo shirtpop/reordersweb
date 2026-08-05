@@ -40,6 +40,10 @@ Rails.application.routes.draw do
       resource :product_assignments, only: [ :show ], controller: "client_product_assignments"
       resources :catalogs, only: [ :create, :update, :destroy ], controller: "client_catalogs" do
         resource :products, only: [ :update ], controller: "catalog_products", as: :catalog_products
+        member do
+          patch :move_up
+          patch :move_down
+        end
       end
       get :new_wizard, on: :collection
       post :validate_step, on: :collection

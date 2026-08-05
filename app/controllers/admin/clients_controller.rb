@@ -9,7 +9,7 @@ module Admin
 
     def show
       @assigned_products = @client.assigned_products
-      @catalogs = @client.catalogs.includes(:products).order(created_at: :desc)
+      @catalogs = @client.catalogs.includes(:products).ordered
       @recent_orders = @client.orders.includes(:catalog).order(created_at: :desc).limit(10)
       @recent_client_products = @client.client_products.order(created_at: :desc).limit(5)
     end

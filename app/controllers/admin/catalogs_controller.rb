@@ -15,6 +15,7 @@ module Admin
 
     def create
       @catalog = Catalog.new(catalog_params)
+      @catalog.order = Catalog.where(client_id: @catalog.client_id).maximum(:order).to_i + 1
 
       if @catalog.save
         redirect_to admin_catalogs_path, notice: "Catalog was successfully created."

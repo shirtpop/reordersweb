@@ -1,6 +1,6 @@
 class StorefrontController < BaseController
   def index
-    @catalogs = current_client.catalogs.active.includes(:products)
+    @catalogs = current_client.catalogs.active.ordered.includes(:products)
 
     # Handle empty state - no catalogs assigned
     return if @catalogs.empty?

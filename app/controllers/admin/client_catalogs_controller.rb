@@ -1,10 +1,11 @@
 module Admin
   class ClientCatalogsController < BaseController
     before_action :set_client
-    before_action :set_catalog, only: [ :update, :destroy ]
+    before_action :set_catalog, only: [ :update, :destroy, :move_up, :move_down ]
 
     def create
       @catalog = @client.catalogs.new(catalog_params)
+      @catalog.order = @client.catalogs.maximum(:order).to_i + 1
 
       if @catalog.save
         respond_to do |format|
@@ -39,7 +40,34 @@ module Admin
       end
     end
 
+    def move_up
+      swap_order(-1)
+    end
+
+    def move_down
+      swap_order(1)
+    end
+
     private
+
+    def swap_order(direction)
+      siblings = @client.catalogs.ordered.to_a
+      index = siblings.index(@catalog)
+      sibling = siblings[index + direction] if index && (index + direction).between?(0, siblings.size - 1)
+
+      if sibling
+        Catalog.transaction do
+          original_order = @catalog.order
+          @catalog.update!(order: sibling.order)
+          sibling.update!(order: original_order)
+        end
+      end
+
+      respond_to do |format|
+        format.turbo_stream { render_catalogs_stream }
+        format.html { redirect_to admin_client_path(@client) }
+      end
+    end
 
     def set_client
       @client = Client.find(params[:client_id])
@@ -54,7 +82,7 @@ module Admin
     end
 
     def render_catalogs_stream
-      catalogs = @client.catalogs.includes(:products).order(created_at: :desc)
+      catalogs = @client.catalogs.includes(products: :product_colors).ordered
       render turbo_stream: turbo_stream.replace("hub-catalogs",
         partial: "admin/clients/hub_catalogs",
         locals: { client: @client, catalogs: catalogs })

@@ -5,6 +5,8 @@ class Catalog < ApplicationRecord
     archived: "archived"
   }, prefix: false, default: :draft
 
+  scope :ordered, -> { order(:order, :id) }
+
   scope :search_by_keyword, ->(keyword) {
     joins(:client)
     .where("#{table_name}.name ILIKE :keyword OR
