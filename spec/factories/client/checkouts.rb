@@ -9,7 +9,7 @@ FactoryBot.define do
 
     trait :confirmed do
       status { "confirmed" }
-      recipient_email { Faker::Internet.email }
+      purpose { "Restock" }
       recipient_first_name { Faker::Name.first_name }
       recipient_last_name { Faker::Name.last_name }
     end

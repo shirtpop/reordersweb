@@ -26,7 +26,7 @@ RSpec.describe Checkouts::Creator, type: :service do
     context "when checkout creation is successful" do
       before do
         checkout.update_columns(
-          recipient_email: "test@example.com",
+          purpose: "Restock",
           recipient_first_name: "Test",
           recipient_last_name: "User"
         )
@@ -94,7 +94,7 @@ RSpec.describe Checkouts::Creator, type: :service do
 
       before do
         checkout.update_columns(
-          recipient_email: "test@example.com",
+          purpose: "Restock",
           recipient_first_name: "Test",
           recipient_last_name: "User"
         )
@@ -130,7 +130,7 @@ RSpec.describe Checkouts::Creator, type: :service do
     context "when checkout is successfully confirmed" do
       before do
         checkout.update_columns(
-          recipient_email: "test@example.com",
+          purpose: "Restock",
           recipient_first_name: "Test",
           recipient_last_name: "User"
         )

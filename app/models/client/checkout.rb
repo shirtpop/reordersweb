@@ -7,12 +7,10 @@ class Client::Checkout < ApplicationRecord
 
   enum :status, { draft: "draft", confirmed: "confirmed" }, default: :confirmed
 
-  validates :recipient_email, :recipient_first_name, :recipient_last_name, presence: true, if: :confirmed?
-  validates :recipient_email, format: { with: URI::MailTo::EMAIL_REGEXP }, if: :confirmed?
+  validates :purpose, :recipient_first_name, :recipient_last_name, presence: true, if: :confirmed?
 
   scope :search_by_name, ->(name) {
-    where("#{table_name}.recipient_email ILIKE :name OR
-          #{table_name}.recipient_first_name ILIKE :name OR
+    where("#{table_name}.recipient_first_name ILIKE :name OR
           #{table_name}.recipient_last_name ILIKE :name",
           name: "%#{sanitize_sql_like(name)}%")
   }

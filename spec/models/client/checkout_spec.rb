@@ -24,10 +24,10 @@ RSpec.describe Client::Checkout, type: :model do
   describe "validations with confirmed status" do
     subject(:checkout) { build(:client_checkout, :confirmed) }
 
-    it "requires recipient_email" do
-      checkout.recipient_email = nil
+    it "requires purpose" do
+      checkout.purpose = nil
       expect(checkout).not_to be_valid
-      expect(checkout.errors[:recipient_email]).to be_present
+      expect(checkout.errors[:purpose]).to be_present
     end
 
     it "requires recipient_first_name" do

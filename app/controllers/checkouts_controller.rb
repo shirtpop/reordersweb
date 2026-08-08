@@ -38,7 +38,7 @@ class CheckoutsController < BaseController
 
   def checkout_params
     params.require(:client_checkout).permit(
-      :recipient_email,
+      :purpose,
       :recipient_first_name,
       :recipient_last_name
     )
