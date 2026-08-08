@@ -148,7 +148,14 @@
         <%= render "admin/products/color_row", f: color_form %>
       <% end %>
     </div>
-    <%= display_field_errors(@product, :product_colors) %>
+    <% if @product.errors[:product_colors].any? %>
+      <div class="mt-2 text-sm text-red-600">
+        <% @product.product_colors.each_with_index do |color, index| %>
+          <% next if color.errors.none? %>
+          <p><%= color.name.presence || "Color ##{index + 1}" %>: <%= color.errors.full_messages.join(", ") %></p>
+        <% end %>
+      </div>
+    <% end %>
   </div>
 
   <!-- Form Actions -->

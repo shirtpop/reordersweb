@@ -7,7 +7,8 @@
       <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Color Name</label>
       <%= f.text_field :name,
           placeholder: "Red",
-          class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" %>
+          class: field_error_class(f.object, :name, "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white") %>
+      <%= display_field_errors(f.object, :name) %>
     </div>
 
     <div class="flex-1">
@@ -19,9 +20,10 @@
                data-product-form-target="colorPicker">
         <%= f.text_field :hex_color,
             placeholder: "#FF0000",
-            class: "flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white",
+            class: field_error_class(f.object, :hex_color, "flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"),
             data: { product_form_target: "colorHexInput" } %>
       </div>
+      <%= display_field_errors(f.object, :hex_color) %>
     </div>
 
     <div class="w-36">
@@ -30,7 +32,8 @@
           placeholder: 0,
           min: 0,
           value: f.object.minimum_order,
-          class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" %>
+          class: field_error_class(f.object, :minimum_order, "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white") %>
+      <%= display_field_errors(f.object, :minimum_order) %>
     </div>
 
     <button type="button"

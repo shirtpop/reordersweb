@@ -29,6 +29,10 @@ module Admin
       if @product.update(product_params)
         redirect_to admin_product_path(@product), notice: "Product was successfully updated."
       else
+        ExceptionNotifier.notify_exception(
+          StandardError.new("Admin::ProductsController#update validation failed"),
+          data: { product_id: @product.id, errors: @product.errors.full_messages }
+        )
         render :edit
       end
     end
