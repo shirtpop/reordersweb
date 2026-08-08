@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_08_08_101448) do
+ActiveRecord::Schema[8.0].define(version: 2026_08_08_180000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -118,7 +118,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_08_08_101448) do
     t.bigint "client_inventory_id", null: false
     t.bigint "order_item_id"
     t.bigint "user_id"
-    t.string "movement_type", limit: 20, default: "in", null: false
+    t.string "movement_type", limit: 20, default: "add", null: false
     t.integer "quantity", null: false
     t.jsonb "metadata", default: {}
     t.datetime "created_at", null: false

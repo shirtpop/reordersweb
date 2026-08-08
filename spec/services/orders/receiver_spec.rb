@@ -74,7 +74,7 @@ RSpec.describe Orders::Receiver do
             order.order_items.each do |item|
               movement = Client::InventoryMovement.find_by(order_item: item)
               expect(movement).to be_present
-              expect(movement.movement_type).to eq('delivered_in')
+              expect(movement.movement_type).to eq('add')
               expect(movement.quantity).to eq(item.quantity)
               expect(movement.user).to eq(user)
             end

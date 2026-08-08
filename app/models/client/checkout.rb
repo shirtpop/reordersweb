@@ -15,20 +15,7 @@ class Client::Checkout < ApplicationRecord
           name: "%#{sanitize_sql_like(name)}%")
   }
 
-  accepts_nested_attributes_for :inventory_movements, allow_destroy: true
-
-  before_save :set_user_for_movements
-
   def recipient_full_name
     "#{recipient_first_name.humanize} #{recipient_last_name.humanize}"
-  end
-
-  private
-
-  def set_user_for_movements
-    inventory_movements.each do |movement|
-      movement.user = user if movement.user_id.blank?
-      movement.quantity = -movement.quantity.abs if movement.movement_type == "stock_out"
-    end
   end
 end

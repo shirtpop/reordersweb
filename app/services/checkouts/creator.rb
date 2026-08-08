@@ -29,15 +29,13 @@ module Checkouts
             inventory.with_lock do
               raise StockUpdateError, "Insufficient stock for #{inventory.id}" if inventory.quantity < item.quantity
 
-              inventory.decrement!(:quantity, item.quantity)
+              checkout.inventory_movements.create!(
+                client_inventory: inventory,
+                quantity: item.quantity,
+                movement_type: :subtract,
+                user: user
+              )
             end
-
-            checkout.inventory_movements.create!(
-              client_inventory: inventory,
-              quantity: -item.quantity.abs,
-              movement_type: :stock_out,
-              user: user
-            )
           end
 
           @checkout

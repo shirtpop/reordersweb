@@ -52,14 +52,6 @@ module ClientInventories
         movement_type: movement_type.to_s,
         quantity: quantity
       )
-
-      if Client::InventoryMovement::INCREASE_MOVEMENTS.include?(movement_type)
-        inventory.increment!(:quantity, quantity)
-      elsif Client::InventoryMovement::DECREASE_MOVEMENTS.include?(movement_type)
-        inventory.decrement!(:quantity, quantity)
-      else
-        raise ArgumentError, "Unknown movement type: #{movement_type}"
-      end
     end
   end
 end

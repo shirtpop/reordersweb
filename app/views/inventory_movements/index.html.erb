@@ -65,21 +65,21 @@
                   <%= movement.created_at.strftime("%b %d, %Y %I:%M %p") %>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
-                  <% if Client::InventoryMovement::INCREASE_MOVEMENTS.include?(movement.movement_type.to_sym) %>
+                  <% if movement.add? %>
                     <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200">
-                      <%= movement.movement_type.humanize %>
+                      Added
                     </span>
                   <% else %>
                     <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-rose-100 text-rose-800 border border-rose-200">
-                      <%= movement.movement_type.humanize %>
+                      Removed
                     </span>
                   <% end %>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-bold tabular-nums">
-                  <% if Client::InventoryMovement::INCREASE_MOVEMENTS.include?(movement.movement_type.to_sym) %>
+                  <% if movement.add? %>
                     <span class="text-emerald-600">+<%= movement.quantity %></span>
                   <% else %>
-                    <span class="text-rose-600"><%= movement.quantity %></span>
+                    <span class="text-rose-600">-<%= movement.quantity %></span>
                   <% end %>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">

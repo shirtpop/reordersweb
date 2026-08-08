@@ -43,8 +43,8 @@ RSpec.describe Checkouts::Creator, type: :service do
         movement = checkout.reload.inventory_movements.first
         aggregate_failures do
           expect(movement.client_inventory).to eq(inventory)
-          expect(movement.movement_type).to eq("stock_out")
-          expect(movement.quantity).to eq(-5)
+          expect(movement.movement_type).to eq("subtract")
+          expect(movement.quantity).to eq(5)
           expect(movement.user).to eq(user)
         end
       end
@@ -54,7 +54,7 @@ RSpec.describe Checkouts::Creator, type: :service do
       end
 
       it "uses database locks to prevent race conditions" do
-        expect_any_instance_of(Client::Inventory).to receive(:with_lock).and_call_original
+        expect_any_instance_of(Client::Inventory).to receive(:with_lock).at_least(:once).and_call_original
         creator.call!
       end
     end

@@ -30,16 +30,12 @@ module Orders
             client_variant = find_or_create_client_variant(client_product, item)
             inventory = find_or_create_inventory(client_variant)
 
-            inventory.with_lock do
-              inventory.inventory_movements.create!(
-                user: user,
-                movement_type: :delivered_in,
-                quantity: item.quantity,
-                order_item: item
-              )
-
-              inventory.increment!(:quantity, item.quantity)
-            end
+            inventory.inventory_movements.create!(
+              user: user,
+              movement_type: :add,
+              quantity: item.quantity,
+              order_item: item
+            )
           end
         end
 

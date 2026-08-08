@@ -9,7 +9,7 @@ RSpec.describe ClientInventories::ApplyMovements do
 
   let(:movements_params) do
     {
-      movement_type: 'stock_in',
+      movement_type: 'add',
       product_variants: [
         {
           product_variant_id: product_variant1.id,
@@ -61,38 +61,34 @@ RSpec.describe ClientInventories::ApplyMovements do
         movement1 = Client::InventoryMovement.find_by(client_inventory: Client::Inventory.find_by(client_product_variant: product_variant1))
         movement2 = Client::InventoryMovement.find_by(client_inventory: Client::Inventory.find_by(client_product_variant: product_variant2))
 
-        expect(movement1.movement_type).to eq('stock_in')
+        expect(movement1.movement_type).to eq('add')
         expect(movement1.quantity).to eq(10)
         expect(movement1.user).to eq(user)
 
-        expect(movement2.movement_type).to eq('stock_in')
+        expect(movement2.movement_type).to eq('add')
         expect(movement2.quantity).to eq(5)
         expect(movement2.user).to eq(user)
       end
     end
 
-    context 'with increase movements' do
-      Client::InventoryMovement::INCREASE_MOVEMENTS.each do |movement_type|
-        it "handles #{movement_type} movement correctly" do
-          params = movements_params.merge(movement_type: movement_type.to_s)
+    context 'with an add movement' do
+      it 'increases inventory quantities' do
+        described_class.call!(user: user, movements_params: movements_params)
 
-          expect { described_class.call!(user: user, movements_params: params) }
-            .to change { Client::InventoryMovement.count }.by(2)
-        end
+        expect(Client::Inventory.find_by(client_product_variant: product_variant1).quantity).to eq(10)
       end
     end
 
-    context 'with decrease movements' do
-      Client::InventoryMovement::DECREASE_MOVEMENTS.each do |movement_type|
-        it "handles #{movement_type} movement correctly" do
-          # First add some stock
-          described_class.call!(user: user, movements_params: movements_params)
+    context 'with a subtract movement' do
+      it 'decreases inventory quantities' do
+        # First add some stock
+        described_class.call!(user: user, movements_params: movements_params)
 
-          # Then decrease
-          decrease_params = movements_params.merge(movement_type: movement_type.to_s)
-          expect { described_class.call!(user: user, movements_params: decrease_params) }
-            .to change { Client::InventoryMovement.count }.by(2)
-        end
+        # Then subtract
+        subtract_params = movements_params.merge(movement_type: 'subtract')
+        described_class.call!(user: user, movements_params: subtract_params)
+
+        expect(Client::Inventory.find_by(client_product_variant: product_variant1).quantity).to eq(0)
       end
     end
 
@@ -118,7 +114,7 @@ RSpec.describe ClientInventories::ApplyMovements do
     end
 
     context 'with empty product_variants' do
-      let(:empty_params) { { movement_type: 'stock_in', product_variants: [] } }
+      let(:empty_params) { { movement_type: 'add', product_variants: [] } }
 
       it 'does not create any movements' do
         expect { described_class.call!(user: user, movements_params: empty_params) }
@@ -127,7 +123,7 @@ RSpec.describe ClientInventories::ApplyMovements do
     end
 
     context 'with nil product_variants' do
-      let(:nil_params) { { movement_type: 'stock_in' } }
+      let(:nil_params) { { movement_type: 'add' } }
 
       it 'does not create any movements' do
         expect { described_class.call!(user: user, movements_params: nil_params) }
