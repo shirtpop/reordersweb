@@ -6,7 +6,7 @@ class UserMailer < ApplicationMailer
 
     mail(
       to: @user.email,
-      subject: "Welcome to Our Platform!"
+      subject: "Ordering company swag just got way easier (and 100% free) 🚀"
     )
   end
 end
