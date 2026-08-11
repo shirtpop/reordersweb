@@ -8,6 +8,9 @@ ORDER DETAILS
 ───────────────────────────────────────────────────────
 Order Date: <%= @order.created_at.strftime("%B %d, %Y") %>
 Scheduled Delivery Date: <%= @order.delivery_date ? @order.delivery_date.strftime("%B %d, %Y") : 'Not specified' %>
+<% if @order.purchase_order.present? %>
+PO#: <%= @order.purchase_order %>
+<% end %>
 Total Quantity: <%= number_with_delimiter(@order.total_quantity) %> units
 
 PRODUCT               COLOR      SIZE       QUANTITY

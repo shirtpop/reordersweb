@@ -39,6 +39,15 @@
           </div>
         </div>
 
+        <!-- Purchase Order Field -->
+        <div class="mb-8">
+          <%= form.label :purchase_order, "PO#",
+              class: "block text-sm font-bold text-gray-900 mb-3 uppercase tracking-wide" %>
+          <%= form.text_field :purchase_order,
+              placeholder: "Purchase order number (optional)",
+              class: "input-primary" %>
+        </div>
+
         <!-- Notes Field -->
         <div class="mb-8">
           <%= form.label :notes, "Notes",

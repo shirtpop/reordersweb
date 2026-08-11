@@ -31,6 +31,9 @@
       <p><strong>Catalog Reference:</strong> <%= @order.catalog&.name || 'Not specified' %></p>
       <p><strong>Order Date:</strong> <%= @order.created_at.strftime("%B %d, %Y at %H:%M") %></p>
       <p><strong>Delivery Date:</strong> <%= @order.delivery_date ? @order.delivery_date.strftime("%B %d, %Y") : 'Not specified' %></p>
+      <% if @order.purchase_order.present? %>
+      <p><strong>PO#:</strong> <%= @order.purchase_order %></p>
+      <% end %>
       <p><strong>Total Quantity:</strong> <%= number_with_delimiter(@order.total_quantity) %> units</p>
       <p><strong>Total Value:</strong> $<%= number_with_delimiter(@order.price) %></p>
     </div>

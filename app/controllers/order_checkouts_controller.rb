@@ -45,6 +45,7 @@ class OrderCheckoutsController < BaseController
     @cart.update!(
       delivery_date: checkout_params[:delivery_date],
       notes: checkout_params[:notes],
+      purchase_order: checkout_params[:purchase_order],
       status: "submitted",
       total_quantity: calculator.total_quantity,
       price: calculator.total_price
@@ -59,6 +60,6 @@ class OrderCheckoutsController < BaseController
   private
 
   def checkout_params
-    params.require(:order).permit(:delivery_date, :notes)
+    params.require(:order).permit(:delivery_date, :notes, :purchase_order)
   end
 end

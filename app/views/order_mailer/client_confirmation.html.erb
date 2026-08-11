@@ -9,6 +9,9 @@
     
     <p><strong>Order Date:</strong> <%= @order.created_at.strftime("%B %d, %Y") %></p>
     <p><strong>Scheduled Delivery Date:</strong> <%= @order.delivery_date.strftime("%B %d, %Y") if @order.delivery_date %></p>
+    <% if @order.purchase_order.present? %>
+    <p><strong>PO#:</strong> <%= @order.purchase_order %></p>
+    <% end %>
     <p><strong>Total Quantity:</strong> <%= number_with_delimiter(@order.total_quantity) %> units</p>
 </div>
 

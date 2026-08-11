@@ -229,6 +229,13 @@
             <span class="text-sm font-bold text-gray-900"><%= @order.order_number %></span>
           </div>
 
+          <% if @order.purchase_order.present? %>
+            <div class="flex justify-between items-center py-2 border-b border-gray-100">
+              <span class="text-sm font-medium text-gray-600">PO#</span>
+              <span class="text-sm font-bold text-gray-900"><%= @order.purchase_order %></span>
+            </div>
+          <% end %>
+
           <div class="flex justify-between items-start py-2 border-b border-gray-100">
             <span class="text-sm font-medium text-gray-600">Ordered by</span>
             <span class="text-sm font-bold text-gray-900 text-right"><%= @order.ordered_by&.email || "Unknown User" %></span>
