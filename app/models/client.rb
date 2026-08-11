@@ -32,7 +32,7 @@ class Client < ApplicationRecord
   end
 
   def assigned_products
-    ::Product.joins(:catalogs_products).where(catalogs_products: { catalog_id: catalogs.select(:id) }).distinct
+    ::Product.joins(:catalogs_products).where(catalogs_products: { catalog_id: catalogs.active.select(:id) }).distinct
   end
 
   def setup_complete?

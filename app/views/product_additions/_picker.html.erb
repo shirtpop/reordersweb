@@ -1,0 +1,28 @@
+<% if addable_products.any? %>
+  <p class="text-sm text-gray-600 mb-6">Choose a product from your catalog to add to your inventory.</p>
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+    <% addable_products.each do |product| %>
+      <%= link_to new_product_addition_path(product_id: product.id),
+          class: "flex items-center gap-4 p-4 border-2 border-gray-200 rounded-xl hover:border-pink-300 hover:bg-pink-50 transition-all duration-200" do %>
+        <div class="w-14 h-14 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0 overflow-hidden">
+          <% if product.drive_files.any? %>
+            <%= image_tag product.drive_files.first.preview_url,
+                alt: product.name, class: "w-full h-full object-cover", referrerpolicy: "no-referrer" %>
+          <% else %>
+            <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+            </svg>
+          <% end %>
+        </div>
+        <div>
+          <p class="font-semibold text-gray-900"><%= product.name %></p>
+          <p class="text-xs text-gray-500"><%= product.color_names %></p>
+        </div>
+      <% end %>
+    <% end %>
+  </div>
+<% else %>
+  <div class="text-center py-12">
+    <p class="text-gray-600">Every product assigned to you has already been added to your inventory.</p>
+  </div>
+<% end %>

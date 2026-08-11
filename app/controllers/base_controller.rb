@@ -3,7 +3,7 @@ class BaseController < ApplicationController
   before_action :set_current_client
   before_action :check_inventories_access
 
-  INVENTORIES_ENABLED_CONTROLLER = [ "inventories", "inventory_movements", "items" ].freeze
+  INVENTORIES_ENABLED_CONTROLLER = [ "inventories", "inventory_movements", "items", "product_additions" ].freeze
 
   def current_client
     @current_client

@@ -1,0 +1,42 @@
+<%= link_to new_admin_client_product_additions_path(client), class: "inline-flex items-center gap-1 text-sm font-medium text-blue-600 hover:text-blue-700 mb-6" do %>
+  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+  </svg>
+  Choose a different product
+<% end %>
+
+<h2 class="text-xl font-bold text-gray-900 dark:text-white mb-1"><%= product.name %></h2>
+<p class="text-gray-600 dark:text-gray-400 mb-6">Enter the quantity currently on hand for each size and color. Leave a field blank to skip it — stock can be added for it later.</p>
+
+<%= form_with url: admin_client_product_additions_path(client), method: :post, local: true, class: "space-y-6", data: { turbo: false } do %>
+  <%= hidden_field_tag :product_id, product.id %>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    <% product.product_colors.each_with_index do |color, color_idx| %>
+      <div class="rounded-lg border border-gray-200 dark:border-gray-600 p-4">
+        <div class="flex items-center gap-2 mb-3">
+          <div class="w-4 h-4 rounded-full border border-gray-200 dark:border-gray-500" style="background-color: <%= color.hex_color %>"></div>
+          <span class="text-sm font-medium text-gray-900 dark:text-white"><%= color.name.capitalize %></span>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <% product.sizes.each_with_index do |size, size_idx| %>
+            <div>
+              <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1"><%= size %></label>
+              <%= number_field_tag "variants[#{size_idx}_#{color_idx}][quantity]", nil,
+                  min: 0, placeholder: "0",
+                  class: "w-full px-2 py-1.5 text-sm text-center border border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-blue-500 focus:border-blue-500" %>
+              <%= hidden_field_tag "variants[#{size_idx}_#{color_idx}][size]", size %>
+              <%= hidden_field_tag "variants[#{size_idx}_#{color_idx}][color]", color.name %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="flex justify-end">
+    <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md shadow-sm text-sm font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+      Add to Inventory
+    </button>
+  </div>
+<% end %>

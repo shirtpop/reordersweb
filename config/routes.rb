@@ -38,6 +38,7 @@ Rails.application.routes.draw do
     resources :clients do
       resources :products, only: [ :index, :show ], controller: "client_products"
       resource :product_assignments, only: [ :show ], controller: "client_product_assignments"
+      resource :product_additions, only: [ :new, :create ], controller: "client_product_additions"
       resources :catalogs, only: [ :create, :update, :destroy ], controller: "client_catalogs" do
         resource :products, only: [ :update ], controller: "catalog_products", as: :catalog_products
         member do
@@ -92,6 +93,7 @@ Rails.application.routes.draw do
           delete "delete_image/:drive_file_id", to: "products#delete_image", as: :delete_image
         end
       end
+      resources :product_additions, only: [ :new, :create ]
       resources :product_variants, only: [ :index, :show ], param: :sku
     end
 

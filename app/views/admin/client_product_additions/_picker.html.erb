@@ -1,0 +1,28 @@
+<% if addable_products.any? %>
+  <p class="text-sm text-gray-600 dark:text-gray-400 mb-6">Choose a catalog product assigned to <%= client.company_name %> to add to their inventory.</p>
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+    <% addable_products.each do |product| %>
+      <%= link_to new_admin_client_product_additions_path(client, product_id: product.id),
+          class: "flex items-center gap-4 p-4 border border-gray-200 dark:border-gray-600 rounded-lg hover:border-blue-400 hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors" do %>
+        <div class="w-12 h-12 rounded-md bg-gray-100 dark:bg-gray-700 flex items-center justify-center flex-shrink-0 overflow-hidden">
+          <% if product.drive_files.any? %>
+            <%= image_tag product.drive_files.first.preview_url,
+                alt: product.name, class: "w-full h-full object-cover", referrerpolicy: "no-referrer" %>
+          <% else %>
+            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+            </svg>
+          <% end %>
+        </div>
+        <div>
+          <p class="font-medium text-gray-900 dark:text-white"><%= product.name %></p>
+          <p class="text-xs text-gray-500 dark:text-gray-400"><%= product.color_names %></p>
+        </div>
+      <% end %>
+    <% end %>
+  </div>
+<% else %>
+  <div class="text-center py-12">
+    <p class="text-gray-600 dark:text-gray-400">Every product assigned to <%= client.company_name %> has already been added to their inventory.</p>
+  </div>
+<% end %>

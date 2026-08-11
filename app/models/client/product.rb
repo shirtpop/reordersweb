@@ -7,6 +7,7 @@ class Client::Product < ApplicationRecord
   has_many :product_variants, class_name: "Client::ProductVariant", foreign_key: "client_product_id", dependent: :destroy
 
   validates :name, presence: true
+  validates :product_id, uniqueness: { scope: :client_id }, allow_nil: true
   validate :validate_max_drive_files
 
   after_create_commit :copy_drive_files
