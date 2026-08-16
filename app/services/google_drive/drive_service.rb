@@ -31,7 +31,11 @@ module GoogleDrive
 
       def delete_file(file_id)
         drive_service.delete_file(file_id)
-      rescue Google::Apis::ClientError, Google::Apis::ServerError => e
+      rescue Google::Apis::ClientError => e
+        return if e.status_code == 404
+
+        raise GoogleDrive::Errors::DeleteError, "Failed to delete file: #{e.message}"
+      rescue Google::Apis::ServerError => e
         raise GoogleDrive::Errors::DeleteError, "Failed to delete file: #{e.message}"
       rescue Google::Apis::AuthorizationError => e
         raise GoogleDrive::Errors::AuthorizationError, "Authorization error: #{e.message}"

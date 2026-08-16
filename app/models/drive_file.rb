@@ -4,7 +4,7 @@ class DriveFile < ApplicationRecord
   validates :drive_file_id, presence: true
   validates :mime_type, presence: true
 
-  after_destroy :remove_drive_file
+  after_commit :enqueue_drive_file_deletion, on: :destroy
 
   attr_accessor :file
 
@@ -37,7 +37,7 @@ class DriveFile < ApplicationRecord
 
   private
 
-  def remove_drive_file
-    GoogleDrive::DriveService.delete_file(drive_file_id)
+  def enqueue_drive_file_deletion
+    GoogleDrive::DeleteFileJob.perform_later(drive_file_id)
   end
 end
