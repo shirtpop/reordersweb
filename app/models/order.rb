@@ -36,6 +36,7 @@ class Order < ApplicationRecord
   validates :order_items, presence: true
   validates :price, numericality: { greater_than_or_equal_to: 0 }
   validates :total_quantity, numericality: { greater_than_or_equal_to: 0 }
+  validate :cancellation_only_allowed_from_submitted, if: -> { status_changed? && status_cancelled? }
 
   accepts_nested_attributes_for :order_items, allow_destroy: true
 
@@ -81,5 +82,9 @@ class Order < ApplicationRecord
     if status_changed? && !status_cart? && status_was == "cart" && submitted_at.nil?
       self.submitted_at = Time.current
     end
+  end
+
+  def cancellation_only_allowed_from_submitted
+    errors.add(:status, "can only be cancelled while submitted") unless status_was == "submitted"
   end
 end

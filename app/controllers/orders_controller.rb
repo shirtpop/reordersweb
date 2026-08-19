@@ -1,8 +1,8 @@
 class OrdersController < BaseController
   before_action :set_order, only: [ :show, :received, :duplicate ]
   def index
-    # Only show submitted orders (exclude cart/draft orders)
-    @pagy, @orders = pagy(current_client.orders.submitted
+    # Only show submitted orders (exclude cart/draft orders and cancelled orders)
+    @pagy, @orders = pagy(current_client.orders.submitted.where.not(status: :cancelled)
                                        .includes(:catalog, :ordered_by, :received_by)
                                        .order(id: :desc))
   end
@@ -52,7 +52,7 @@ class OrdersController < BaseController
   end
 
   def set_order
-    # Only allow viewing submitted orders (not cart orders)
-    @order = current_client.orders.submitted.find(params[:id])
+    # Only allow viewing submitted, non-cancelled orders (not cart or cancelled orders)
+    @order = current_client.orders.submitted.where.not(status: :cancelled).find(params[:id])
   end
 end

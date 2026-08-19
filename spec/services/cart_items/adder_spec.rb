@@ -36,7 +36,7 @@ RSpec.describe CartItems::Adder do
       it 'creates a new cart' do
         expect {
           service.call
-        }.to change { client.orders.in_cart.count }.by(1)
+        }.to change { client.orders.status_cart.count }.by(1)
       end
 
       it 'associates cart with the user' do
@@ -63,7 +63,7 @@ RSpec.describe CartItems::Adder do
       it 'does not create a new cart' do
         expect {
           service.call
-        }.not_to change { client.orders.in_cart.count }
+        }.not_to change { client.orders.status_cart.count }
       end
 
       it 'uses the existing cart' do

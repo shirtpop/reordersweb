@@ -117,6 +117,14 @@ RSpec.describe Checkouts::Creator, type: :service do
     end
 
     context "transaction behavior" do
+      before do
+        checkout.update_columns(
+          purpose: "Restock",
+          recipient_first_name: "Test",
+          recipient_last_name: "User"
+        )
+      end
+
       it "wraps the entire operation in a transaction" do
         allow_any_instance_of(Client::Inventory).to receive(:with_lock).and_raise(StandardError, "DB error")
 

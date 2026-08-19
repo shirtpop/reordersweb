@@ -7,6 +7,7 @@ module Admin
 
     def show
       @order = Order.find(params[:id])
+      @inventory_movements_count = Client::InventoryMovement.where(order_item_id: @order.order_item_ids).count
     end
 
     def update
@@ -24,6 +25,20 @@ module Admin
       redirect_to admin_order_path(@order), notice: "Order marked as processing."
     rescue ActiveRecord::RecordInvalid => e
       redirect_to admin_order_path(@order), alert: "Failed to update order: #{e.message}"
+    end
+
+    def cancel
+      @order = Order.find(params[:id])
+      @order.status_cancelled!
+      redirect_to admin_order_path(@order), notice: "Order cancelled."
+    rescue ActiveRecord::RecordInvalid => e
+      redirect_to admin_order_path(@order), alert: "Failed to cancel order: #{e.message}"
+    end
+
+    def destroy
+      @order = Order.find(params[:id])
+      @order.destroy
+      redirect_to admin_orders_path(format: :html), notice: "Order deleted."
     end
 
     private

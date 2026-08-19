@@ -54,9 +54,10 @@ Rails.application.routes.draw do
         patch :activate
       end
     end
-    resources :orders, only: [ :index, :show, :update ] do
+    resources :orders, only: [ :index, :show, :update, :destroy ] do
       member do
         post :mark_as_processing
+        post :cancel
       end
     end
     resources :products do
