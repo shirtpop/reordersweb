@@ -44,6 +44,49 @@
     </div>
   </div>
 
+  <!-- Parent Company (optional) -->
+  <div class="border-t pt-6"
+      data-controller="client-autocomplete"
+      data-client-autocomplete-client-name-value="<%= @client.parent&.company_name %>"
+      data-client-autocomplete-client-id-value="<%= @client.parent&.id %>"
+      data-client-autocomplete-params-value="<%= { eligible_parent: 1, exclude_id: @client.id }.compact.to_json %>">
+    <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-1">Parent Company</h3>
+    <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
+      If this client is a division of a larger group (e.g. Los Poblanos &rarr; Kitchen, Spa, Campo), link it to its parent company here. Leave blank if this client operates independently.
+    </p>
+    <div class="relative flex items-start gap-2">
+      <div class="flex-1">
+        <%= form.text_field :parent_search,
+              placeholder: "Search for parent company...",
+              data: {
+                client_autocomplete_target: "input",
+                action: "input->client-autocomplete#search focus->client-autocomplete#showResults blur->client-autocomplete#hideResults"
+              },
+              class: field_error_class(@client, :parent_id, "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white") %>
+
+        <%= form.hidden_field :parent_id,
+              value: @client.parent_id,
+              data: { client_autocomplete_target: "hiddenField" } %>
+
+        <!-- Autocomplete Results -->
+        <div data-client-autocomplete-target="results"
+              class="absolute z-50 w-full mt-1 bg-white rounded-lg shadow-lg border border-gray-200 dark:bg-gray-700 dark:border-gray-600 hidden">
+          <div data-client-autocomplete-target="resultsList"
+                class="max-h-60 overflow-y-auto">
+            <!-- Results will be populated here -->
+          </div>
+        </div>
+      </div>
+
+      <button type="button"
+              data-action="click->client-autocomplete#clearValues"
+              class="mt-0.5 px-3 py-2 text-sm font-medium text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-700 whitespace-nowrap">
+        Remove parent
+      </button>
+    </div>
+    <%= display_field_errors(@client, :parent_id) %>
+  </div>
+
   <!-- Main Address -->
   <div class="border-t pt-6">
     <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Main Address</h3>

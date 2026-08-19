@@ -8,8 +8,7 @@
               <th scope="col" class="px-6 py-3">Company Name</th>
               <th scope="col" class="px-6 py-3">Personal Name</th>
               <th scope="col" class="px-6 py-3">Phone number</th>
-              <th scope="col" class="px-6 py-3">Created</th>
-              <th scope="col" class="px-6 py-3">Updated</th>
+              <th scope="col" class="px-6 py-3">Parent</th>
               <th scope="col" class="px-6 py-3">
                 <span class="sr-only">Actions</span>
               </th>
@@ -29,10 +28,11 @@
                     <%= client.phone_number %>
                   </td>
                   <td class="px-6 py-4">
-                    <%= client.created_at.strftime("%b %d, %Y") %>
-                  </td>
-                  <td class="px-6 py-4">
-                    <%= client.updated_at.strftime("%b %d, %Y") %>
+                    <% if client.parent.present? %>
+                      <%= link_to client.parent.company_name, admin_client_path(client.parent), class: "font-medium text-blue-600 dark:text-blue-500 hover:underline" %>
+                    <% else %>
+                      <span class="text-gray-400 dark:text-gray-500">&mdash;</span>
+                    <% end %>
                   </td>
                   <td class="px-6 py-4 text-right">
                     <div class="flex items-center space-x-2">

@@ -10,7 +10,7 @@ module Clients
       @catalog_name = catalog_name
       @catalog_status = catalog_status || "active"
       @product_ids = Array(product_ids).map(&:to_i).reject(&:zero?)
-      @client = Client.new(client_params.slice(:company_name, :personal_name, :phone_number))
+      @client = Client.new(client_params.slice(:company_name, :personal_name, :phone_number, :parent_id))
       @failed = false
     end
 

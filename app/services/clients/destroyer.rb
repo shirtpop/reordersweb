@@ -12,6 +12,8 @@ module Clients
       end
     rescue ActiveRecord::RecordNotFound, ActiveRecord::InvalidForeignKey, GoogleDrive::Errors::DeleteError => e
       raise DeleteError, "Failed to delete client or associated records: #{e.message}"
+    rescue ActiveRecord::RecordNotDestroyed
+      raise DeleteError, @client.errors.full_messages.to_sentence.presence || "Failed to delete client."
     end
   end
 end

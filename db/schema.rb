@@ -165,8 +165,10 @@ ActiveRecord::Schema[8.0].define(version: 2026_08_23_000001) do
     t.datetime "updated_at", null: false
     t.string "company_url"
     t.boolean "inventory_enabled", default: false
+    t.bigint "parent_id"
     t.index ["address_id"], name: "index_clients_on_address_id"
     t.index ["company_name"], name: "index_clients_on_company_name"
+    t.index ["parent_id"], name: "index_clients_on_parent_id"
     t.index ["personal_name"], name: "index_clients_on_personal_name"
     t.index ["shipping_address_id"], name: "index_clients_on_shipping_address_id"
   end
@@ -296,6 +298,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_08_23_000001) do
   add_foreign_key "client_products", "products"
   add_foreign_key "clients", "addresses"
   add_foreign_key "clients", "addresses", column: "shipping_address_id"
+  add_foreign_key "clients", "clients", column: "parent_id"
   add_foreign_key "order_items", "orders"
   add_foreign_key "order_items", "product_colors"
   add_foreign_key "order_items", "products"

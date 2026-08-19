@@ -49,6 +49,8 @@ module Clients
     end
 
     def address_changed?(address, params)
+      return true if address.nil?
+
       %w[street city state zip_code].any? do |attr|
         current = address.public_send(attr).to_s.strip.downcase
         incoming = params[attr].to_s.strip.downcase

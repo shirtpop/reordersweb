@@ -3,7 +3,10 @@ class Client < ApplicationRecord
 
   belongs_to :address, optional: true
   belongs_to :shipping_address, class_name: "Address", optional: true
+  belongs_to :parent, class_name: "Client", optional: true
 
+  has_many :children, class_name: "Client", foreign_key: :parent_id, inverse_of: :parent, dependent: :restrict_with_error
+  has_many :users, inverse_of: :client, dependent: :destroy
   has_many :orders, dependent: :destroy
   has_many :catalogs, dependent: :destroy
   has_many :client_products, class_name: "Client::Product", dependent: :destroy
@@ -14,6 +17,7 @@ class Client < ApplicationRecord
   has_many :users, inverse_of: :client, dependent: :destroy
 
   validates :company_name, :personal_name, :phone_number, presence: true
+  validate :parent_hierarchy_is_a_single_level
 
   scope :search_by_name, ->(query) {
     sanitized_query = "%#{sanitize_sql_like(query)}%"
@@ -71,5 +75,15 @@ class Client < ApplicationRecord
       client_products: client_products.count,
       checkouts: checkouts.count
     }
+  end
+
+  private
+
+  def parent_hierarchy_is_a_single_level
+    return if parent_id.blank?
+
+    errors.add(:parent_id, "can't be set to itself") if parent_id == id
+    errors.add(:parent_id, "can't be a client that already has linked child accounts") if children.any?
+    errors.add(:parent_id, "can't be a client that is already linked under another parent") if parent&.parent_id.present?
   end
 end

@@ -147,8 +147,10 @@ class ProductsController < BaseController
     # Storefront product detail page (for ordering)
     catalog_id = params[:catalog_id]
 
-    # Find the catalog and product (admin Product, not Client::Product)
-    @catalog = current_client.catalogs.active.find(catalog_id)
+    # Find the catalog and product (admin Product, not Client::Product).
+    # A main account can view its own catalogs plus every linked child's catalogs,
+    # matching what the storefront index shows it.
+    @catalog = Catalog.active.where(client_id: [ current_client.id, *current_client.children.ids ]).find(catalog_id)
     @product = @catalog.products
                        .includes(:drive_files, product_colors: { product_color_images: :drive_files })
                        .find(params[:id])

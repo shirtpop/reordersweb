@@ -4,7 +4,9 @@ module Admin
 
     def index
       scope = params[:q].present? ? Client.search_by_name(params[:q]) : Client.order(created_at: :desc)
-      @pagy, @clients = pagy(scope)
+      scope = scope.where(parent_id: nil) if params[:eligible_parent].present?
+      scope = scope.where.not(id: params[:exclude_id]) if params[:exclude_id].present?
+      @pagy, @clients = pagy(scope.includes(:parent))
     end
 
     def show
@@ -67,7 +69,9 @@ module Admin
       end
     end
 
-    def edit; end
+    def edit
+      build_missing_addresses
+    end
 
     def update
       updater = Clients::Updater.new(
@@ -78,10 +82,11 @@ module Admin
 
       @client = updater.call
 
-      unless updater.failed?
-        redirect_to admin_clients_path, notice: "Client was successfully updated."
-      else
+      if updater.failed?
+        build_missing_addresses
         render :edit
+      else
+        redirect_to admin_clients_path, notice: "Client was successfully updated."
       end
     end
 
@@ -102,6 +107,11 @@ module Admin
       @client = Client.includes(:address, :shipping_address, :users).find(params[:id])
     end
 
+    def build_missing_addresses
+      @client.build_address unless @client.address
+      @client.build_shipping_address unless @client.shipping_address
+    end
+
     def client_params
       params.require(:client).permit(
         :company_name,
@@ -110,6 +120,7 @@ module Admin
         :same_as_main,
         :company_url,
         :inventory_enabled,
+        :parent_id,
         address_attributes: [ :id, :street, :city, :state, :zip_code ],
         shipping_address_attributes: [ :id, :street, :city, :state, :zip_code ],
         users_attributes: [ :id, :email, :role, :client_id ]

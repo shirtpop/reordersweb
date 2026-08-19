@@ -39,6 +39,27 @@
             <%= client.created_at.strftime("%B %d, %Y at %I:%M %p") %>
           </p>
         </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Parent Company</label>
+          <p class="text-sm text-gray-900 dark:text-white bg-gray-50 dark:bg-gray-700 px-3 py-2 rounded-md border border-gray-200 dark:border-gray-600">
+            <% if client.parent.present? %>
+              <%= link_to client.parent.company_name, admin_client_path(client.parent), class: "text-blue-600 hover:underline" %>
+            <% else %>
+              None &mdash; operates independently
+            <% end %>
+          </p>
+        </div>
+        <% if client.children.any? %>
+          <div class="md:col-span-2">
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Linked Child Companies</label>
+            <div class="flex flex-wrap gap-2">
+              <% client.children.each do |child| %>
+                <%= link_to child.company_name, admin_client_path(child),
+                    class: "inline-flex items-center px-3 py-1 rounded-full text-sm bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-800" %>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
       </div>
 
       <!-- Image Uploader -->

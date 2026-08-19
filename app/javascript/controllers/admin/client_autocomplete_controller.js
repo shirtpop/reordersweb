@@ -2,10 +2,11 @@ import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
   static targets = ["container", "input", "results", "resultsList", "hiddenField"]
-  static values = { 
+  static values = {
     url: String,
     clientName: String,
-    clientId: String
+    clientId: String,
+    params: { type: Object, default: {} }
   }
 
   connect() {
@@ -56,7 +57,7 @@ export default class extends Controller {
 
   async performSearch(query) {
     try {
-      const params = new URLSearchParams({ q: query })
+      const params = new URLSearchParams({ ...this.paramsValue, q: query })
       const response = await fetch(`${this.urlValue}?${params}`, {
         headers: {
           "Accept": "application/json",
