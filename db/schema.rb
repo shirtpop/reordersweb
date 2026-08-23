@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_08_11_233937) do
+ActiveRecord::Schema[8.0].define(version: 2026_08_23_000001) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -138,8 +138,9 @@ ActiveRecord::Schema[8.0].define(version: 2026_08_11_233937) do
     t.string "sku"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "client_id", null: false
+    t.index ["client_id", "sku"], name: "index_client_product_variants_on_client_id_and_sku", unique: true
     t.index ["client_product_id"], name: "index_client_product_variants_on_client_product_id"
-    t.index ["sku"], name: "index_client_product_variants_on_sku", unique: true
   end
 
   create_table "client_products", force: :cascade do |t|
@@ -290,6 +291,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_08_11_233937) do
   add_foreign_key "client_inventory_movements", "order_items"
   add_foreign_key "client_inventory_movements", "users"
   add_foreign_key "client_product_variants", "client_products"
+  add_foreign_key "client_product_variants", "clients"
   add_foreign_key "client_products", "clients"
   add_foreign_key "client_products", "products"
   add_foreign_key "clients", "addresses"

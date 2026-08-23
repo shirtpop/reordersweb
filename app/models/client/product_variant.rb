@@ -1,15 +1,19 @@
 class Client::ProductVariant < ApplicationRecord
   belongs_to :client_product, class_name: "Client::Product", counter_cache: true, optional: true
+  belongs_to :client, class_name: "Client"
 
   has_one :inventory, class_name: "Client::Inventory", dependent: :destroy, foreign_key: "client_product_variant_id"
   has_many :inventory_movements, through: :inventory
   has_many :checkout_items, through: :inventory, class_name: "Client::CheckoutItem"
+
+  validates :sku, uniqueness: { scope: :client_id }, allow_blank: true
 
   scope :search_by_product_name, ->(query) {
     joins(:client_product)
       .where("client_products.name ILIKE ?", "%#{sanitize_sql_like(query)}%")
   }
 
+  before_validation :set_client_from_client_product
   before_create :set_sku_if_blank
 
   # Counts of records a delete would cascade through. Computed on demand (not eagerly),
@@ -19,6 +23,10 @@ class Client::ProductVariant < ApplicationRecord
   end
 
   private
+
+  def set_client_from_client_product
+    self.client_id ||= client_product&.client_id
+  end
 
   def set_sku_if_blank
     return if sku.present?
