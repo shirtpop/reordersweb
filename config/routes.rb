@@ -36,6 +36,7 @@ Rails.application.routes.draw do
     root to: "dashboard#index", as: :root
     get "dashboard/chart_data", to: "dashboard#chart_data"
     resources :clients do
+      member { get :delete_info }
       resources :products, only: [ :index, :show, :destroy ], controller: "client_products" do
         member { get :delete_info }
       end
