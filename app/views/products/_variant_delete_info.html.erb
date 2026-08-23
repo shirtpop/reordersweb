@@ -1,0 +1,38 @@
+<%= turbo_frame_tag "variant_delete_info" do %>
+  <h3 class="text-lg font-bold text-gray-900 mb-1">Delete variant <%= variant.sku %>?</h3>
+  <p class="text-sm text-gray-600 mb-4">
+    This permanently removes the variant and its inventory. This cannot be undone.
+  </p>
+
+  <% impact = variant.delete_impact %>
+  <% if impact[:movements].positive? || impact[:checkouts].positive? %>
+    <dl class="space-y-2 text-sm mb-4 bg-gray-50 rounded-xl p-4">
+      <% if impact[:movements].positive? %>
+        <div class="flex justify-between gap-4">
+          <dt class="text-gray-500">Inventory records</dt>
+          <dd class="font-medium text-red-600 text-right"><%= pluralize(impact[:movements], "movement") %></dd>
+        </div>
+      <% end %>
+      <% if impact[:checkouts].positive? %>
+        <div class="flex justify-between gap-4">
+          <dt class="text-gray-500">Checkout records</dt>
+          <dd class="font-medium text-red-600 text-right"><%= pluralize(impact[:checkouts], "item") %></dd>
+        </div>
+      <% end %>
+    </dl>
+
+    <p class="text-xs text-red-600 mb-4">
+      This variant has already affected inventory and/or checkouts. Deleting it removes those records too, without adjusting stock counts back.
+    </p>
+  <% end %>
+
+  <div class="flex items-center gap-3">
+    <button type="button" data-action="click->delete-confirm#close"
+            class="flex-1 px-4 py-2.5 rounded-xl font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 transition-colors">
+      Cancel
+    </button>
+    <%= button_to "Delete Anyway", product_variant_path(variant.sku), method: :delete,
+        data: { turbo_frame: "_top" },
+        class: "flex-1 px-4 py-2.5 rounded-xl font-bold text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors" %>
+  </div>
+<% end %>

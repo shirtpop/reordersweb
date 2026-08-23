@@ -3,6 +3,7 @@ class Client::Inventory < ApplicationRecord
   belongs_to :client_product_variant, class_name: "Client::ProductVariant"
 
   has_many :inventory_movements, class_name: "Client::InventoryMovement", dependent: :destroy, foreign_key: :client_inventory_id
+  has_many :checkout_items, class_name: "Client::CheckoutItem", dependent: :destroy, foreign_key: :client_inventory_id
 
   scope :search_by_keyword, ->(keyword) {
     joins(client_product_variant: :client_product)

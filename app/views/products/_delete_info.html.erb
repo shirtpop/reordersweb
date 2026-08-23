@@ -1,0 +1,32 @@
+<%= turbo_frame_tag dom_id(product, :delete_info) do %>
+  <dl class="space-y-2 text-sm mb-4 bg-gray-50 rounded-xl p-4">
+    <div class="flex justify-between gap-4">
+      <dt class="text-gray-500">Variants</dt>
+      <dd class="font-medium text-gray-900 text-right"><%= pluralize(product.product_variants_count, "variant") %></dd>
+    </div>
+    <div class="flex justify-between gap-4">
+      <dt class="text-gray-500">Drive files</dt>
+      <dd class="font-medium text-gray-900 text-right"><%= pluralize(product.drive_files.count, "file") %></dd>
+    </div>
+    <% if impact %>
+      <% if impact[:inventory_movements].positive? %>
+        <div class="flex justify-between gap-4">
+          <dt class="text-gray-500">Inventory records</dt>
+          <dd class="font-medium text-red-600 text-right"><%= pluralize(impact[:inventory_movements], "movement") %></dd>
+        </div>
+      <% end %>
+      <% if impact[:checkout_items].positive? %>
+        <div class="flex justify-between gap-4">
+          <dt class="text-gray-500">Checkout records</dt>
+          <dd class="font-medium text-red-600 text-right"><%= pluralize(impact[:checkout_items], "item") %></dd>
+        </div>
+      <% end %>
+    <% end %>
+  </dl>
+
+  <% if impact && (impact[:inventory_movements].positive? || impact[:checkout_items].positive?) %>
+    <p class="text-xs text-red-600 mb-4">
+      This product has already affected inventory and/or checkouts. Deleting it removes those records too, without adjusting stock counts back.
+    </p>
+  <% end %>
+<% end %>

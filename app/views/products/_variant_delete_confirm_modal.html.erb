@@ -1,0 +1,10 @@
+<div data-delete-confirm-target="variantModal"
+     class="hidden fixed inset-0 z-[90] flex items-center justify-center p-4">
+  <div class="absolute inset-0 bg-gray-900/60" data-action="click->delete-confirm#close"></div>
+
+  <div class="relative bg-white rounded-2xl shadow-2xl max-w-md w-full p-6">
+    <%= turbo_frame_tag "variant_delete_info" do %>
+      <p class="text-sm text-gray-500">Loading…</p>
+    <% end %>
+  </div>
+</div>

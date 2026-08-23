@@ -1,4 +1,4 @@
-<div class="p-6 space-y-6">
+<div class="p-6 space-y-6" data-controller="delete-confirm">
   <div class="flex items-center justify-between">
     <div>
       <h1 class="text-2xl font-bold text-gray-900 dark:text-white"><%= @product.name %></h1>
@@ -14,6 +14,10 @@
                     class: "px-4 py-2 bg-blue-600 text-white rounded-md shadow-sm text-sm font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500",
                     data: { turbo_frame: "_top" } %>
       <% end %>
+      <%= link_to "Delete Product",
+                  delete_info_admin_client_product_path(@client, @product),
+                  data: { turbo_frame: dom_id(@product, :delete_info), action: "click->delete-confirm#open" },
+                  class: "px-4 py-2 bg-red-600 text-white rounded-md shadow-sm text-sm font-medium hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500" %>
     </div>
   </div>
 
@@ -72,6 +76,7 @@
                   <th scope="col" class="px-6 py-3">Size</th>
                   <th scope="col" class="px-6 py-3">Inventory</th>
                   <th scope="col" class="px-6 py-3">Created At</th>
+                  <th scope="col" class="px-6 py-3"></th>
                 </tr>
               </thead>
               <tbody>
@@ -97,6 +102,12 @@
                     </td>
                     <td class="px-6 py-4">
                       <%= variant.created_at.strftime("%b %d, %Y") %>
+                    </td>
+                    <td class="px-6 py-4 text-right">
+                      <%= link_to "Delete",
+                                  delete_info_admin_client_product_variant_path(@client, variant),
+                                  data: { turbo_frame: "variant_delete_info", action: "click->delete-confirm#openVariant" },
+                                  class: "font-medium text-red-600 dark:text-red-500 hover:underline" %>
                     </td>
                   </tr>
                 <% end %>
@@ -137,4 +148,7 @@
       <%= render 'shared/image_uploader', attachable: @product %>
     </div>
   </div>
+
+  <%= render "delete_confirm_modal", product: @product %>
+  <%= render "variant_delete_confirm_modal" %>
 </div>

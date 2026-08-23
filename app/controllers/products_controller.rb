@@ -1,5 +1,5 @@
 class ProductsController < BaseController
-  before_action :set_product, only: [ :edit, :update, :delete_image, :upload_images ]
+  before_action :set_product, only: [ :edit, :update, :delete_image, :upload_images, :delete_info, :destroy ]
 
   def index
     scope = params[:q].present? ? current_client.client_products.search_by_name(params[:q]) : current_client.client_products
@@ -23,6 +23,10 @@ class ProductsController < BaseController
       @product = current_client.client_products.includes(product_variants: :inventory).find(params[:id])
       @draft_checkout = current_client.checkouts.find_or_create_by!(status: :draft, user: current_user)
     end
+  end
+
+  def delete_info
+    render partial: "delete_info", locals: { product: @product, impact: @product.delete_impact }
   end
 
   def basket_modal
@@ -51,9 +55,12 @@ class ProductsController < BaseController
 
   def edit; end
 
-  def update
-    @product = current_client.client_products.find(params[:id])
+  def destroy
+    @product.destroy!
+    redirect_to products_path(format: :html), notice: "Product deleted."
+  end
 
+  def update
     if @product.update(product_params)
       redirect_to products_path, notice: "Product was successfully updated."
     else

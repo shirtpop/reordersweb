@@ -24,6 +24,17 @@ class Client::Product < ApplicationRecord
 
   accepts_nested_attributes_for :product_variants, allow_destroy: true
 
+  # Counts of records a delete would cascade through. Computed on demand (not eagerly),
+  # since this only matters when the delete confirmation is actually opened.
+  def delete_impact
+    inventory_ids = product_variants.joins(:inventory).select("client_inventories.id")
+
+    {
+      inventory_movements: Client::InventoryMovement.where(client_inventory_id: inventory_ids).count,
+      checkout_items: Client::CheckoutItem.where(client_inventory_id: inventory_ids).count
+    }
+  end
+
   private
 
   def copy_drive_files

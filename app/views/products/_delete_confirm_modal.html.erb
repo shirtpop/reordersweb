@@ -1,0 +1,22 @@
+<div data-delete-confirm-target="modal"
+     class="hidden fixed inset-0 z-[90] flex items-center justify-center p-4">
+  <div class="absolute inset-0 bg-gray-900/60" data-action="click->delete-confirm#close"></div>
+
+  <div class="relative bg-white rounded-2xl shadow-2xl max-w-md w-full p-6">
+    <h3 class="text-lg font-bold text-gray-900 mb-1">Delete <%= product.name %>?</h3>
+    <p class="text-sm text-gray-600 mb-4">
+      This permanently removes the product and everything listed below. This cannot be undone.
+    </p>
+
+    <%= render "delete_info", product: product, impact: nil %>
+
+    <div class="flex items-center gap-3">
+      <button type="button" data-action="click->delete-confirm#close"
+              class="flex-1 px-4 py-2.5 rounded-xl font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 transition-colors">
+        Cancel
+      </button>
+      <%= button_to "Delete Anyway", product_path(product), method: :delete,
+          class: "flex-1 px-4 py-2.5 rounded-xl font-bold text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors" %>
+    </div>
+  </div>
+</div>

@@ -36,7 +36,12 @@ Rails.application.routes.draw do
     root to: "dashboard#index", as: :root
     get "dashboard/chart_data", to: "dashboard#chart_data"
     resources :clients do
-      resources :products, only: [ :index, :show ], controller: "client_products"
+      resources :products, only: [ :index, :show, :destroy ], controller: "client_products" do
+        member { get :delete_info }
+      end
+      resources :product_variants, only: [ :destroy ], controller: "client_product_variants" do
+        member { get :delete_info }
+      end
       resource :product_assignments, only: [ :show ], controller: "client_product_assignments"
       resource :product_additions, only: [ :new, :create ], controller: "client_product_additions"
       resources :catalogs, only: [ :create, :update, :destroy ], controller: "client_catalogs" do
@@ -92,10 +97,13 @@ Rails.application.routes.draw do
           get :basket_modal
           post :upload_images
           delete "delete_image/:drive_file_id", to: "products#delete_image", as: :delete_image
+          get :delete_info
         end
       end
       resources :product_additions, only: [ :new, :create ]
-      resources :product_variants, only: [ :index, :show ], param: :sku
+      resources :product_variants, only: [ :index, :show, :destroy ], param: :sku do
+        member { get :delete_info }
+      end
     end
 
     member do

@@ -3,6 +3,7 @@ class Client::ProductVariant < ApplicationRecord
 
   has_one :inventory, class_name: "Client::Inventory", dependent: :destroy, foreign_key: "client_product_variant_id"
   has_many :inventory_movements, through: :inventory
+  has_many :checkout_items, through: :inventory, class_name: "Client::CheckoutItem"
 
   scope :search_by_product_name, ->(query) {
     joins(:client_product)
@@ -10,6 +11,12 @@ class Client::ProductVariant < ApplicationRecord
   }
 
   before_create :set_sku_if_blank
+
+  # Counts of records a delete would cascade through. Computed on demand (not eagerly),
+  # since this only matters when the delete confirmation is actually opened.
+  def delete_impact
+    { movements: inventory_movements.count, checkouts: checkout_items.count }
+  end
 
   private
 

@@ -111,6 +111,10 @@
                   </svg>
                   Adjust
                 </button>
+                <%= link_to "Delete",
+                    delete_info_product_variant_path(variant.sku),
+                    data: { turbo_frame: "variant_delete_info", action: "click->delete-confirm#openVariant" },
+                    class: "inline-flex items-center px-2.5 py-1.5 text-xs font-medium text-red-600 bg-white border border-red-200 rounded hover:bg-red-50" %>
               </div>
             </td>
             <% if defined?(@draft_checkout) && @draft_checkout %>
