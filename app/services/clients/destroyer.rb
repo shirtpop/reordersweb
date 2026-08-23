@@ -10,8 +10,8 @@ module Clients
       ActiveRecord::Base.transaction do
         @client.destroy!
       end
-    rescue ActiveRecord::RecordNotFound, GoogleDrive::Errors::DeleteError => e
-      raise DeleteError, "Failed to delete client or associated drive files: #{e.message}"
+    rescue ActiveRecord::RecordNotFound, ActiveRecord::InvalidForeignKey, GoogleDrive::Errors::DeleteError => e
+      raise DeleteError, "Failed to delete client or associated records: #{e.message}"
     end
   end
 end

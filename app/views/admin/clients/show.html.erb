@@ -1,4 +1,4 @@
-<div class="p-6 space-y-6" data-controller="copy-products">
+<div class="p-6 space-y-6" data-controller="copy-products delete-confirm">
   <!-- Header -->
   <div class="flex items-center justify-between">
     <div>
@@ -60,4 +60,18 @@
       </div>
     </div>
   </div>
+
+  <!-- Danger Zone -->
+  <div class="bg-white dark:bg-gray-800 shadow rounded-lg border border-red-200 dark:border-red-900 p-6">
+    <h3 class="text-lg font-semibold text-red-700 dark:text-red-400 mb-2">Danger Zone</h3>
+    <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
+      Permanently delete this client, their users, orders, catalogs, and products. This cannot be undone.
+    </p>
+    <%= link_to "Delete Client",
+                delete_info_admin_client_path(@client),
+                data: { turbo_frame: dom_id(@client, :delete_info), action: "click->delete-confirm#open" },
+                class: "inline-flex items-center px-4 py-2 bg-red-600 text-white rounded-md shadow-sm text-sm font-medium hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500" %>
+  </div>
+
+  <%= render "delete_confirm_modal", client: @client %>
 </div>

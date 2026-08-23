@@ -4,7 +4,6 @@ class Client < ApplicationRecord
   belongs_to :address, optional: true
   belongs_to :shipping_address, class_name: "Address", optional: true
 
-  has_many :users, inverse_of: :client, dependent: :destroy
   has_many :orders, dependent: :destroy
   has_many :catalogs, dependent: :destroy
   has_many :client_products, class_name: "Client::Product", dependent: :destroy
@@ -12,6 +11,7 @@ class Client < ApplicationRecord
   has_many :product_variants, class_name: "Client::ProductVariant", through: :client_products
   has_many :inventories, class_name: "Client::Inventory", dependent: :destroy
   has_many :inventory_movements, through: :inventories, source: :inventory_movements
+  has_many :users, inverse_of: :client, dependent: :destroy
 
   validates :company_name, :personal_name, :phone_number, presence: true
 
@@ -59,5 +59,17 @@ class Client < ApplicationRecord
     completed = steps.values.count(true)
     total = steps.size
     ((completed.to_f / total) * 100).round
+  end
+
+  # Counts of records a delete would cascade through. Computed on demand (not eagerly),
+  # since this only matters when the delete confirmation is actually opened.
+  def delete_impact
+    {
+      users: users.count,
+      orders: orders.count,
+      catalogs: catalogs.count,
+      client_products: client_products.count,
+      checkouts: checkouts.count
+    }
   end
 end

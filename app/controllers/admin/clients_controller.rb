@@ -1,6 +1,6 @@
 module Admin
   class ClientsController < BaseController
-    before_action :set_client, only: [ :edit, :show, :update, :destroy ]
+    before_action :set_client, only: [ :edit, :show, :update, :destroy, :delete_info ]
 
     def index
       scope = params[:q].present? ? Client.search_by_name(params[:q]) : Client.order(created_at: :desc)
@@ -85,11 +85,15 @@ module Admin
       end
     end
 
+    def delete_info
+      render partial: "delete_info", locals: { client: @client, impact: @client.delete_impact }
+    end
+
     def destroy
       Clients::Destroyer.new(client: @client).call!
-      redirect_to admin_clients_path, notice: "Client was successfully deleted."
+      redirect_to admin_clients_path(format: :html), notice: "Client was successfully deleted."
     rescue Clients::Destroyer::DeleteError => e
-      redirect_to admin_clients_path, alert: e.message
+      redirect_to admin_clients_path(format: :html), alert: e.message
     end
 
     private

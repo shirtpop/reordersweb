@@ -1,0 +1,30 @@
+<%= turbo_frame_tag dom_id(client, :delete_info) do %>
+  <dl class="space-y-2 text-sm mb-4 bg-gray-50 dark:bg-gray-900 rounded-xl p-4">
+    <% if impact %>
+      <div class="flex justify-between gap-4">
+        <dt class="text-gray-500 dark:text-gray-400">Users</dt>
+        <dd class="font-medium text-gray-900 dark:text-white text-right"><%= pluralize(impact[:users], "user") %></dd>
+      </div>
+      <div class="flex justify-between gap-4">
+        <dt class="text-gray-500 dark:text-gray-400">Orders</dt>
+        <dd class="font-medium text-gray-900 dark:text-white text-right"><%= pluralize(impact[:orders], "order") %></dd>
+      </div>
+      <div class="flex justify-between gap-4">
+        <dt class="text-gray-500 dark:text-gray-400">Catalogs</dt>
+        <dd class="font-medium text-gray-900 dark:text-white text-right"><%= pluralize(impact[:catalogs], "catalog") %></dd>
+      </div>
+      <div class="flex justify-between gap-4">
+        <dt class="text-gray-500 dark:text-gray-400">Products</dt>
+        <dd class="font-medium text-gray-900 dark:text-white text-right"><%= pluralize(impact[:client_products], "product") %></dd>
+      </div>
+      <% if impact[:checkouts].positive? %>
+        <div class="flex justify-between gap-4">
+          <dt class="text-gray-500 dark:text-gray-400">Checkout records</dt>
+          <dd class="font-medium text-red-600 dark:text-red-400 text-right"><%= pluralize(impact[:checkouts], "record") %></dd>
+        </div>
+      <% end %>
+    <% else %>
+      <p class="text-sm text-gray-500 dark:text-gray-400">Loading…</p>
+    <% end %>
+  </dl>
+<% end %>
