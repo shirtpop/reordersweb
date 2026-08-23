@@ -27,11 +27,19 @@
               </span>
             </div>
             <div>
+              <% if current_client.children.any? %>
+                <p class="text-pink-100 text-xs font-semibold uppercase tracking-wider mb-1">
+                  <%= @order.client.company_name %>
+                </p>
+              <% end %>
               <h1 class="text-3xl font-bold mb-1">
                 <%= @order.order_number %>
               </h1>
               <p class="text-pink-100 text-sm">
                 Placed on <%= @order.created_at.strftime("%B %d, %Y at %I:%M %p") %>
+                <% if @order.ordered_by.present? && @order.ordered_by.client_id != @order.client_id %>
+                  by <%= @order.ordered_by.email %> (<%= @order.ordered_by.client.company_name %>)
+                <% end %>
               </p>
             </div>
           </div>

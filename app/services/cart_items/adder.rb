@@ -23,8 +23,17 @@ module CartItems
     private
 
     def find_or_create_cart
-      @cart = @user.in_cart_order ||
-              @client.orders.build(status: :cart, ordered_by: @user)
+      existing_cart = @user.in_cart_order
+
+      @cart =
+        if existing_cart.nil?
+          @client.orders.build(status: :cart, ordered_by: @user)
+        elsif existing_cart.client_id == @client.id
+          existing_cart
+        else
+          raise Orders::CrossBusinessCartError, existing_cart.client
+        end
+
       @cart.order_items.reload if @cart.persisted?
     end
 

@@ -30,7 +30,15 @@ module Orders
     end
 
     def find_or_create_cart
-      @user.in_cart_order || @client.orders.build(status: :cart, ordered_by: @user)
+      existing_cart = @user.in_cart_order
+
+      if existing_cart.nil?
+        @client.orders.build(status: :cart, ordered_by: @user, catalog: @original_order.catalog)
+      elsif existing_cart.client_id == @client.id
+        existing_cart
+      else
+        raise Orders::CrossBusinessCartError, existing_cart.client
+      end
     end
 
     def validate_products

@@ -4,6 +4,19 @@
     <p class="text-sm text-gray-500 mt-1">Track and manage your orders</p>
   </div>
 
+  <% if @businesses.present? %>
+    <!-- Business filter: main account sees orders across itself plus every linked business -->
+    <div class="flex flex-wrap gap-2 mb-6">
+      <%= link_to "All businesses", orders_path,
+          class: "px-4 py-2 rounded-lg text-sm font-medium transition-colors #{params[:business_id].blank? ? 'bg-gradient-to-r from-pink-600 to-rose-600 text-white shadow-sm' : 'bg-white text-gray-700 border border-gray-200 hover:bg-pink-50'}" %>
+      <% @businesses.each do |business| %>
+        <%= link_to (business == current_client ? "#{business.company_name} (Main)" : business.company_name),
+            orders_path(business_id: business.id),
+            class: "px-4 py-2 rounded-lg text-sm font-medium transition-colors #{params[:business_id].to_s == business.id.to_s ? 'bg-gradient-to-r from-pink-600 to-rose-600 text-white shadow-sm' : 'bg-white text-gray-700 border border-gray-200 hover:bg-pink-50'}" %>
+      <% end %>
+    </div>
+  <% end %>
+
   <% if @orders.any? %>
     <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
       <ul class="divide-y divide-gray-100">
@@ -22,6 +35,11 @@
                   <div class="flex items-center gap-2 flex-wrap">
                     <span class="text-sm font-semibold text-gray-900"><%= order.order_number %></span>
                     <%= render "orders/status_badge", order: order %>
+                    <% if @businesses.present? %>
+                      <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-pink-50 text-pink-700 border border-pink-200">
+                        <%= order.client.company_name %>
+                      </span>
+                    <% end %>
                   </div>
                   <!-- Row 2: metadata chips -->
                   <div class="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1.5">
@@ -58,7 +76,7 @@
                         <svg class="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                         </svg>
-                        By <%= order.ordered_by.email %>
+                        By <%= order.ordered_by.email %><% if order.ordered_by.client_id != order.client_id %> (<%= order.ordered_by.client.company_name %>)<% end %>
                       </span>
                     <% end %>
                     <% if order.received_by.present? %>
@@ -89,7 +107,7 @@
           </p>
           <nav class="inline-flex items-center gap-1">
             <% if @pagy.prev %>
-              <%= link_to orders_path(page: @pagy.prev), class: "inline-flex items-center justify-center w-8 h-8 rounded-md border border-gray-300 bg-white text-gray-500 hover:bg-pink-50 hover:border-pink-300 hover:text-pink-600 transition-colors" do %>
+              <%= link_to orders_path(page: @pagy.prev, business_id: params[:business_id]), class: "inline-flex items-center justify-center w-8 h-8 rounded-md border border-gray-300 bg-white text-gray-500 hover:bg-pink-50 hover:border-pink-300 hover:text-pink-600 transition-colors" do %>
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
                 </svg>
@@ -103,14 +121,14 @@
             <% end %>
             <% @pagy.series.each do |item| %>
               <% if item.is_a?(Integer) %>
-                <%= link_to item, orders_path(page: item),
+                <%= link_to item, orders_path(page: item, business_id: params[:business_id]),
                     class: "inline-flex items-center justify-center w-8 h-8 rounded-md border text-sm font-medium transition-colors #{item == @pagy.page ? 'bg-pink-600 border-pink-600 text-white shadow-sm' : 'border-gray-300 bg-white text-gray-700 hover:bg-pink-50 hover:border-pink-300 hover:text-pink-600'}" %>
               <% elsif item == :gap %>
                 <span class="inline-flex items-center justify-center w-8 h-8 text-sm text-gray-400">…</span>
               <% end %>
             <% end %>
             <% if @pagy.next %>
-              <%= link_to orders_path(page: @pagy.next), class: "inline-flex items-center justify-center w-8 h-8 rounded-md border border-gray-300 bg-white text-gray-500 hover:bg-pink-50 hover:border-pink-300 hover:text-pink-600 transition-colors" do %>
+              <%= link_to orders_path(page: @pagy.next, business_id: params[:business_id]), class: "inline-flex items-center justify-center w-8 h-8 rounded-md border border-gray-300 bg-white text-gray-500 hover:bg-pink-50 hover:border-pink-300 hover:text-pink-600 transition-colors" do %>
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                 </svg>

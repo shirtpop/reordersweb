@@ -1,9 +1,19 @@
 class OrdersController < BaseController
   before_action :set_order, only: [ :show, :received, :duplicate ]
+
   def index
+    @children = current_client.children.to_a
+    @businesses = [ current_client ] + @children if @children.any?
+
+    scope = Order.where(client_id: [ current_client.id, *@children.map(&:id) ])
+                 .submitted.where.not(status: :cancelled)
+
+    if @businesses && params[:business_id].present?
+      scope = scope.where(client_id: params[:business_id])
+    end
+
     # Only show submitted orders (exclude cart/draft orders and cancelled orders)
-    @pagy, @orders = pagy(current_client.orders.submitted.where.not(status: :cancelled)
-                                       .includes(:catalog, :ordered_by, :received_by)
+    @pagy, @orders = pagy(scope.includes(:catalog, :received_by, :client, ordered_by: :client)
                                        .order(id: :desc))
   end
 
@@ -24,7 +34,7 @@ class OrdersController < BaseController
     Orders::Receiver.call!(
       order: @order,
       user: current_user,
-      apply_inventory: current_client.inventory_enabled?
+      apply_inventory: @order.client.inventory_enabled?
     )
     redirect_to @order, notice: "Order was successfully received."
 
@@ -41,6 +51,8 @@ class OrdersController < BaseController
     redirect_to cart_path, alert: "Some products are no longer available but available items have been added to your cart."
   rescue Orders::Duplicator::DuplicateError => e
     redirect_to @order, alert: "Failed to duplicate order: #{e.message}"
+  rescue Orders::CrossBusinessCartError => e
+    redirect_to @order, alert: e.message
   end
 
   private
@@ -52,7 +64,10 @@ class OrdersController < BaseController
   end
 
   def set_order
-    # Only allow viewing submitted, non-cancelled orders (not cart or cancelled orders)
-    @order = current_client.orders.submitted.where.not(status: :cancelled).find(params[:id])
+    # Only allow viewing submitted, non-cancelled orders (not cart or cancelled orders).
+    # A main account can view orders belonging to its own catalogs plus every linked child's.
+    @order = Order.where(client_id: [ current_client.id, *current_client.children.ids ])
+                  .submitted.where.not(status: :cancelled)
+                  .find(params[:id])
   end
 end

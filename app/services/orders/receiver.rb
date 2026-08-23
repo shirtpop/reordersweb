@@ -82,6 +82,7 @@ module Orders
       unless variant
         variant = Client::ProductVariant.create!(
           client_product_id: client_product.id,
+          client_id: order.client_id,
           color: item.color,
           size: item.size
         )

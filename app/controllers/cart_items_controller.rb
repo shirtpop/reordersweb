@@ -1,11 +1,15 @@
 class CartItemsController < BaseController
   def create
-    product = Product.joins(:catalogs)
-                     .merge(Catalog.active.where(id: params[:catalog_id], client_id: current_client.id))
-                     .find(params[:product_id])
+    # A main account can order from its own catalogs plus every linked child's. The
+    # resulting order belongs to whichever business owns the catalog being ordered
+    # from, not necessarily the account placing it.
+    catalog = Catalog.active
+                     .where(client_id: [ current_client.id, *current_client.children.ids ])
+                     .find(params[:catalog_id])
+    product = catalog.products.find(params[:product_id])
 
     adder = CartItems::Adder.new(
-      client: current_client,
+      client: catalog.client,
       user: current_user,
       product: product,
       items_params: params[:items]
@@ -49,6 +53,15 @@ class CartItemsController < BaseController
       }
       format.json { render json: { success: false, message: e.message }, status: :unprocessable_entity }
       format.html { redirect_to storefront_path, alert: "Failed to add items to cart: #{e.message}" }
+    end
+  rescue Orders::CrossBusinessCartError => e
+    respond_to do |format|
+      format.turbo_stream {
+        flash.now[:alert] = e.message
+        render :error, status: :unprocessable_entity
+      }
+      format.json { render json: { success: false, message: e.message }, status: :unprocessable_entity }
+      format.html { redirect_to cart_path, alert: e.message }
     end
   end
 
