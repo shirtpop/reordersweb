@@ -65,11 +65,12 @@ class Order < ApplicationRecord
       # Advisory lock scoped to this transaction prevents concurrent duplicates
       self.class.connection.execute("SELECT pg_advisory_xact_lock(hashtext('order_number_generation'))")
       now = Time.current
-      month_start = now.beginning_of_month
-      month_end = now.end_of_month
-      count = self.class.where(created_at: month_start..month_end).count
-      seq = (count + 1).to_s.rjust(4, "0")
-      self.order_number = "O#{now.strftime('%Y%m%d')}#{seq}"
+      month_prefix = "O#{now.strftime('%Y%m')}"
+      last_seq = self.class
+        .where("order_number LIKE ?", "#{month_prefix}%")
+        .maximum(Arel.sql("substring(order_number from 10)::integer")) || 0
+      seq = (last_seq + 1).to_s.rjust(4, "0")
+      self.order_number = "#{month_prefix}#{now.strftime('%d')}#{seq}"
     end
   end
 
