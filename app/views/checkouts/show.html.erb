@@ -50,6 +50,9 @@
               <th scope="col" class="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Color</th>
               <th scope="col" class="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Size</th>
               <th scope="col" class="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Quantity</th>
+              <% if Current.masquerading %>
+                <th scope="col" class="px-6 py-4"></th>
+              <% end %>
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-100 bg-white">
@@ -73,12 +76,33 @@
                   <span class="text-sm font-bold text-gray-900 tabular-nums"><%= movement.quantity.abs %></span>
                   <span class="ml-1 text-xs text-gray-500">units</span>
                 </td>
+                <% if Current.masquerading %>
+                  <td class="px-6 py-4 whitespace-nowrap text-right">
+                    <%= link_to "Delete",
+                        destroy_movement_inventory_checkout_path(@checkout, movement_id: movement.id),
+                        data: { "turbo-method": :delete, "turbo-confirm": "Remove this item from the checkout? This cannot be undone." },
+                        class: "text-sm font-medium text-red-600 hover:text-red-900" %>
+                  </td>
+                <% end %>
               </tr>
             <% end %>
           </tbody>
         </table>
       </div>
     </div>
+
+    <% if Current.masquerading %>
+      <div class="rounded-2xl border-2 border-red-200 bg-white shadow-md p-6">
+        <h2 class="text-lg font-bold text-red-700 mb-1">Danger Zone</h2>
+        <p class="text-sm text-gray-500 mb-4">
+          Permanently delete this checkout and its items. This cannot be undone.
+        </p>
+        <%= link_to "Delete Checkout",
+            inventory_checkout_path(@checkout),
+            data: { "turbo-method": :delete, "turbo-confirm": "Delete this checkout and its items? This cannot be undone." },
+            class: "inline-flex items-center px-4 py-2 bg-red-600 text-white rounded-lg shadow-sm text-sm font-medium hover:bg-red-700" %>
+      </div>
+    <% end %>
   </div>
 <% end %>
 <%= render "shared/inventory_workspace", body: workspace_body %>

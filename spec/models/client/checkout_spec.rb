@@ -40,4 +40,21 @@ RSpec.describe Client::Checkout, type: :model do
       expect(checkout).not_to be_valid
     end
   end
+
+  describe "date scopes" do
+    let!(:old_checkout) { create(:client_checkout, :confirmed, created_at: 10.days.ago) }
+    let!(:recent_checkout) { create(:client_checkout, :confirmed, created_at: 1.day.ago) }
+
+    describe ".created_from" do
+      it "includes checkouts on or after the given date" do
+        expect(Client::Checkout.created_from(3.days.ago)).to contain_exactly(recent_checkout)
+      end
+    end
+
+    describe ".created_to" do
+      it "includes checkouts on or before the given date" do
+        expect(Client::Checkout.created_to(3.days.ago)).to contain_exactly(old_checkout)
+      end
+    end
+  end
 end

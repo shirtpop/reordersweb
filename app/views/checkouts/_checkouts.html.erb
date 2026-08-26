@@ -6,22 +6,43 @@
         <h2 class="text-xl font-semibold text-gray-900">Checkouts</h2>
         <p class="text-sm text-gray-600 mt-1">Manage and track all checkout records</p>
       </div>
+      <%= link_to inventory_checkouts_path(format: :csv, q: params[:q], date_from: params[:date_from], date_to: params[:date_to]),
+          class: "inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500",
+          data: { turbo: false } do %>
+        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+        </svg>
+        Export CSV
+      <% end %>
     </div>
-    
-    <!-- Search Form -->
-    <%= form_with url: inventory_checkouts_path, method: :get, local: false, class: "flex items-center space-x-2", data: { turbo_frame: "tab-content" } do |form| %>
-      <div class="flex-1 max-w-md">
+
+    <!-- Search & Filter Form -->
+    <%= form_with url: inventory_checkouts_path, method: :get, local: false, class: "flex items-end flex-wrap gap-2", data: { turbo_frame: "tab-content" } do |form| %>
+      <div class="flex-1 min-w-[16rem] max-w-md">
+        <label class="block text-xs font-medium text-gray-500 mb-1">Recipient</label>
         <div class="relative">
           <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
             <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
             </svg>
           </div>
-          <%= form.text_field :q, 
-              value: params[:q], 
+          <%= form.text_field :q,
+              value: params[:q],
               placeholder: "Search by recipient name...",
               class: "block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-pink-500 focus:border-pink-500 sm:text-sm" %>
         </div>
+      </div>
+      <div>
+        <label class="block text-xs font-medium text-gray-500 mb-1">From</label>
+        <%= form.date_field :date_from,
+            value: params[:date_from],
+            class: "block px-3 py-2 border border-gray-300 rounded-lg leading-5 bg-white focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500 sm:text-sm" %>
+      </div>
+      <div>
+        <label class="block text-xs font-medium text-gray-500 mb-1">To</label>
+        <%= form.date_field :date_to,
+            value: params[:date_to],
+            class: "block px-3 py-2 border border-gray-300 rounded-lg leading-5 bg-white focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500 sm:text-sm" %>
       </div>
       <button type="submit" class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-pink-600 border border-transparent rounded-lg hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500">
         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -29,7 +50,7 @@
         </svg>
         Search
       </button>
-      <% if params[:q].present? %>
+      <% if params[:q].present? || params[:date_from].present? || params[:date_to].present? %>
         <%= link_to inventory_checkouts_path, class: "inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500", data: { turbo_frame: "tab-content" } do %>
           <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -78,13 +99,22 @@
                   <div class="text-xs text-gray-500"><%= checkout.created_at.strftime("%I:%M %p") %></div>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                  <%= link_to inventory_checkout_path(checkout), class: "text-pink-600 hover:text-pink-900 inline-flex items-center", data: { turbo_frame: "_top" } do %>
-                    <svg class="h-5 w-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                    </svg>
-                    View
-                  <% end %>
+                  <div class="flex items-center gap-3">
+                    <%= link_to inventory_checkout_path(checkout), class: "text-pink-600 hover:text-pink-900 inline-flex items-center", data: { turbo_frame: "_top" } do %>
+                      <svg class="h-5 w-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                      </svg>
+                      View
+                    <% end %>
+                    <% if Current.masquerading %>
+                      <%= link_to inventory_checkout_path(checkout),
+                          data: { "turbo-method": :delete, "turbo-confirm": "Delete this checkout and its items? This cannot be undone." },
+                          class: "text-red-600 hover:text-red-900" do %>
+                        Delete
+                      <% end %>
+                    <% end %>
+                  </div>
                 </td>
               </tr>
             <% end %>
@@ -97,12 +127,12 @@
         <div class="bg-white px-4 py-3 border-t border-gray-200 sm:px-6">
           <div class="flex items-center justify-between">
             <div class="flex-1 flex justify-between sm:hidden">
-              <%= link_to inventory_checkouts_path(page: @pagy.prev, q: params[:q]), 
+              <%= link_to inventory_checkouts_path(page: @pagy.prev, q: params[:q], date_from: params[:date_from], date_to: params[:date_to]), 
                   class: "relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 #{'opacity-50 cursor-not-allowed' unless @pagy.prev}", 
                   data: { turbo_frame: "tab-content" } do %>
                 Previous
               <% end %>
-              <%= link_to inventory_checkouts_path(page: @pagy.next, q: params[:q]), 
+              <%= link_to inventory_checkouts_path(page: @pagy.next, q: params[:q], date_from: params[:date_from], date_to: params[:date_to]), 
                   class: "ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 #{'opacity-50 cursor-not-allowed' unless @pagy.next}", 
                   data: { turbo_frame: "tab-content" } do %>
                 Next
@@ -117,7 +147,7 @@
               <div>
                 <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
                   <% if @pagy.prev %>
-                    <%= link_to inventory_checkouts_path(page: @pagy.prev, q: params[:q]), 
+                    <%= link_to inventory_checkouts_path(page: @pagy.prev, q: params[:q], date_from: params[:date_from], date_to: params[:date_to]), 
                         class: "relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50", 
                         data: { turbo_frame: "tab-content" } do %>
                       <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
@@ -128,7 +158,7 @@
                   
                   <% @pagy.series.each do |item| %>
                     <% if item.is_a?(Integer) %>
-                      <%= link_to item, inventory_checkouts_path(page: item, q: params[:q]), 
+                      <%= link_to item, inventory_checkouts_path(page: item, q: params[:q], date_from: params[:date_from], date_to: params[:date_to]), 
                           class: "relative inline-flex items-center px-4 py-2 border text-sm font-medium #{item == @pagy.page ? 'z-10 bg-pink-50 border-pink-500 text-pink-600' : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'}", 
                           data: { turbo_frame: "tab-content" } %>
                     <% elsif item == :gap %>
@@ -137,7 +167,7 @@
                   <% end %>
                   
                   <% if @pagy.next %>
-                    <%= link_to inventory_checkouts_path(page: @pagy.next, q: params[:q]), 
+                    <%= link_to inventory_checkouts_path(page: @pagy.next, q: params[:q], date_from: params[:date_from], date_to: params[:date_to]), 
                         class: "relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50", 
                         data: { turbo_frame: "tab-content" } do %>
                       <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
