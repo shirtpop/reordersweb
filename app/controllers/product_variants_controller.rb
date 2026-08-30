@@ -13,7 +13,7 @@ class ProductVariantsController < BaseController
   end
 
   def delete_info
-    render partial: "products/variant_delete_info", locals: { variant: @product_variant }
+    render partial: "inventories/products/variant_delete_info", locals: { variant: @product_variant }
   end
 
   def destroy

@@ -6,12 +6,23 @@
        data-bulk-prices="<%= @product.bulk_prices.to_json %>">
 
     <!-- Back to Storefront Link -->
-    <%= link_to storefront_path(catalog_id: @catalog.id), class: "inline-flex items-center text-pink-600 hover:text-pink-700 mb-6 transition-colors" do %>
+    <%= link_to storefront_path(catalog_id: @catalog.id), class: "inline-flex items-center text-pink-600 hover:text-pink-700 mb-2 transition-colors" do %>
       <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
       </svg>
       <span class="font-medium">Back to Store</span>
     <% end %>
+
+    <!-- Which catalog this product is being viewed/ordered under -->
+    <div class="mb-6 text-sm text-gray-500">
+      Viewing under <span class="font-semibold text-gray-700"><%= @catalog.name %></span>
+      <% if @other_catalogs.any? %>
+        &mdash; also available under
+        <% @other_catalogs.each_with_index do |catalog, index| %>
+          <%= ", " if index.positive? %><%= link_to catalog.name, storefront_product_path(@product.id, catalog_id: catalog.id), class: "text-pink-600 hover:text-pink-700 underline" %>
+        <% end %>
+      <% end %>
+    </div>
 
   <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
     <!-- Product Header Section -->

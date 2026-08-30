@@ -1,4 +1,4 @@
-class ProductsController < BaseController
+class Inventories::ProductsController < BaseController
   before_action :set_product, only: [ :edit, :update, :delete_image, :upload_images, :delete_info, :destroy ]
 
   def index
@@ -15,14 +15,8 @@ class ProductsController < BaseController
   end
 
   def show
-    # Check if this is a storefront request (has catalog_id param)
-    if params[:catalog_id].present?
-      show_storefront_product
-    else
-      # Inventory view — load product and draft checkout for basket
-      @product = current_client.client_products.includes(product_variants: :inventory).find(params[:id])
-      @draft_checkout = current_client.checkouts.find_or_create_by!(status: :draft, user: current_user)
-    end
+    @product = current_client.client_products.includes(product_variants: :inventory).find(params[:id])
+    @draft_checkout = current_client.checkouts.find_or_create_by!(status: :draft, user: current_user)
   end
 
   def delete_info
@@ -82,7 +76,7 @@ class ProductsController < BaseController
       format.turbo_stream do
         render turbo_stream: turbo_stream.replace(
           "images_container_client_product",
-          partial: "products/images_section",
+          partial: "images_section",
           locals: { product: @product }
         )
       end
@@ -107,7 +101,7 @@ class ProductsController < BaseController
       format.turbo_stream do
         render turbo_stream: turbo_stream.replace(
           "images_container_client_product",
-          partial: "products/images_section",
+          partial: "images_section",
           locals: { product: @product }
         )
       end
@@ -141,23 +135,5 @@ class ProductsController < BaseController
 
   def drive_file_params
     params.permit(:file)
-  end
-
-  def show_storefront_product
-    # Storefront product detail page (for ordering)
-    catalog_id = params[:catalog_id]
-
-    # Find the catalog and product (admin Product, not Client::Product).
-    # A main account can view its own catalogs plus every linked child's catalogs,
-    # matching what the storefront index shows it.
-    @catalog = Catalog.active.where(client_id: [ current_client.id, *current_client.children.ids ]).find(catalog_id)
-    @product = @catalog.products
-                       .includes(:drive_files, product_colors: { product_color_images: :drive_files })
-                       .find(params[:id])
-
-    # Render storefront view instead of default
-    render "products/storefront_show"
-  rescue ActiveRecord::RecordNotFound
-    redirect_to storefront_path, alert: "Product not found or not available in your catalogs."
   end
 end

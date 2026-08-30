@@ -1,0 +1,33 @@
+<h1>Low Stock Alert</h1>
+
+<p><%= @client_inventory.client.company_name %>,</p>
+
+<p>One of your inventory items has dropped to or below its low-stock threshold and may need to be reordered soon.</p>
+
+<div style="background-color: #f9f9f9; padding: 20px; margin: 20px 0; border-left: 4px solid #f59e0b;">
+    <h2 style="margin-top: 0; color: #1f2937;"><%= @product.name %></h2>
+
+    <p><strong>Color:</strong> <%= @variant.color.presence || "N/A" %></p>
+    <p><strong>Size:</strong> <%= @variant.size.presence || "N/A" %></p>
+    <p><strong>Current quantity:</strong> <%= @client_inventory.quantity %> units</p>
+    <p><strong>Low stock threshold:</strong> <%= @client_inventory.minimum_quantity %> units</p>
+</div>
+
+<% if @reorder_catalog.present? %>
+<p>
+    <a href="<%= storefront_product_url(@product.product_id, catalog_id: @reorder_catalog.id) %>" target="_blank" rel="noopener" style="display: inline-block; padding: 12px 24px; background-color: #db2777; color: white; text-decoration: none; border-radius: 6px;">
+        Reorder now
+    </a>
+</p>
+<% end %>
+
+<p>Should you have any questions or require further assistance, please do not hesitate to contact our customer service team.</p>
+
+<p>Thank you for choosing ShirtPop!<br>
+<strong>The Shirtpop Team</strong><br>
+Email: <a href="mailto:sales@shirtpop.com">sales@shirtpop.com</a><br>
+Voice &amp; Text: 505.677.3055</p>
+
+<p style="color: #6b7280; font-size: 14px; margin-top: 30px;">
+    This is an automated message. Please do not reply to this email.
+</p>

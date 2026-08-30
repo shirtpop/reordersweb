@@ -28,4 +28,49 @@ RSpec.describe Client::Product, type: :model do
       expect(other).to be_valid
     end
   end
+
+  describe "#reorder_catalog" do
+    # create(:client)'s default `users { [ association(:user) ] }` currently fails against
+    # User's admin_cannot_belong_to_client validation (pre-existing, unrelated to this spec) —
+    # :without_users sidesteps it so these examples exercise real persisted records.
+    let(:client) { create(:client, :without_users) }
+    let(:admin_product) { create(:product) }
+
+    it "is nil when there is no admin_product link" do
+      client_product = create(:client_product, client: client, admin_product: nil)
+
+      expect(client_product.reorder_catalog).to be_nil
+    end
+
+    it "is nil when the admin product isn't assigned to any active catalog this client can browse" do
+      client_product = create(:client_product, client: client, admin_product: admin_product)
+
+      expect(client_product.reorder_catalog).to be_nil
+    end
+
+    it "finds an active catalog belonging to this client that carries the admin product" do
+      client_product = create(:client_product, client: client, admin_product: admin_product)
+      catalog = create(:catalog, client: client, status: :active)
+      create(:catalogs_product, catalog: catalog, product: admin_product)
+
+      expect(client_product.reorder_catalog).to eq(catalog)
+    end
+
+    it "ignores catalogs that are not active" do
+      client_product = create(:client_product, client: client, admin_product: admin_product)
+      draft_catalog = create(:catalog, client: client, status: :draft)
+      create(:catalogs_product, catalog: draft_catalog, product: admin_product)
+
+      expect(client_product.reorder_catalog).to be_nil
+    end
+
+    it "finds an active catalog belonging to one of this client's children" do
+      child = create(:client, :without_users, parent: client)
+      client_product = create(:client_product, client: client, admin_product: admin_product)
+      child_catalog = create(:catalog, client: child, status: :active)
+      create(:catalogs_product, catalog: child_catalog, product: admin_product)
+
+      expect(client_product.reorder_catalog).to eq(child_catalog)
+    end
+  end
 end

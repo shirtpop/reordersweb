@@ -1,8 +1,17 @@
-<% products_active = controller_name != "checkouts" %>
+<% stock_active = controller_path == "inventories/dashboard" %>
+<% products_active = controller_path == "inventories/products" %>
 <% checkouts_active = controller_name == "checkouts" %>
 
 <div class="border-b border-gray-200 bg-gradient-to-b from-gray-50/90 to-white px-4 py-4 md:px-8 md:py-5">
   <nav class="flex flex-wrap gap-2" aria-label="Inventory sections">
+    <%= link_to inventories_path,
+        class: "inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 #{stock_active ? 'bg-gradient-to-r from-pink-600 to-rose-600 text-white shadow-lg shadow-pink-500/20' : 'text-gray-700 bg-white border-2 border-gray-200 hover:border-pink-300 hover:text-pink-700'}" do %>
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+      </svg>
+      Stock
+    <% end %>
+
     <%= link_to products_path,
         class: "inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 #{products_active ? 'bg-gradient-to-r from-pink-600 to-rose-600 text-white shadow-lg shadow-pink-500/20' : 'text-gray-700 bg-white border-2 border-gray-200 hover:border-pink-300 hover:text-pink-700'}" do %>
       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">

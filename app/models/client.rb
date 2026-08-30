@@ -39,6 +39,19 @@ class Client < ApplicationRecord
     ::Product.joins(:catalogs_products).where(catalogs_products: { catalog_id: catalogs.active.select(:id) }).distinct
   end
 
+  # Active catalogs (belonging to this client or one of its children — matching
+  # StorefrontController's visibility rules) that currently carry the given admin
+  # product. A product can be assigned to more than one catalog, so this can return
+  # several rows; callers that need a single link target should pick one explicitly.
+  def catalogs_for_product(product_id)
+    return Catalog.none if product_id.blank?
+
+    Catalog.active.ordered
+      .where(client_id: [ id, *children.ids ])
+      .joins(:catalogs_products)
+      .where(catalogs_products: { product_id: product_id })
+  end
+
   def setup_complete?
     address.present? &&
       shipping_address.present? &&

@@ -4,7 +4,6 @@ FactoryBot.define do
     quantity { 10 }
     metadata { {} }
 
-    association :client
     association :client_inventory
   end
 end

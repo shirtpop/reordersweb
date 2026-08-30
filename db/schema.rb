@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_08_26_132335) do
+ActiveRecord::Schema[8.0].define(version: 2026_08_30_032237) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -109,6 +109,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_08_26_132335) do
     t.integer "quantity", default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "minimum_quantity", default: 10, null: false
     t.index ["client_id", "client_product_variant_id"], name: "index_client_inventories_on_client_and_variant", unique: true
     t.index ["client_id"], name: "index_client_inventories_on_client_id"
     t.index ["client_product_variant_id"], name: "index_client_inventories_on_client_product_variant_id"

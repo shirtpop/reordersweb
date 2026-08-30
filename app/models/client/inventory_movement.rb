@@ -11,6 +11,7 @@ class Client::InventoryMovement < ApplicationRecord
   validates :quantity, numericality: { greater_than: 0 }
 
   after_create :apply_to_inventory!
+  after_commit :notify_low_stock, on: :create
 
   def signed_quantity
     add? ? quantity : -quantity
@@ -19,6 +20,19 @@ class Client::InventoryMovement < ApplicationRecord
   private
 
   def apply_to_inventory!
-    client_inventory.with_lock { client_inventory.increment!(:quantity, signed_quantity) }
+    client_inventory.with_lock do
+      previous_quantity = client_inventory.quantity
+      client_inventory.increment!(:quantity, signed_quantity)
+      @crossed_into_low_stock = crossed_into_low_stock?(previous_quantity, client_inventory.quantity)
+    end
+  end
+
+  def crossed_into_low_stock?(previous_quantity, new_quantity)
+    threshold = client_inventory.minimum_quantity
+    threshold.positive? && previous_quantity > threshold && new_quantity <= threshold
+  end
+
+  def notify_low_stock
+    Inventories::LowStockNotifier.new(client_inventory).call if @crossed_into_low_stock
   end
 end

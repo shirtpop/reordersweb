@@ -17,7 +17,7 @@ Rails.application.routes.draw do
 
   # Storefront routes (new customer-facing e-commerce experience)
   get "/shop" => "storefront#index", as: :storefront
-  resources :products, only: [ :show ], as: "storefront_product"  # Product detail pages for ordering
+  resources :products, only: [ :show ], as: "storefront_product", controller: "storefront/products"  # Product detail pages for ordering
   resource :cart, only: [ :show ], controller: "cart"  # Shopping cart
   resources :cart_items, only: [ :create, :update, :destroy ]  # Add/update/remove from cart
 
@@ -74,7 +74,7 @@ Rails.application.routes.draw do
     resources :catalogs
   end
 
-  resources :inventories, only: [ :index ] do
+  resources :inventories, only: [ :index, :update ], controller: "inventories/dashboard" do
     collection do
       get :adjustments
       get :search_products
@@ -88,7 +88,7 @@ Rails.application.routes.draw do
           delete "items/:id",   to: "checkouts/items#destroy"
         end
       end
-      resources :products do
+      resources :products, controller: "inventories/products" do
         collection do
           get :barcodes
           get :admin_products
@@ -97,7 +97,7 @@ Rails.application.routes.draw do
         member do
           get :basket_modal
           post :upload_images
-          delete "delete_image/:drive_file_id", to: "products#delete_image", as: :delete_image
+          delete "delete_image/:drive_file_id", to: "inventories/products#delete_image", as: :delete_image
           get :delete_info
         end
       end

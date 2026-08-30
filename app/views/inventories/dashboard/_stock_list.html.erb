@@ -179,19 +179,21 @@
                   <span class="ml-1 text-xs text-gray-500">units</span>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
-                  <% if inventory.quantity > 10 %>
-                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200">
-                      In stock
-                    </span>
-                  <% elsif inventory.quantity > 0 %>
-                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-900 border border-amber-200">
-                      Low stock
-                    </span>
-                  <% else %>
-                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-rose-100 text-rose-800 border border-rose-200">
-                      Out of stock
-                    </span>
-                  <% end %>
+                  <%
+                    status_class = {
+                      in_stock: "bg-emerald-100 text-emerald-800 border border-emerald-200",
+                      low_stock: "bg-amber-100 text-amber-900 border border-amber-200",
+                      out_of_stock: "bg-rose-100 text-rose-800 border border-rose-200"
+                    }.fetch(inventory.stock_status)
+                    status_label = {
+                      in_stock: "In stock",
+                      low_stock: "Low stock",
+                      out_of_stock: "Out of stock"
+                    }.fetch(inventory.stock_status)
+                  %>
+                  <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold <%= status_class %>">
+                    <%= status_label %>
+                  </span>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-center">
                   <%= link_to inventory_movements_path(inventory), class: "inline-flex items-center justify-center p-2 rounded-xl text-pink-600 hover:bg-pink-50 border-2 border-transparent hover:border-pink-200 transition-all duration-200", title: "View movements", data: { turbo_frame: "_top" } do %>

@@ -35,6 +35,14 @@ class Client::Product < ApplicationRecord
     }
   end
 
+  # An active catalog carrying the linked admin product — nil if there's no
+  # admin_product link or it's no longer assigned to any catalog this client can
+  # browse. storefront_product_path requires a catalog_id, so this is what makes a
+  # "reorder this" link resolvable instead of a dead/broken one.
+  def reorder_catalog
+    client.catalogs_for_product(product_id).first
+  end
+
   private
 
   def copy_drive_files

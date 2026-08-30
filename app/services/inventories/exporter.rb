@@ -22,11 +22,17 @@ module Inventories
       @sort_by = sort_by
     end
 
+    STATUS_LABELS = {
+      in_stock: "In Stock",
+      low_stock: "Low Stock",
+      out_of_stock: "Out of Stock"
+    }.freeze
+
     def call!
       CSV.generate(headers: true) do |csv|
         csv << HEADERS
 
-        sorted_inventories.each do |inventory|
+        inventories.sorted_by(sort_by).each do |inventory|
           csv << build_row(inventory)
         end
       end
@@ -37,21 +43,6 @@ module Inventories
     private
 
     attr_reader :inventories, :sort_by
-
-    def sorted_inventories
-      case sort_by
-      when "product_name_asc"
-        inventories.joins(client_product_variant: :client_product).order("client_products.name ASC")
-      when "product_name_desc"
-        inventories.joins(client_product_variant: :client_product).order("client_products.name DESC")
-      when "quantity_asc"
-        inventories.order(:quantity)
-      when "quantity_desc"
-        inventories.order(quantity: :desc)
-      else
-        inventories.order(:id)
-      end
-    end
 
     def build_row(inventory)
       variant = inventory.client_product_variant
@@ -64,18 +55,8 @@ module Inventories
         variant.size.present? ? variant.size : "N/A",
         variant.sku.present? ? variant.sku : "N/A",
         inventory.quantity,
-        determine_status(inventory.quantity)
+        STATUS_LABELS.fetch(inventory.stock_status)
       ]
-    end
-
-    def determine_status(quantity)
-      if quantity > 10
-        "In Stock"
-      elsif quantity > 0
-        "Low Stock"
-      else
-        "Out of Stock"
-      end
     end
 
     def strip_html_tags(text)

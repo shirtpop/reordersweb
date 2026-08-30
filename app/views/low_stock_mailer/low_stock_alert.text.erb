@@ -1,0 +1,27 @@
+LOW STOCK ALERT
+
+<%= @client_inventory.client.company_name %>,
+
+One of your inventory items has dropped to or below its low-stock threshold and may need to be reordered soon.
+
+<%= @product.name %>
+───────────────────────────────────────────────────────
+Color: <%= @variant.color.presence || "N/A" %>
+Size: <%= @variant.size.presence || "N/A" %>
+Current quantity: <%= @client_inventory.quantity %> units
+Low stock threshold: <%= @client_inventory.minimum_quantity %> units
+
+<% if @reorder_catalog.present? %>
+Reorder now: <%= storefront_product_url(@product.product_id, catalog_id: @reorder_catalog.id) %>
+
+<% end %>
+Should you have any questions or require further assistance, please do not hesitate to contact our customer service team.
+
+Thank you for choosing ShirtPop!
+
+The Shirtpop Team
+Email: sales@shirtpop.com
+Voice & Text: 505.677.3055
+
+───────────────────────────────────────────────────────
+This is an automated message. Please do not reply to this email.
