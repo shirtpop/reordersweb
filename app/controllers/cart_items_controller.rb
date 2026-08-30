@@ -3,9 +3,7 @@ class CartItemsController < BaseController
     # A main account can order from its own catalogs plus every linked child's. The
     # resulting order belongs to whichever business owns the catalog being ordered
     # from, not necessarily the account placing it.
-    catalog = Catalog.active
-                     .where(client_id: [ current_client.id, *current_client.children.ids ])
-                     .find(params[:catalog_id])
+    catalog = current_client.browsable_catalogs.find(params[:catalog_id])
     product = catalog.products.find(params[:product_id])
 
     adder = CartItems::Adder.new(

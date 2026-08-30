@@ -1,5 +1,11 @@
-<turbo-frame id="storefront_content">
-  <div class="container mx-auto px-4 py-8 max-w-7xl"
+<div class="flex bg-gray-50 min-h-screen">
+  <!-- Left Sidebar: Catalog Navigation (only if 2+ catalogs) — same as the storefront
+       index, so landing here directly (e.g. via a "Reorder" link) doesn't strand the
+       client without a way to browse other catalogs. -->
+  <%= render Storefront::CatalogSidebarComponent.new(catalogs: @catalogs, selected_catalog: @catalog, current_client: current_client) %>
+
+  <turbo-frame id="storefront_content" class="flex-1">
+  <div class="<%= @catalogs.count > 1 ? 'p-8' : 'container mx-auto px-4 py-8' %> max-w-7xl"
        data-controller="quantity-grid"
        data-base-price="<%= @product.base_price.to_f %>"
        data-minimum-order="<%= @product.minimum_order %>"
@@ -283,4 +289,5 @@
       </div>
     <% end %>
   </div>
-</turbo-frame>
+  </turbo-frame>
+</div>

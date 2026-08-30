@@ -1,0 +1,29 @@
+<aside class="w-72 flex-shrink-0 p-6">
+  <div class="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 sticky top-6">
+    <h2 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Catalogs</h2>
+
+    <% if catalog_groups.present? %>
+      <!-- Grouped by company: main account sees its own catalogs plus each linked company's -->
+      <nav class="space-y-5">
+        <% catalog_groups.each do |owner, owner_catalogs| %>
+          <div>
+            <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 px-1">
+              <%= owner_label(owner) %>
+            </h3>
+            <div class="space-y-2">
+              <% owner_catalogs.each do |catalog| %>
+                <%= link_to catalog.name, storefront_path(catalog_id: catalog.id), class: catalog_link_class(catalog) %>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      </nav>
+    <% else %>
+      <nav class="space-y-2">
+        <% @catalogs.each do |catalog| %>
+          <%= link_to catalog.name, storefront_path(catalog_id: catalog.id), class: catalog_link_class(catalog) %>
+        <% end %>
+      </nav>
+    <% end %>
+  </div>
+</aside>

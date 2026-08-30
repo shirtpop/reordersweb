@@ -9,7 +9,7 @@ class Storefront::ProductsController < BaseController
     # Find the catalog and product (admin Product, not Client::Product).
     # A main account can view its own catalogs plus every linked child's catalogs,
     # matching what the storefront index shows it.
-    @catalog = Catalog.active.where(client_id: [ current_client.id, *current_client.children.ids ]).find(params[:catalog_id])
+    @catalog = current_client.browsable_catalogs.find(params[:catalog_id])
     @product = @catalog.products
                        .includes(:drive_files, product_colors: { product_color_images: :drive_files })
                        .find(params[:id])
@@ -18,6 +18,10 @@ class Storefront::ProductsController < BaseController
     # surface a "you're viewing it under X, also available under Y" switcher instead
     # of silently ordering under whichever catalog happened to be linked to.
     @other_catalogs = current_client.catalogs_for_product(@product.id).where.not(id: @catalog.id)
+
+    # Same catalog sidebar as the storefront index, so landing here directly (e.g. via
+    # a "Reorder" link) doesn't strand the client without a way to browse other catalogs.
+    @catalogs = current_client.browsable_catalogs.to_a
   rescue ActiveRecord::RecordNotFound
     redirect_to storefront_path, alert: "Product not found or not available in your catalogs."
   end
