@@ -123,7 +123,7 @@ module Admin
         :parent_id,
         address_attributes: [ :id, :street, :city, :state, :zip_code ],
         shipping_address_attributes: [ :id, :street, :city, :state, :zip_code ],
-        users_attributes: [ :id, :email, :role, :client_id ]
+        users_attributes: [ :id, :email, :first_name, :last_name, :title, :role, :client_id ]
       )
     end
 

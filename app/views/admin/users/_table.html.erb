@@ -4,6 +4,7 @@
       <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
         <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
           <tr>
+            <th scope="col" class="px-6 py-3">Name</th>
             <th scope="col" class="px-6 py-3">Email</th>
             <th scope="col" class="px-6 py-3">Role</th>
             <th scope="col" class="px-6 py-3">Client</th>
@@ -19,8 +20,11 @@
             <% users.each do |user| %>
               <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
                 <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                  <!--email_off--><%= user.email %><!--/email_off-->
+                  <%= user.full_name %>
                 </th>
+                <td class="px-6 py-4">
+                  <!--email_off--><%= user.email %><!--/email_off-->
+                </td>
                 <td class="px-6 py-4">
                   <span class="<%= user.role_admin? ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300' : 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300' %> text-xs font-medium me-2 px-2.5 py-0.5 rounded">
                     <%= user.role.humanize %>
@@ -81,7 +85,7 @@
             <% end %>
           <% else %>
             <tr>
-              <td colspan="6" class="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
+              <td colspan="7" class="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
                 <div class="flex flex-col items-center justify-center">
                   <svg class="w-12 h-12 mb-4 text-gray-300 dark:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5 0a6 6 0 00-9-5.197"></path>

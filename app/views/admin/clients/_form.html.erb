@@ -209,6 +209,20 @@
       <%= form.fields_for :users do |user_form| %>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
+            <%= user_form.label :first_name, class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" %>
+            <%= user_form.text_field :first_name, required: true,
+                class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" %>
+            <%= display_field_errors(@client, 'users.first_name') %>
+          </div>
+
+          <div>
+            <%= user_form.label :last_name, class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" %>
+            <%= user_form.text_field :last_name, required: true,
+                class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" %>
+            <%= display_field_errors(@client, 'users.last_name') %>
+          </div>
+
+          <div>
             <%= user_form.label :email, class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" %>
             <%= user_form.email_field :email, required: true,
                 class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" %>
@@ -216,10 +230,10 @@
           </div>
 
           <div>
-            <%= user_form.label :password, class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" %>
-            <%= user_form.password_field :password, required: true,
+            <%= user_form.label :title, class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" %>
+            <%= user_form.text_field :title,
                 class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" %>
-            <%= display_field_errors(@client, 'users.password') %>
+            <%= display_field_errors(@client, 'users.title') %>
           </div>
 
           <%= user_form.hidden_field :role, value: 'client' %>

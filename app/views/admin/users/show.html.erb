@@ -23,11 +23,33 @@
           <div class="space-y-4">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
+                <label class="block mb-1 text-sm font-medium text-gray-900 dark:text-white">Name</label>
+                <p class="text-sm text-gray-600 dark:text-gray-300 bg-gray-50 dark:bg-gray-600 p-2.5 rounded-lg">
+                  <%= @user.full_name %>
+                </p>
+              </div>
+              <div>
                 <label class="block mb-1 text-sm font-medium text-gray-900 dark:text-white">Email</label>
                 <p class="text-sm text-gray-600 dark:text-gray-300 bg-gray-50 dark:bg-gray-600 p-2.5 rounded-lg">
                   <!--email_off--><%= @user.email %><!--/email_off-->
                 </p>
               </div>
+              <% if @user.title.present? %>
+                <div>
+                  <label class="block mb-1 text-sm font-medium text-gray-900 dark:text-white">Title</label>
+                  <p class="text-sm text-gray-600 dark:text-gray-300 bg-gray-50 dark:bg-gray-600 p-2.5 rounded-lg">
+                    <%= @user.title %>
+                  </p>
+                </div>
+              <% end %>
+              <% if @user.phone_number.present? %>
+                <div>
+                  <label class="block mb-1 text-sm font-medium text-gray-900 dark:text-white">Phone Number</label>
+                  <p class="text-sm text-gray-600 dark:text-gray-300 bg-gray-50 dark:bg-gray-600 p-2.5 rounded-lg">
+                    <%= @user.phone_number %>
+                  </p>
+                </div>
+              <% end %>
               <div>
                 <label class="block mb-1 text-sm font-medium text-gray-900 dark:text-white">Role</label>
                 <span class="<%= @user.role_admin? ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300' : 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300' %> text-xs font-medium me-2 px-2.5 py-0.5 rounded">

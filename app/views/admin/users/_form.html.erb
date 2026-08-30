@@ -24,30 +24,64 @@
     <!-- Email Field -->
     <div>
       <%= form.label :email, class: "block mb-2 text-sm font-medium text-gray-900 dark:text-white" %>
-      <%= form.email_field :email, 
+      <%= form.email_field :email,
             required: true,
             readonly: !user.new_record?,
             class: "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500",
             placeholder: "user@example.com" %>
     </div>
 
-    <!-- Password Fields -->
-    <div>
-      <%= form.label :password, class: "block mb-2 text-sm font-medium text-gray-900 dark:text-white" %>
-      <%= form.password_field :password, 
-            class: "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500",
-            placeholder: "••••••••" %>
-      <% if user.persisted? %>
-        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Leave blank to keep current password</p>
-      <% end %>
+    <!-- Name Fields -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div>
+        <%= form.label :first_name, class: "block mb-2 text-sm font-medium text-gray-900 dark:text-white" %>
+        <%= form.text_field :first_name,
+              required: true,
+              class: "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500",
+              placeholder: "Jane" %>
+      </div>
+      <div>
+        <%= form.label :last_name, class: "block mb-2 text-sm font-medium text-gray-900 dark:text-white" %>
+        <%= form.text_field :last_name,
+              required: true,
+              class: "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500",
+              placeholder: "Doe" %>
+      </div>
     </div>
 
-    <div>
-      <%= form.label :password_confirmation, class: "block mb-2 text-sm font-medium text-gray-900 dark:text-white" %>
-      <%= form.password_field :password_confirmation, 
-            class: "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500",
-            placeholder: "••••••••" %>
+    <!-- Title & Phone Number Fields (optional) -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div>
+        <%= form.label :title, class: "block mb-2 text-sm font-medium text-gray-900 dark:text-white" %>
+        <%= form.text_field :title,
+              class: "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500",
+              placeholder: "Warehouse Manager" %>
+      </div>
+      <div>
+        <%= form.label :phone_number, class: "block mb-2 text-sm font-medium text-gray-900 dark:text-white" %>
+        <%= form.telephone_field :phone_number,
+              class: "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500",
+              placeholder: "(555) 555-5555" %>
+      </div>
     </div>
+
+    <!-- Password Fields (editing only — new users set their password from the Welcome email) -->
+    <% if user.persisted? %>
+      <div>
+        <%= form.label :password, class: "block mb-2 text-sm font-medium text-gray-900 dark:text-white" %>
+        <%= form.password_field :password,
+              class: "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500",
+              placeholder: "••••••••" %>
+        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Leave blank to keep current password</p>
+      </div>
+
+      <div>
+        <%= form.label :password_confirmation, class: "block mb-2 text-sm font-medium text-gray-900 dark:text-white" %>
+        <%= form.password_field :password_confirmation,
+              class: "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500",
+              placeholder: "••••••••" %>
+      </div>
+    <% end %>
 
     <!-- Role Field (only show for new users or admin editing) -->
     <% if user.new_record? %>

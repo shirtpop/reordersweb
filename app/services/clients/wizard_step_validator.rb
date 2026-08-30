@@ -68,6 +68,18 @@ module Clients
         end
       end
 
+      rows.each_with_index do |row, index|
+        next if row[:email].to_s.strip.blank?
+
+        if row[:first_name].to_s.strip.blank?
+          errors["first_name_#{index + 1}"] = [ "can't be blank" ]
+        end
+
+        if row[:last_name].to_s.strip.blank?
+          errors["last_name_#{index + 1}"] = [ "can't be blank" ]
+        end
+      end
+
       errors
     end
 

@@ -48,9 +48,11 @@ module Clients
 
         @client.users.create!(
           email: email,
+          first_name: user_param[:first_name].to_s.strip,
+          last_name: user_param[:last_name].to_s.strip,
+          title: user_param[:title].to_s.strip,
           role: "client",
           client_id: @client.id,
-          password: SecureRandom.alphanumeric(20),
           active: false
         )
       end

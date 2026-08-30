@@ -38,7 +38,7 @@ module Admin
     end
 
     def update
-      if @user.update(user_params)
+      if @user.update(user_update_params)
         respond_to do |format|
           format.turbo_stream do
             render turbo_stream: [
@@ -104,7 +104,7 @@ module Admin
     private
 
     def user_params
-      permitted_params = [ :email, :password, :password_confirmation, :role ]
+      permitted_params = [ :email, :role, :first_name, :last_name, :title, :phone_number ]
 
       # Only allow client_id if role is 'client'
       if params[:user][:role] == "client"
@@ -115,7 +115,7 @@ module Admin
     end
 
     def user_update_params
-      permitted_params = [ :email, :role ]
+      permitted_params = [ :email, :role, :first_name, :last_name, :title, :phone_number ]
 
       # Include password fields only if they are provided
       if params[:user][:password].present?

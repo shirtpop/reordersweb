@@ -15,10 +15,12 @@ class User < ApplicationRecord
 
   validates :role, presence: true
   validates :email, presence: true, uniqueness: true, format: { with: URI::MailTo::EMAIL_REGEXP }
+  validates :first_name, :last_name, presence: true
   validates :client_id, presence: true, if: -> { role_client? }
 
   validate :admin_cannot_belong_to_client
 
+  before_validation :assign_temporary_password, on: :create
   before_create :mark_as_logged_in, if: -> { role_admin? }
   before_create :activate_by_default, if: -> { role_admin? }
 
@@ -29,6 +31,8 @@ class User < ApplicationRecord
   def self.ransackable_associations(auth_object = nil)
     []
   end
+
+  def full_name = "#{first_name} #{last_name}".strip
 
   def in_cart_order = orders.status_cart.first
 
@@ -54,5 +58,9 @@ class User < ApplicationRecord
 
   def activate_by_default
     self.active = true
+  end
+
+  def assign_temporary_password
+    self.password ||= SecureRandom.alphanumeric(20)
   end
 end
