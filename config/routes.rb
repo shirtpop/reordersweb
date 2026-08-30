@@ -79,7 +79,10 @@ Rails.application.routes.draw do
       get :adjustments
       get :search_products
       post :save_adjustments
-      resources :checkouts, only: [ :index, :show, :new, :create ], as: :inventory_checkouts do
+      resources :checkouts, only: [ :index, :show, :new, :create, :destroy ], as: :inventory_checkouts do
+        member do
+          delete "movements/:movement_id", to: "checkouts#destroy_movement", as: :destroy_movement
+        end
         collection do
           delete "items/clear", to: "checkouts/items#clear", as: :clear_items
           post   "items/batch", to: "checkouts/items#batch", as: :batch_items
