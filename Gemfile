@@ -4,7 +4,7 @@ source "https://rubygems.org"
 gem "rails", "~> 8.0.2"
 
 # Database
-gem "pg", "~> 1.1"
+gem "pg", "~> 1.6"
 
 # Asset pipeline
 gem "propshaft"
