@@ -29,6 +29,31 @@ RSpec.describe Client::Product, type: :model do
     end
   end
 
+  describe "creating with nested product_variants_attributes" do
+    # create(:client)'s default `users { [ association(:user) ] }` currently fails against
+    # User's admin_cannot_belong_to_client validation (pre-existing, unrelated to this spec) —
+    # :without_users sidesteps it so these examples exercise real persisted records.
+    let(:client) { create(:client, :without_users) }
+
+    it "sets client_id on the built variants from the (unsaved) parent, not the database" do
+      # Regression test: Client::ProductVariant#client is required, and is normally
+      # backfilled from client_product.client_id in a before_validation callback. That
+      # only works if `variant.client_product` is the very same in-memory object being
+      # built here — which needs inverse_of on both sides, since Rails can't auto-detect
+      # it when both associations use a non-default class_name (Client::Product /
+      # Client::ProductVariant). Without inverse_of, variant.client_product reads back
+      # nil (the parent has no id yet to look it up by), so client_id never gets set and
+      # save fails with "Client must exist".
+      product = client.client_products.new(
+        name: "Regression Test Tee",
+        product_variants_attributes: { "0" => { color: "Red", size: "M" } }
+      )
+
+      expect(product.save).to be(true)
+      expect(product.product_variants.first.client_id).to eq(client.id)
+    end
+  end
+
   describe "#reorder_catalog" do
     # create(:client)'s default `users { [ association(:user) ] }` currently fails against
     # User's admin_cannot_belong_to_client validation (pre-existing, unrelated to this spec) —

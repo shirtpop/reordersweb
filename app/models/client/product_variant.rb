@@ -1,5 +1,5 @@
 class Client::ProductVariant < ApplicationRecord
-  belongs_to :client_product, class_name: "Client::Product", counter_cache: true, optional: true
+  belongs_to :client_product, class_name: "Client::Product", counter_cache: true, optional: true, inverse_of: :product_variants
   belongs_to :client, class_name: "Client"
 
   has_one :inventory, class_name: "Client::Inventory", dependent: :destroy, foreign_key: "client_product_variant_id"

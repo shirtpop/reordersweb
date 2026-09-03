@@ -5,7 +5,7 @@ require "csv"
 module Checkouts
   class CsvExporter
     HEADERS = [
-      "Recipient", "Purpose", "Created By", "Date",
+      "Recipient", "Purpose", "Department", "Created By", "Date",
       "Product", "SKU", "Color", "Size", "Quantity"
     ].freeze
 
@@ -20,6 +20,7 @@ module Checkouts
           checkout_row = [
             checkout.recipient_full_name,
             checkout.purpose,
+            checkout.department,
             checkout.user.email,
             checkout.created_at.strftime("%Y-%m-%d %H:%M")
           ]

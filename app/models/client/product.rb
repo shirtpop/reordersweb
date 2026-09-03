@@ -4,7 +4,7 @@ class Client::Product < ApplicationRecord
   belongs_to :client
   belongs_to :admin_product, class_name: "Product", optional: true, foreign_key: "product_id"
 
-  has_many :product_variants, class_name: "Client::ProductVariant", foreign_key: "client_product_id", dependent: :destroy
+  has_many :product_variants, class_name: "Client::ProductVariant", foreign_key: "client_product_id", dependent: :destroy, inverse_of: :client_product
 
   validates :name, presence: true
   validates :product_id, uniqueness: { scope: :client_id }, allow_nil: true
@@ -21,8 +21,6 @@ class Client::Product < ApplicationRecord
   scope :search_by_name, ->(name) {
     where("#{table_name}.name ILIKE ?", "%#{sanitize_sql_like(name)}%")
   }
-
-  accepts_nested_attributes_for :product_variants, allow_destroy: true
 
   # Counts of records a delete would cascade through. Computed on demand (not eagerly),
   # since this only matters when the delete confirmation is actually opened.

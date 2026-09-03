@@ -21,6 +21,10 @@
             <dd class="mt-1 text-sm font-semibold text-gray-900"><%= @checkout.recipient_full_name %></dd>
           </div>
           <div class="rounded-xl border border-gray-100 bg-gradient-to-br from-gray-50 to-white p-4">
+            <dt class="text-xs font-semibold uppercase tracking-wide text-gray-500">Department</dt>
+            <dd class="mt-1 text-sm font-semibold text-gray-900 break-all"><%= @checkout.department %></dd>
+          </div>
+          <div class="rounded-xl border border-gray-100 bg-gradient-to-br from-gray-50 to-white p-4">
             <dt class="text-xs font-semibold uppercase tracking-wide text-gray-500">Purpose</dt>
             <dd class="mt-1 text-sm font-semibold text-gray-900 break-all"><%= @checkout.purpose %></dd>
           </div>

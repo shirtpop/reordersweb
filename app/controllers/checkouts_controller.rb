@@ -68,7 +68,7 @@ class CheckoutsController < BaseController
   private
 
   def filtered_checkouts
-    checkouts = current_client.checkouts.confirmed.order(created_at: :desc)
+    checkouts = current_client.checkouts.confirmed
     checkouts = checkouts.search_by_name(params[:q]) if params[:q].present?
 
     if (date_from = parse_filter_date(params[:date_from]))
@@ -79,7 +79,7 @@ class CheckoutsController < BaseController
       checkouts = checkouts.created_to(date_to)
     end
 
-    checkouts
+    checkouts.sorted_by(params[:sort_by])
   end
 
   def parse_filter_date(value)
@@ -96,7 +96,8 @@ class CheckoutsController < BaseController
     params.require(:client_checkout).permit(
       :purpose,
       :recipient_first_name,
-      :recipient_last_name
+      :recipient_last_name,
+      :department
     )
   end
 end

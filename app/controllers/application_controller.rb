@@ -17,7 +17,7 @@ class ApplicationController < ActionController::Base
   end
 
   def checkout_basket_count
-    @checkout_basket_count ||= current_draft_checkout&.checkout_items&.sum(:quantity) || 0
+    @checkout_basket_count ||= current_draft_checkout&.checkout_items_count || 0
   end
 
   def current_draft_checkout
