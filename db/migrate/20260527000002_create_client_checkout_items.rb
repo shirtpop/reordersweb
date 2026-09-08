@@ -7,7 +7,7 @@ class CreateClientCheckoutItems < ActiveRecord::Migration[8.0]
       t.timestamps
     end
 
-    add_index :client_checkout_items, [:client_checkout_id, :client_inventory_id], unique: true,
+    add_index :client_checkout_items, [ :client_checkout_id, :client_inventory_id ], unique: true,
               name: "idx_checkout_items_on_checkout_and_inventory"
   end
 end

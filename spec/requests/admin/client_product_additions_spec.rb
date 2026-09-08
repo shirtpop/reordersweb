@@ -52,7 +52,7 @@ RSpec.describe "Admin::ClientProductAdditions", type: :request do
     end
 
     context "when signed in as a non-admin user" do
-      before { sign_in create(:user, :client) }
+      before { sign_in create(:user, :client, active: true, first_time_login: false) }
 
       it "denies access" do
         get new_admin_client_product_additions_path(client)
@@ -131,7 +131,7 @@ RSpec.describe "Admin::ClientProductAdditions", type: :request do
     end
 
     context "when signed in as a non-admin user" do
-      before { sign_in create(:user, :client) }
+      before { sign_in create(:user, :client, active: true, first_time_login: false) }
 
       it "denies access and creates nothing" do
         expect {

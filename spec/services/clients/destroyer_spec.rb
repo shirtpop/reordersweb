@@ -21,7 +21,7 @@ RSpec.describe Clients::Destroyer do
       it "raises Clients::Destroyer::DeleteError with message" do
         expect {
           destroyer.call!
-        }.to raise_error(Clients::Destroyer::DeleteError, /Failed to delete client or associated drive files: not found/)
+        }.to raise_error(Clients::Destroyer::DeleteError, /Failed to delete client or associated records: not found/)
       end
     end
 
@@ -33,7 +33,7 @@ RSpec.describe Clients::Destroyer do
       it "raises Clients::Destroyer::DeleteError with message" do
         expect {
           destroyer.call!
-        }.to raise_error(Clients::Destroyer::DeleteError, /Failed to delete client or associated drive files: drive error/)
+        }.to raise_error(Clients::Destroyer::DeleteError, /Failed to delete client or associated records: drive error/)
       end
     end
   end

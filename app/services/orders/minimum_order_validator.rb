@@ -15,6 +15,7 @@ module Orders
                            .transform_values { |rows| rows.sum(&:quantity) }
 
         product_min = product.minimum_order.to_i
+        own_minimum_violation = false
 
         product.product_colors.each do |pc|
           qty = ordered_qty[pc.name] || 0
@@ -26,6 +27,7 @@ module Orders
             # Color has its own minimum — once ordered, must meet it
             if qty < color_min
               result << "#{product.name} – #{pc.name}: minimum is #{color_min} units (#{qty} selected)."
+              own_minimum_violation = true
             end
           elsif product_min > 0 && qty < product_min
             # No color-specific minimum — if ordered, must meet the product minimum run size
@@ -33,9 +35,10 @@ module Orders
           end
         end
 
-        # Total quantity must also meet the product minimum
+        # Total quantity must also meet the product minimum, unless a color's own
+        # minimum already flagged the same shortfall
         total = ordered_qty.values.sum
-        if product_min > 0 && total < product_min
+        if product_min > 0 && total < product_min && !own_minimum_violation
           result << "#{product.name}: total minimum order is #{product_min} units (#{total} selected)."
         end
       end

@@ -145,7 +145,7 @@ RSpec.describe Orders::Duplicator do
           rescue ActiveRecord::RecordInvalid
             # Expected error
           end
-        }.not_to change { Order.in_cart.count }
+        }.not_to change { Order.status_cart.count }
       end
     end
 

@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe "Demo client access restrictions", type: :request do
   let(:client) { create(:client, inventory_enabled: true) }
-  let(:user) { create(:user, client: client, role: :client) }
+  let(:user) { create(:user, client: client, role: :client, active: true, first_time_login: false) }
 
   before { sign_in user }
 
@@ -54,7 +54,7 @@ RSpec.describe "Demo client access restrictions", type: :request do
       before { client.update!(demo: true) }
 
       it "redirects to root with an explanatory alert" do
-        get inventory_inventory_movements_path(inventory)
+        get inventory_movements_path(inventory)
 
         expect(response).to redirect_to(root_path)
         expect(flash[:alert]).to match(/trial account/i)
@@ -63,7 +63,7 @@ RSpec.describe "Demo client access restrictions", type: :request do
 
     context "when the client is not a trial account" do
       it "does not block access" do
-        get inventory_inventory_movements_path(inventory)
+        get inventory_movements_path(inventory)
 
         expect(response).not_to redirect_to(root_path)
       end

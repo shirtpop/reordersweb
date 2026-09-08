@@ -35,8 +35,8 @@ RSpec.describe Clients::WizardStepValidator do
 
     it "is valid for distinct, well-formed, unused emails" do
       errors = errors_for({
-        "0" => { email: "one@example.com" },
-        "1" => { email: "two@example.com" }
+        "0" => { email: "one@example.com", first_name: "One", last_name: "Example" },
+        "1" => { email: "two@example.com", first_name: "Two", last_name: "Example" }
       })
 
       expect(errors).to be_empty

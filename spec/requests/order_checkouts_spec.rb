@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe "OrderCheckouts", type: :request do
   let(:client) { create(:client) }
   let(:catalog) { create(:catalog, client: client) }
-  let(:user) { create(:user, client: client, role: :client) }
+  let(:user) { create(:user, client: client, role: :client, active: true, first_time_login: false) }
   let(:product) { create(:product) }
 
   let!(:cart) do

@@ -12,7 +12,7 @@ RSpec.describe Clients::Creator do
 
   let(:valid_user_params) do
     {
-      "0" => { email: "user@example.com" }
+      "0" => { email: "user@example.com", first_name: "Jane", last_name: "Roe" }
     }
   end
 
@@ -92,8 +92,8 @@ RSpec.describe Clients::Creator do
     context "when multiple user emails are given" do
       let(:valid_user_params) do
         {
-          "0" => { email: "first@example.com" },
-          "1" => { email: "second@example.com" }
+          "0" => { email: "first@example.com", first_name: "First", last_name: "User" },
+          "1" => { email: "second@example.com", first_name: "Second", last_name: "User" }
         }
       end
 

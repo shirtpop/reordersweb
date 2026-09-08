@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe "ProductAdditions", type: :request do
   let(:client) { create(:client, inventory_enabled: true) }
-  let(:user) { create(:user, :client, client: client) }
+  let(:user) { create(:user, :client, client: client, active: true, first_time_login: false) }
   let(:catalog) { create(:catalog, client: client, status: 'active') }
   let(:product) do
     create(:product, sizes: [ "M", "L" ], product_colors: [ build(:product_color, name: "Red", minimum_order: 0) ])

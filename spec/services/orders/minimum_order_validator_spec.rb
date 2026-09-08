@@ -20,8 +20,8 @@ RSpec.describe Orders::MinimumOrderValidator do
   describe '#valid? / #violations' do
     context 'with a single required color meeting its minimum' do
       let(:red) { make_color(name: 'Red', minimum_order: 12) }
-      let(:product) { make_product(minimum_order: 12, colors: [red]) }
-      let(:items) { [item(product: product, color: 'Red', quantity: 12)] }
+      let(:product) { make_product(minimum_order: 12, colors: [ red ]) }
+      let(:items) { [ item(product: product, color: 'Red', quantity: 12) ] }
 
       it { is_expected.to be_valid }
       it { expect(validator.violations).to be_empty }
@@ -29,8 +29,8 @@ RSpec.describe Orders::MinimumOrderValidator do
 
     context 'when a required color is below its minimum' do
       let(:red) { make_color(name: 'Red', minimum_order: 12) }
-      let(:product) { make_product(minimum_order: 12, colors: [red]) }
-      let(:items) { [item(product: product, color: 'Red', quantity: 5)] }
+      let(:product) { make_product(minimum_order: 12, colors: [ red ]) }
+      let(:items) { [ item(product: product, color: 'Red', quantity: 5) ] }
 
       it { is_expected.not_to be_valid }
 
@@ -41,8 +41,8 @@ RSpec.describe Orders::MinimumOrderValidator do
 
     context 'when a color with its own minimum is not ordered at all' do
       let(:red) { make_color(name: 'Red', minimum_order: 12) }
-      let(:product) { make_product(minimum_order: 0, colors: [red]) }
-      let(:items) { [item(product: product, color: 'Red', quantity: 0)] }
+      let(:product) { make_product(minimum_order: 0, colors: [ red ]) }
+      let(:items) { [ item(product: product, color: 'Red', quantity: 0) ] }
 
       it 'does not force the color to be ordered' do
         is_expected.to be_valid
@@ -52,8 +52,8 @@ RSpec.describe Orders::MinimumOrderValidator do
     context 'when one color already meets the product minimum and another color is left unordered' do
       let(:red) { make_color(name: 'Red', minimum_order: 12) }
       let(:blue) { make_color(name: 'Blue', minimum_order: 10) }
-      let(:product) { make_product(minimum_order: 50, colors: [red, blue]) }
-      let(:items) { [item(product: product, color: 'Red', quantity: 50)] }
+      let(:product) { make_product(minimum_order: 50, colors: [ red, blue ]) }
+      let(:items) { [ item(product: product, color: 'Red', quantity: 50) ] }
 
       it 'does not require ordering the unordered color' do
         is_expected.to be_valid
@@ -63,7 +63,7 @@ RSpec.describe Orders::MinimumOrderValidator do
     context 'when a color is ordered but falls short of its own minimum' do
       let(:red) { make_color(name: 'Red', minimum_order: 12) }
       let(:blue) { make_color(name: 'Blue', minimum_order: 10) }
-      let(:product) { make_product(minimum_order: 50, colors: [red, blue]) }
+      let(:product) { make_product(minimum_order: 50, colors: [ red, blue ]) }
       let(:items) do
         [
           item(product: product, color: 'Red', quantity: 45),
@@ -79,7 +79,7 @@ RSpec.describe Orders::MinimumOrderValidator do
 
     context 'when quantities are split across sizes (summed per color)' do
       let(:red) { make_color(name: 'Red', minimum_order: 12) }
-      let(:product) { make_product(minimum_order: 12, colors: [red]) }
+      let(:product) { make_product(minimum_order: 12, colors: [ red ]) }
       let(:items) do
         [
           item(product: product, color: 'Red', quantity: 6),
@@ -95,8 +95,8 @@ RSpec.describe Orders::MinimumOrderValidator do
     context 'with an optional color (minimum_order 0) not ordered' do
       let(:red) { make_color(name: 'Red', minimum_order: 12) }
       let(:blue) { make_color(name: 'Blue', minimum_order: 0) }
-      let(:product) { make_product(minimum_order: 12, colors: [red, blue]) }
-      let(:items) { [item(product: product, color: 'Red', quantity: 12)] }
+      let(:product) { make_product(minimum_order: 12, colors: [ red, blue ]) }
+      let(:items) { [ item(product: product, color: 'Red', quantity: 12) ] }
 
       it 'does not flag the unordered optional color' do
         is_expected.to be_valid
@@ -106,7 +106,7 @@ RSpec.describe Orders::MinimumOrderValidator do
     context 'with an optional color ordered below the product run size' do
       let(:red) { make_color(name: 'Red', minimum_order: 12) }
       let(:blue) { make_color(name: 'Blue', minimum_order: 0) }
-      let(:product) { make_product(minimum_order: 12, colors: [red, blue]) }
+      let(:product) { make_product(minimum_order: 12, colors: [ red, blue ]) }
       let(:items) do
         [
           item(product: product, color: 'Red', quantity: 12),
@@ -124,8 +124,8 @@ RSpec.describe Orders::MinimumOrderValidator do
 
     context 'when total quantity is below the product minimum (transition period)' do
       let(:red) { make_color(name: 'Red', minimum_order: 0) }
-      let(:product) { make_product(minimum_order: 12, colors: [red]) }
-      let(:items) { [item(product: product, color: 'Red', quantity: 5)] }
+      let(:product) { make_product(minimum_order: 12, colors: [ red ]) }
+      let(:items) { [ item(product: product, color: 'Red', quantity: 5) ] }
 
       it { is_expected.not_to be_valid }
 
@@ -137,10 +137,10 @@ RSpec.describe Orders::MinimumOrderValidator do
 
     context 'with multiple products in the order' do
       let(:red) { make_color(name: 'Red', minimum_order: 12) }
-      let(:product_a) { make_product(name: 'Shirt A', minimum_order: 12, colors: [red]) }
+      let(:product_a) { make_product(name: 'Shirt A', minimum_order: 12, colors: [ red ]) }
 
       let(:green) { make_color(name: 'Green', minimum_order: 6) }
-      let(:product_b) { make_product(name: 'Shirt B', minimum_order: 6, colors: [green]) }
+      let(:product_b) { make_product(name: 'Shirt B', minimum_order: 6, colors: [ green ]) }
 
       let(:items) do
         [
