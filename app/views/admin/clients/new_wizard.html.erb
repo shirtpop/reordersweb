@@ -64,6 +64,16 @@
         </div>
       </div>
 
+      <div class="border-t pt-4">
+        <div class="flex items-center">
+          <%= form.check_box :demo,
+              class: "h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" %>
+          <%= form.label :demo, class: "ml-2 text-sm text-gray-700 dark:text-gray-300" do %>
+            Trial account &mdash; users can browse and build a cart, but can't submit orders
+          <% end %>
+        </div>
+      </div>
+
       <!-- Billing Address -->
       <div class="border-t pt-4">
         <h3 class="text-md font-medium text-gray-900 dark:text-white mb-3">Billing Address</h3>

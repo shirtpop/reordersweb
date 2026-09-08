@@ -19,7 +19,14 @@
               <% clients.each do |client| %>
                 <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
                   <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                    <%= client.company_name %>
+                    <div class="flex items-center gap-2">
+                      <%= client.company_name %>
+                      <% if client.demo? %>
+                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-300">
+                          Trial
+                        </span>
+                      <% end %>
+                    </div>
                   </th>
                   <td class="px-6 py-4">
                     <%= client.personal_name %>

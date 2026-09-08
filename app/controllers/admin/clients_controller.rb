@@ -120,6 +120,7 @@ module Admin
         :same_as_main,
         :company_url,
         :inventory_enabled,
+        :demo,
         :parent_id,
         address_attributes: [ :id, :street, :city, :state, :zip_code ],
         shipping_address_attributes: [ :id, :street, :city, :state, :zip_code ],

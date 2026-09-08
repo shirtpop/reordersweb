@@ -34,6 +34,16 @@
           </p>
         </div>
         <div>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Account Type</label>
+          <p class="text-sm text-gray-900 dark:text-white bg-gray-50 dark:bg-gray-700 px-3 py-2 rounded-md border border-gray-200 dark:border-gray-600">
+            <% if client.demo? %>
+              Trial &mdash; users can browse and build a cart, but can't submit orders
+            <% else %>
+              Standard
+            <% end %>
+          </p>
+        </div>
+        <div>
           <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Created</label>
           <p class="text-sm text-gray-900 dark:text-white bg-gray-50 dark:bg-gray-700 px-3 py-2 rounded-md border border-gray-200 dark:border-gray-600">
             <%= client.created_at.strftime("%B %d, %Y at %I:%M %p") %>

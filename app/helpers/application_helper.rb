@@ -5,6 +5,7 @@ module ApplicationHelper
 
   def client_inventory_enabled?
     return false unless @current_client
+    return false if @current_client.demo?
 
     @current_client.inventory_enabled
   end

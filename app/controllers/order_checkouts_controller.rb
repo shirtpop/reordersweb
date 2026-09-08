@@ -1,4 +1,6 @@
 class OrderCheckoutsController < BaseController
+  before_action :block_demo_checkout, only: :create
+
   def show
     @cart = current_user.in_cart_order
 
@@ -58,6 +60,12 @@ class OrderCheckoutsController < BaseController
   end
 
   private
+
+  def block_demo_checkout
+    return unless current_client.demo?
+
+    redirect_to cart_path, alert: "This is a trial account — checkout is disabled. Contact us to place a real order."
+  end
 
   def checkout_params
     params.require(:order).permit(:delivery_date, :notes, :purchase_order)

@@ -80,9 +80,17 @@ module Admin
     def activate
       redirect_back fallback_location: admin_users_path, alert: "User is already active." and return if @user.active?
 
-      password = SecureRandom.alphanumeric(16)
-      @user.update!(active: true, password: password)
-      UserMailer.with(user_id: @user.id, password: password).welcome_client.deliver_later
+      if @user.client&.demo?
+        password = params[:password].presence
+        unless password && @user.update(active: true, password: password)
+          redirect_back fallback_location: admin_users_path,
+            alert: "Enter a password (at least #{Devise.password_length.min} characters) to activate this trial account." and return
+        end
+      else
+        password = SecureRandom.alphanumeric(16)
+        @user.update!(active: true, password: password)
+        UserMailer.with(user_id: @user.id, password: password).welcome_client.deliver_later
+      end
 
       respond_to do |format|
         format.turbo_stream do
@@ -136,7 +144,11 @@ module Admin
 
     def activation_notice(user)
       email = ERB::Util.html_escape(user.email)
-      "<!--email_off-->#{email}<!--/email_off--> was activated and emailed their login credentials.".html_safe
+      if user.client&.demo?
+        "<!--email_off-->#{email}<!--/email_off--> was activated. Hand off the password directly — no email was sent.".html_safe
+      else
+        "<!--email_off-->#{email}<!--/email_off--> was activated and emailed their login credentials.".html_safe
+      end
     end
   end
 end

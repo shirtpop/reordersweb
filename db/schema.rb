@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_09_03_234014) do
+ActiveRecord::Schema[8.0].define(version: 2026_09_08_133443) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -169,6 +169,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_09_03_234014) do
     t.string "company_url"
     t.boolean "inventory_enabled", default: false
     t.bigint "parent_id"
+    t.boolean "demo", default: false, null: false
     t.index ["address_id"], name: "index_clients_on_address_id"
     t.index ["company_name"], name: "index_clients_on_company_name"
     t.index ["parent_id"], name: "index_clients_on_parent_id"
