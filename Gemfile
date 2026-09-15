@@ -36,6 +36,9 @@ gem "pagy"
 gem "solid_queue"
 gem "mission_control-jobs"
 
+# Real-time features (Action Cable adapter, DB-backed like solid_queue — no Redis needed)
+gem "solid_cable"
+
 # API building
 gem "jbuilder"
 

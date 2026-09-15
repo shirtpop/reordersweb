@@ -44,6 +44,7 @@ class Order < ApplicationRecord
   before_create :set_order_number
   before_save :set_submitted_at
   after_commit :send_notifications, if: -> { status_submitted? }
+  after_commit :notify_processing, if: -> { saved_change_to_status? && status_processing? }
 
   def total_price
     order_items.sum { |item| item.total_price }
@@ -58,6 +59,10 @@ class Order < ApplicationRecord
   def send_notifications
     OrderMailer.with(order_id: self.id).client_confirmation.deliver_later
     OrderMailer.with(order_id: self.id).admin_notification.deliver_later
+  end
+
+  def notify_processing
+    Notifications::OrderProcessedNotifier.new(self).call
   end
 
   def set_order_number

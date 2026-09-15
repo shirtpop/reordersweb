@@ -33,7 +33,16 @@ development:
     username: postgres
     password: password
     host: db
-    schema_search_path: "solid"
+    schema_search_path: "solid_queue"
+    migrations_paths: []
+  cable:
+    <<: *default
+    database: reordersweb_development
+    username: postgres
+    password: password
+    host: db
+    schema_search_path: "solid_cable"
+    migrations_paths: []
 
   # The specified database role being used to connect to PostgreSQL.
   # To create additional roles in PostgreSQL see `$ createuser --help`.
@@ -66,8 +75,29 @@ development:
 # re-generated from your development database when you run "rake".
 # Do not set this db to the same as development or production.
 test:
-  <<: *default
-  database: reordersweb_test
+  primary:
+    <<: *default
+    database: reordersweb_test
+    username: postgres
+    password: password
+    host: db
+    schema_search_path: "public"
+  queue:
+    <<: *default
+    database: reordersweb_test
+    username: postgres
+    password: password
+    host: db
+    schema_search_path: "solid_queue"
+    migrations_paths: []
+  cable:
+    <<: *default
+    database: reordersweb_test
+    username: postgres
+    password: password
+    host: db
+    schema_search_path: "solid_cable"
+    migrations_paths: []
 
 # As with config/credentials.yml, you never want to store sensitive information,
 # like your database password, in your source code. If your source code is
@@ -97,7 +127,12 @@ staging:
   queue:
     <<: *default
     url: <%= ENV["DATABASE_URL"] %>
-    schema_search_path: "solid"
+    schema_search_path: "solid_queue"
+    migrations_paths: []
+  cable:
+    <<: *default
+    url: <%= ENV["DATABASE_URL"] %>
+    schema_search_path: "solid_cable"
     migrations_paths: []
 production:
   primary:
@@ -107,13 +142,10 @@ production:
   queue:
     <<: *default
     url: <%= ENV["DATABASE_URL"] %>
-    schema_search_path: "solid"
+    schema_search_path: "solid_queue"
     migrations_paths: []
-  # cache:
-  #   <<: *primary_production
-  #   database: reordersweb_production_cache
-  #   migrations_paths: db/cache_migrate
-  # cable:
-  #   <<: *primary_production
-  #   database: reordersweb_production_cable
-  #   migrations_paths: db/cable_migrate
+  cable:
+    <<: *default
+    url: <%= ENV["DATABASE_URL"] %>
+    schema_search_path: "solid_cable"
+    migrations_paths: []

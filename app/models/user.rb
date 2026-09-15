@@ -12,6 +12,7 @@ class User < ApplicationRecord
   belongs_to :client, optional: true
 
   has_many :orders, foreign_key: :ordered_by_id
+  has_many :notifications, foreign_key: :recipient_id, dependent: :destroy, inverse_of: :recipient
 
   validates :role, presence: true
   validates :email, presence: true, uniqueness: true, format: { with: URI::MailTo::EMAIL_REGEXP }

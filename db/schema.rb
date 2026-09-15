@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_09_08_133443) do
+ActiveRecord::Schema[8.0].define(version: 2026_09_16_000001) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -188,6 +188,21 @@ ActiveRecord::Schema[8.0].define(version: 2026_09_08_133443) do
     t.index ["attachable_type", "attachable_id"], name: "index_drive_files_on_attachable"
   end
 
+  create_table "notifications", force: :cascade do |t|
+    t.bigint "recipient_id", null: false
+    t.string "notifiable_type", null: false
+    t.bigint "notifiable_id", null: false
+    t.string "kind", null: false
+    t.string "title", null: false
+    t.text "description"
+    t.datetime "read_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["notifiable_type", "notifiable_id"], name: "index_notifications_on_notifiable"
+    t.index ["recipient_id", "read_at", "created_at"], name: "index_notifications_on_recipient_and_read_and_created"
+    t.index ["recipient_id"], name: "index_notifications_on_recipient_id"
+  end
+
   create_table "order_items", force: :cascade do |t|
     t.bigint "order_id", null: false
     t.bigint "product_id", null: false
@@ -307,6 +322,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_09_08_133443) do
   add_foreign_key "clients", "addresses"
   add_foreign_key "clients", "addresses", column: "shipping_address_id"
   add_foreign_key "clients", "clients", column: "parent_id"
+  add_foreign_key "notifications", "users", column: "recipient_id"
   add_foreign_key "order_items", "orders"
   add_foreign_key "order_items", "product_colors"
   add_foreign_key "order_items", "products"

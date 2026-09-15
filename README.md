@@ -1,7 +1,7 @@
 # Shirtpop Ordering Platform
 
 A Ruby on Rails 8 application for managing clients, projects, products, and orders.  
-The app uses PostgreSQL with multiple schemas (`public` for main models and `solid` for background jobs and caching), Devise for authentication, TailwindCSS + Flowbite for UI, Hotwire (Turbo + Stimulus) for interactivity, and Solid Queue for background jobs.
+The app uses PostgreSQL with multiple schemas (`public` for main models, `solid_queue` for background jobs, `solid_cable` for Action Cable / Turbo Streams), Devise for authentication, TailwindCSS + Flowbite for UI, Hotwire (Turbo + Stimulus) for interactivity, and Solid Queue for background jobs.
 
 ---
 

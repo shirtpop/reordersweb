@@ -1,10 +1,25 @@
-development:
-  adapter: async
+# Solid Cable (DB-backed Action Cable) is used in every real environment so behavior
+# stays consistent between local Docker, staging, and production — no Redis, and no
+# "works on my machine because dev uses the in-process async adapter" gap.
+default: &default
+  adapter: solid_cable
+  connects_to:
+    database:
+      writing: cable
+  polling_interval: 0.1.seconds
+  message_retention: 1.day
 
-test:
-  adapter: test
+development:
+  <<: *default
+
+staging:
+  <<: *default
 
 production:
-  adapter: redis
-  url: <%= ENV.fetch("REDIS_URL") { "redis://localhost:6379/1" } %>
-  channel_prefix: reordersweb_production
+  <<: *default
+
+# The `test` adapter is a Rails testing convention (synchronous, inspectable via
+# `have_broadcasted_to`), not a real backend — every environment that actually runs
+# the app uses solid_cable above, so this doesn't reintroduce a dev/prod gap.
+test:
+  adapter: test

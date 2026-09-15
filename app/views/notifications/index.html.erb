@@ -1,0 +1,22 @@
+<div class="container mx-auto px-4 py-6 max-w-2xl">
+  <div class="mb-6">
+    <h1 class="text-2xl font-bold text-gray-900">Notifications</h1>
+    <p class="text-sm text-gray-500 mt-1">Order updates and inventory alerts</p>
+  </div>
+
+  <% if @notifications.any? %>
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+      <%= render partial: "notifications/notification", collection: @notifications, as: :notification %>
+    </div>
+
+    <% if @pagy.pages > 1 %>
+      <div class="mt-6 flex justify-center">
+        <%= pagy_tailwind_nav(@pagy).html_safe %>
+      </div>
+    <% end %>
+  <% else %>
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-8 text-center text-sm text-gray-500">
+      No notifications yet.
+    </div>
+  <% end %>
+</div>

@@ -1,0 +1,14 @@
+<%= link_to notification.url || "#", id: dom_id(notification), class: "block px-4 py-3 hover:bg-gray-50 border-b border-gray-100 last:border-b-0 #{'bg-pink-50/60' unless notification.read?}" do %>
+  <div class="flex items-start gap-2">
+    <% unless notification.read? %>
+      <span class="mt-1.5 w-2 h-2 rounded-full bg-pink-600 flex-shrink-0"></span>
+    <% end %>
+    <div class="min-w-0">
+      <p class="text-sm font-medium text-gray-900 truncate"><%= notification.title %></p>
+      <% if notification.description.present? %>
+        <p class="text-xs text-gray-500 mt-0.5 line-clamp-2"><%= notification.description %></p>
+      <% end %>
+      <p class="text-xs text-gray-400 mt-1"><%= time_ago_in_words(notification.created_at) %> ago</p>
+    </div>
+  </div>
+<% end %>

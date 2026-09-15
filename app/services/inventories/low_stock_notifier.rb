@@ -7,10 +7,10 @@ module Inventories
     end
 
     def call
-      return unless admin_linked?
       return unless recipients?
 
-      LowStockMailer.with(client_inventory_id: client_inventory.id).low_stock_alert.deliver_later
+      send_mail
+      Notifications::LowStockNotifier.new(client_inventory).call
     end
 
     private
@@ -21,8 +21,18 @@ module Inventories
       client_inventory.client_product_variant.client_product.product_id.present?
     end
 
+    def recipients
+      client_inventory.client.users.role_client.where(active: true)
+    end
+
     def recipients?
-      client_inventory.client.users.role_client.where(active: true).exists?
+      recipients.exists?
+    end
+
+    def send_mail
+      return unless admin_linked?
+
+      LowStockMailer.with(client_inventory_id: client_inventory.id).low_stock_alert.deliver_later
     end
   end
 end

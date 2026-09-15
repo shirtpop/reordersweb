@@ -4,7 +4,19 @@ class BaseController < ApplicationController
   before_action :block_demo_inventory_access
   before_action :check_inventories_access
 
-  helper_method :current_client
+  helper_method :current_client, :recent_notifications, :unread_notifications_count, :more_notifications?
+
+  def recent_notifications
+    @recent_notifications ||= current_user.notifications.recent_first.limit(5)
+  end
+
+  def unread_notifications_count
+    @unread_notifications_count ||= current_user.notifications.unread.count
+  end
+
+  def more_notifications?
+    current_user.notifications.count > recent_notifications.size
+  end
 
   # Matched against controller_path (not controller_name) since several of these are
   # namespaced controllers whose bare controller_name collides with unrelated

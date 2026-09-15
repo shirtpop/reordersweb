@@ -122,6 +122,9 @@ Rails.application.routes.draw do
     end
   end
   resources :catalogs, only: [ :index, :show ]
+  resources :notifications, only: [ :index ] do
+    post :mark_all_read, on: :collection
+  end
 
   post "drive_files/:attachable_type/:attachable_id", to: "admin/drive_files#create", as: :drive_files
   delete "drive_files/:attachable_type/:attachable_id/:id", to: "admin/drive_files#destroy", as: :drive_file

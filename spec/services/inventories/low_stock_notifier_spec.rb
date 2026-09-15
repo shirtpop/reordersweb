@@ -32,5 +32,43 @@ RSpec.describe Inventories::LowStockNotifier, type: :service do
 
       expect { described_class.new(client_inventory).call }.not_to have_enqueued_mail(LowStockMailer)
     end
+
+    it "creates a low_stock notification for each active client user" do
+      user = create(:user, :client, client: client, active: true)
+      client_inventory = build_client_inventory(admin_linked: true)
+
+      expect { described_class.new(client_inventory).call }
+        .to change { user.notifications.count }.by(1)
+
+      notification = user.notifications.last
+      aggregate_failures do
+        expect(notification.notifiable).to eq(client_inventory)
+        expect(notification.kind_low_stock?).to be true
+      end
+    end
+
+    it "creates a notification even when the product has no admin_product link (only the email is gated by that)" do
+      user = create(:user, :client, client: client, active: true)
+      client_inventory = build_client_inventory(admin_linked: false)
+
+      expect { described_class.new(client_inventory).call }
+        .to change { user.notifications.count }.by(1)
+    end
+
+    it "creates an out_of_stock notification when the inventory has zero quantity" do
+      user = create(:user, :client, client: client, active: true)
+      client_inventory = build_client_inventory(admin_linked: true)
+      client_inventory.update!(quantity: 0)
+
+      described_class.new(client_inventory).call
+
+      expect(user.notifications.last.kind_out_of_stock?).to be true
+    end
+
+    it "does not create notifications when the client has no active client users" do
+      client_inventory = build_client_inventory(admin_linked: true)
+
+      expect { described_class.new(client_inventory).call }.not_to change(Notification, :count)
+    end
   end
 end

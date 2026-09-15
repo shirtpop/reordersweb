@@ -53,4 +53,23 @@ RSpec.describe Order, type: :model do
       end
     end
   end
+
+  describe "#notify_processing" do
+    let(:client) { create(:client, :without_users) }
+    let(:user) { create(:user, :client, client: client, active: true) }
+    let(:order) { create(:order, :with_catalog_line_items, client: client) }
+
+    before { user }
+
+    it "notifies active client users when the order transitions to processing" do
+      expect { order.status_processing! }.to change { user.notifications.count }.by(1)
+    end
+
+    it "does not notify again on unrelated updates while already processing" do
+      order.status_processing!
+
+      expect { order.update!(invoice_url: "https://example.com/invoice.pdf") }
+        .not_to change(Notification, :count)
+    end
+  end
 end
