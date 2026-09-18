@@ -3,6 +3,15 @@
 class Users::RegistrationsController < Devise::RegistrationsController
   skip_before_action :force_password_change
 
+  def update_profile
+    if current_user.update(profile_params)
+      redirect_to edit_user_registration_path, notice: "Profile updated successfully."
+    else
+      self.resource = current_user
+      render :edit, status: :unprocessable_entity
+    end
+  end
+
   protected
 
   def update_resource(resource, params)
@@ -11,5 +20,11 @@ class Users::RegistrationsController < Devise::RegistrationsController
     else
       super
     end
+  end
+
+  private
+
+  def profile_params
+    params.require(:user).permit(:first_name, :last_name)
   end
 end

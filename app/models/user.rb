@@ -16,7 +16,6 @@ class User < ApplicationRecord
 
   validates :role, presence: true
   validates :email, presence: true, uniqueness: true, format: { with: URI::MailTo::EMAIL_REGEXP }
-  validates :first_name, :last_name, presence: true
   validates :client_id, presence: true, if: -> { role_client? }
 
   validate :admin_cannot_belong_to_client

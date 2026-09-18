@@ -30,6 +30,7 @@ Rails.application.routes.draw do
   as :user do
     get "users/edit" => "users/registrations#edit",   as: :edit_user_registration
     put "users"      => "users/registrations#update", as: :user_registration
+    patch "users/profile" => "users/registrations#update_profile", as: :user_profile
   end
 
   namespace :admin do

@@ -10,7 +10,8 @@ class ApplicationController < ActionController::Base
   before_action :authenticate_user!
   before_action :force_password_change, if: :user_signed_in?
 
-  helper_method :cart_items_count, :checkout_basket_count, :current_draft_checkout
+  helper_method :cart_items_count, :checkout_basket_count, :current_draft_checkout,
+                :recent_notifications, :unread_notifications_count, :more_notifications?
 
   def cart_items_count
     @cart_items_count ||= current_user&.in_cart_order&.order_items&.sum(:quantity) || 0
@@ -22,6 +23,18 @@ class ApplicationController < ActionController::Base
 
   def current_draft_checkout
     @current_draft_checkout ||= current_user&.client&.checkouts&.find_by(status: :draft, user: current_user)
+  end
+
+  def recent_notifications
+    @recent_notifications ||= current_user.notifications.recent_first.limit(5)
+  end
+
+  def unread_notifications_count
+    @unread_notifications_count ||= current_user.notifications.unread.count
+  end
+
+  def more_notifications?
+    current_user.notifications.count > recent_notifications.size
   end
 
   private

@@ -1,5 +1,38 @@
 <div class="min-h-screen bg-gradient-to-br from-gray-50 to-pink-50 py-8 px-4 sm:px-6 lg:px-8">
   <div class="max-w-3xl mx-auto">
+    <% if current_user.role_client? %>
+      <!-- Profile Card -->
+      <div class="mb-6 bg-white rounded-2xl shadow-2xl border-2 border-gray-200">
+        <div class="px-6 py-5 border-b-2 border-gray-200">
+          <h2 class="text-lg font-bold text-gray-900">Profile</h2>
+          <p class="mt-1 text-sm text-gray-600">Let us know who you are</p>
+        </div>
+
+        <%= form_with model: current_user, url: user_profile_path, method: :patch, local: true, html: { class: "px-6 py-5" } do |f| %>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div>
+              <%= f.label :first_name, class: "block text-sm font-bold text-gray-700 mb-2" %>
+              <%= f.text_field :first_name,
+                    placeholder: "First name",
+                    class: "block w-full px-3 py-3 border-2 border-gray-300 rounded-lg bg-gray-50 text-gray-900 placeholder-gray-400 focus:outline-none focus:bg-white focus:border-pink-500 focus:ring-2 focus:ring-pink-200 transition-all duration-200" %>
+            </div>
+
+            <div>
+              <%= f.label :last_name, class: "block text-sm font-bold text-gray-700 mb-2" %>
+              <%= f.text_field :last_name,
+                    placeholder: "Last name",
+                    class: "block w-full px-3 py-3 border-2 border-gray-300 rounded-lg bg-gray-50 text-gray-900 placeholder-gray-400 focus:outline-none focus:bg-white focus:border-pink-500 focus:ring-2 focus:ring-pink-200 transition-all duration-200" %>
+            </div>
+          </div>
+
+          <div class="mt-6 pt-6 border-t-2 border-gray-200 flex items-center justify-end">
+            <%= f.submit "Save Profile",
+                class: "group relative flex justify-center gap-2 py-3 px-6 border border-transparent text-base font-bold rounded-lg text-white bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-700 hover:to-rose-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200" %>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+
     <!-- Change Password Card -->
     <div class="bg-white rounded-2xl shadow-2xl border-2 border-gray-200">
       <div class="px-6 py-5 border-b-2 border-gray-200">
