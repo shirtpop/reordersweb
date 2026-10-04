@@ -32,6 +32,10 @@ gem "view_component"
 # Pagination
 gem "pagy"
 
+# PDF
+gem "prawn", "~> 2.5"
+gem "barby", "~> 0.7.0"
+
 # Background jobs processing
 gem "solid_queue"
 gem "mission_control-jobs"

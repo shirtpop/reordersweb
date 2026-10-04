@@ -14,12 +14,12 @@
             </svg>
             Back to Products
           <% end %>
-          <button onclick="window.print()" class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-pink-600 border border-transparent rounded-lg hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500">
+          <%= link_to barcodes_products_path(format: :pdf), target: "_blank", rel: "noopener", class: "inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-pink-600 border border-transparent rounded-lg hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500" do %>
             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
             </svg>
-            Print Barcodes
-          </button>
+            Download PDF
+          <% end %>
         </div>
       </div>
     </div>
@@ -28,66 +28,50 @@
   <!-- Barcodes Grid -->
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8" data-controller="barcode">
     <% if @products&.any? %>
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 barcode-grid">
-        <% @products.each do |product| %>
-          <% if product.product_variants.any? %>
-            <% product.product_variants.each do |variant| %>
-              <div class="bg-white border-2 border-gray-300 rounded-lg p-6 barcode-card break-inside-avoid">
-                <!-- Product Name -->
-                <div class="mb-3">
-                  <h3 class="text-lg font-bold text-gray-900 text-center truncate">
-                    <%= product.name %>
-                  </h3>
-                  <% if variant.color.present? || variant.size.present? %>
-                    <p class="text-sm text-gray-600 text-center mt-1">
-                      <% if variant.color.present? %>
-                        <span class="font-medium">Color:</span> <%= variant.color %>
-                      <% end %>
-                      <% if variant.color.present? && variant.size.present? %>
-                        <span class="mx-1">•</span>
-                      <% end %>
-                      <% if variant.size.present? %>
+      <% @products.each do |product| %>
+        <% if product.product_variants.any? %>
+          <% product.product_variants.group_by { |v| v.color.to_s.strip }.each do |color, variants| %>
+            <section class="mb-8 barcode-group">
+              <h2 class="text-lg font-bold text-gray-900 mb-3 pb-2 border-b border-gray-300 barcode-group-title">
+                <%= [ product.name, color.presence ].compact.join(" - ") %>
+              </h2>
+              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 barcode-grid">
+                <% variants.sort_by { |v| v.size.to_s }.each do |variant| %>
+                  <div class="bg-white border-2 border-gray-300 rounded-lg p-6 barcode-card break-inside-avoid">
+                    <% if variant.size.present? %>
+                      <p class="text-sm text-gray-600 text-center mb-3">
                         <span class="font-medium">Size:</span> <%= variant.size %>
-                      <% end %>
-                    </p>
-                  <% end %>
-                </div>
+                      </p>
+                    <% end %>
 
-                <!-- Barcode -->
-                <div class="flex justify-center mb-3">
-                  <svg class="barcode" 
-                       data-barcode-target="barcode"
-                       data-sku="<%= variant.sku %>" 
-                       data-format="CODE128"
-                       data-height="60"
-                       data-width="2"
-                       data-display-value="true"
-                       data-font-size="14"></svg>
-                </div>
+                    <div class="flex justify-center mb-3">
+                      <svg class="barcode"
+                           data-barcode-target="barcode"
+                           data-sku="<%= variant.sku %>"
+                           data-format="CODE128"
+                           data-height="60"
+                           data-width="2"
+                           data-display-value="true"
+                           data-font-size="14"></svg>
+                    </div>
 
-                <!-- SKU Text (fallback) -->
-                <div class="text-center">
-                  <p class="text-xs font-mono text-gray-700 font-semibold">
-                    SKU: <%= variant.sku %>
-                  </p>
-                </div>
+                    <div class="text-center">
+                      <p class="text-xs font-mono text-gray-700 font-semibold">
+                        SKU: <%= variant.sku %>
+                      </p>
+                    </div>
+                  </div>
+                <% end %>
               </div>
-            <% end %>
-          <% else %>
-            <!-- Product without variants -->
-            <div class="bg-white border-2 border-gray-300 rounded-lg p-6 barcode-card break-inside-avoid">
-              <div class="mb-3">
-                <h3 class="text-lg font-bold text-gray-900 text-center truncate">
-                  <%= product.name %>
-                </h3>
-              </div>
-              <div class="flex justify-center items-center py-8">
-                <p class="text-sm text-gray-500 italic">No variants available</p>
-              </div>
-            </div>
+            </section>
           <% end %>
+        <% else %>
+          <section class="mb-8 barcode-group">
+            <h2 class="text-lg font-bold text-gray-900 mb-3 pb-2 border-b border-gray-300 barcode-group-title"><%= product.name %></h2>
+            <p class="text-sm text-gray-500 italic">No variants available</p>
+          </section>
         <% end %>
-      </div>
+      <% end %>
     <% else %>
       <!-- Empty State -->
       <div class="text-center py-12 bg-white rounded-lg border border-gray-200">
@@ -122,6 +106,16 @@
 
     .no-print {
       display: none !important;
+    }
+
+    .barcode-group {
+      break-inside: avoid-page;
+      margin-bottom: 6mm !important;
+    }
+
+    .barcode-group-title {
+      font-size: 11pt !important;
+      margin-bottom: 3mm !important;
     }
 
     .barcode-grid {

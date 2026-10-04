@@ -120,6 +120,14 @@ class Inventories::ProductsController < BaseController
 
   def barcodes
     @products = current_client.client_products.includes(:product_variants)
+
+    respond_to do |format|
+      format.html
+      format.pdf do
+        pdf = Inventories::BarcodesPdf.new(products: @products).call
+        send_data pdf, filename: "barcodes.pdf", type: "application/pdf", disposition: :inline
+      end
+    end
   end
 
   private

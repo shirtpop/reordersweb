@@ -77,6 +77,7 @@ GEM
     airbrussh (1.5.3)
       sshkit (>= 1.6.1, != 1.7.0)
     ast (2.4.3)
+    barby (0.7.0)
     base64 (0.3.0)
     bcrypt (3.1.20)
     bcrypt_pbkdf (1.1.1)
@@ -210,6 +211,7 @@ GEM
       net-pop
       net-smtp
     marcel (1.0.4)
+    matrix (0.4.3)
     mini_magick (5.3.0)
       logger
     mini_mime (1.1.5)
@@ -257,11 +259,16 @@ GEM
     parser (3.3.9.0)
       ast (~> 2.4.1)
       racc
+    pdf-core (0.10.0)
     pg (1.6.0-aarch64-linux)
     pg (1.6.0-arm64-darwin)
     pg (1.6.0-x86_64-linux)
     pp (0.6.2)
       prettyprint
+    prawn (2.5.0)
+      matrix (~> 0.4)
+      pdf-core (~> 0.10.0)
+      ttfunk (~> 1.8)
     prettyprint (0.2.0)
     prism (1.4.0)
     propshaft (1.2.1)
@@ -421,6 +428,8 @@ GEM
     thruster (0.1.14-x86_64-linux)
     timeout (0.4.3)
     trailblazer-option (0.1.2)
+    ttfunk (1.8.0)
+      bigdecimal (~> 3.1)
     turbo-rails (2.0.16)
       actionpack (>= 7.1.0)
       railties (>= 7.1.0)
@@ -455,6 +464,7 @@ PLATFORMS
   x86_64-linux
 
 DEPENDENCIES
+  barby (~> 0.7.0)
   bcrypt (~> 3.1.7)
   bcrypt_pbkdf
   bootsnap
@@ -481,6 +491,7 @@ DEPENDENCIES
   mission_control-jobs
   pagy
   pg (~> 1.1)
+  prawn (~> 2.5)
   propshaft
   puma (>= 5.0)
   rails (~> 8.0.2)
