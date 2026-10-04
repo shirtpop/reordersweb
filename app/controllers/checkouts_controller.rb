@@ -5,7 +5,10 @@ class CheckoutsController < BaseController
     checkouts = filtered_checkouts
 
     respond_to do |format|
-      format.html { @pagy, @checkouts = pagy(checkouts, items: 20) }
+      format.html do
+        @pagy, @checkouts = pagy(checkouts, items: 20)
+        @departments = current_client.checkouts.confirmed.where.not(department: [ nil, "" ]).distinct.order(:department).pluck(:department)
+      end
       format.csv do
         exportable_checkouts = checkouts.includes(
           :user,
@@ -70,6 +73,7 @@ class CheckoutsController < BaseController
   def filtered_checkouts
     checkouts = current_client.checkouts.confirmed
     checkouts = checkouts.search_by_name(params[:q]) if params[:q].present?
+    checkouts = checkouts.in_department(params[:department]) if params[:department].present?
 
     if (date_from = parse_filter_date(params[:date_from]))
       checkouts = checkouts.created_from(date_from)

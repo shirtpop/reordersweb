@@ -15,6 +15,8 @@ class Client::Checkout < ApplicationRecord
           name: "%#{sanitize_sql_like(name)}%")
   }
 
+  scope :in_department, ->(department) { where(department: department) }
+
   scope :created_from, ->(date) { where("#{table_name}.created_at >= ?", date.to_date.beginning_of_day) }
   scope :created_to, ->(date) { where("#{table_name}.created_at <= ?", date.to_date.end_of_day) }
 

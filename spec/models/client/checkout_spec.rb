@@ -58,6 +58,19 @@ RSpec.describe Client::Checkout, type: :model do
     end
   end
 
+  describe ".in_department" do
+    # :without_users sidesteps the pre-existing create(:client) factory validation failure.
+    let(:client) { create(:client, :without_users) }
+    let(:user) { create(:user) }
+
+    it "only includes checkouts for the given department" do
+      sales = create(:client_checkout, :confirmed, client: client, user: user, department: "Sales")
+      create(:client_checkout, :confirmed, client: client, user: user, department: "Engineering")
+
+      expect(Client::Checkout.where(client: client).in_department("Sales")).to contain_exactly(sales)
+    end
+  end
+
   describe ".sorted_by" do
     # create(:client)'s default `users { [ association(:user) ] }` currently fails against
     # User's admin_cannot_belong_to_client validation (pre-existing, unrelated to this spec) —
