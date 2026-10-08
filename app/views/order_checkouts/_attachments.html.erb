@@ -1,0 +1,70 @@
+<%= turbo_frame_tag "checkout_attachments", class: "block space-y-4" do %>
+  <% if local_assigns[:error].present? %>
+    <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded text-sm"><%= error %></div>
+  <% end %>
+
+  <% if order.drive_files.any? %>
+    <div class="grid grid-cols-2 gap-3">
+      <% order.drive_files.each do |drive_file| %>
+        <div class="relative group">
+          <div class="aspect-square bg-gray-100 rounded-lg overflow-hidden shadow-sm flex items-center justify-center">
+            <% if drive_file.mime_type.to_s.start_with?("image/") %>
+              <%= image_tag drive_file.preview_url, class: "w-full h-full object-cover", alt: drive_file.filename,
+                  referrerpolicy: "no-referrer", loading: "lazy" %>
+            <% else %>
+              <div class="text-center text-gray-500">
+                <svg class="mx-auto h-12 w-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 21h10a2 2 0 002-2V9l-6-6H7a2 2 0 00-2 2v14a2 2 0 002 2z M13 3v6h6"/>
+                </svg>
+                <span class="text-xs font-bold">PDF</span>
+              </div>
+            <% end %>
+          </div>
+          <div class="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity duration-200 rounded-lg flex items-center justify-center">
+            <%= link_to checkout_attachment_path(drive_file),
+                data: { turbo_method: :delete, turbo_confirm: "Remove this file?" },
+                class: "bg-red-600 hover:bg-red-700 text-white p-2 rounded-full shadow-lg",
+                title: "Remove file" do %>
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+              </svg>
+            <% end %>
+          </div>
+          <p class="mt-1 text-xs text-gray-600 truncate" title="<%= drive_file.filename %>"><%= drive_file.filename %></p>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+
+  <% remaining = Order.max_drive_files - order.drive_files.size %>
+  <% if remaining > 0 %>
+    <div class="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:border-gray-400 transition-colors"
+         data-controller="drive-upload"
+         data-drive-upload-url-value="<%= checkout_attachments_path %>"
+         data-drive-upload-allowed-types-value="<%= Order::ATTACHMENT_CONTENT_TYPES.to_json %>"
+         data-drive-upload-allowed-label-value="images or PDF">
+      <%# Not a <form>: this sits inside the checkout form, and the controller only needs the URL. %>
+      <button type="button" data-action="click->drive-upload#triggerFileInput"
+              class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50">
+        Add File
+      </button>
+      <input type="file" accept="image/*,application/pdf" class="hidden"
+             data-drive-upload-target="fileInput" data-action="change->drive-upload#handleFileSelect" />
+      <p class="mt-2 text-sm text-gray-500">
+        Images or PDF, 10 MB each. <%= remaining %> more file<%= remaining == 1 ? "" : "s" %> allowed.
+      </p>
+
+      <div data-drive-upload-target="progressContainer" class="hidden mt-4">
+        <div class="bg-gray-200 rounded-full h-2">
+          <div data-drive-upload-target="progressBar" class="bg-pink-600 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+        </div>
+        <p data-drive-upload-target="progressText" class="text-sm text-gray-600 mt-2">Uploading...</p>
+      </div>
+      <div data-drive-upload-target="errorContainer" class="hidden mt-4">
+        <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+          <p data-drive-upload-target="errorMessage"></p>
+        </div>
+      </div>
+    </div>
+  <% end %>
+<% end %>

@@ -48,6 +48,13 @@
               class: "input-primary" %>
         </div>
 
+        <!-- Attachments Field -->
+        <div class="mb-8">
+          <%= tag.span "Attachments",
+              class: "block text-sm font-bold text-gray-900 mb-3 uppercase tracking-wide" %>
+          <%= render "order_checkouts/attachments", order: @cart %>
+        </div>
+
         <!-- Notes Field -->
         <div class="mb-8">
           <%= form.label :notes, "Notes",

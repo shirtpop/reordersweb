@@ -116,6 +116,7 @@ Rails.application.routes.draw do
     end
   end
   resource :checkout, only: [ :show, :create ], controller: "order_checkouts"
+  resources :checkout_attachments, only: [ :create, :destroy ], path: "checkout/attachments"
   resources :orders, only: [ :index, :show, :create ] do
     member do
       post :received

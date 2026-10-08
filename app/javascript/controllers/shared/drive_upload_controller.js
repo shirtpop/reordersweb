@@ -15,7 +15,10 @@ export default class extends Controller {
 
   static values = {
     attachableType: String,
-    attachableId: String
+    attachableId: String,
+    url: String,
+    allowedTypes: { type: Array, default: ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'] },
+    allowedLabel: { type: String, default: 'PNG, JPG, or GIF' }
   }
 
   connect() {
@@ -98,11 +101,11 @@ export default class extends Controller {
   validateFiles(files) {
     const validFiles = []
     const maxSize = 10 * 1024 * 1024 // 10MB
-    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif']
+    const allowedTypes = this.allowedTypesValue
     
     for (const file of files) {
       if (!allowedTypes.includes(file.type)) {
-        this.showError(`${file.name} is not a valid image type. Please use PNG, JPG, or GIF.`)
+        this.showError(`${file.name} is not a valid file type. Please use ${this.allowedLabelValue}.`)
         continue
       }
       
@@ -178,7 +181,7 @@ export default class extends Controller {
       })
       
       // Get the form action URL
-      const formAction = this.formTarget.action
+      const formAction = this.urlValue || this.formTarget.action
       
       xhr.open('POST', formAction)
       

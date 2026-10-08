@@ -1,4 +1,12 @@
 class Order < ApplicationRecord
+  include HasDriveFiles
+
+  ATTACHMENT_CONTENT_TYPES = %w[image/jpeg image/png image/gif image/webp image/heic application/pdf].freeze
+  ATTACHMENT_EXTENSIONS = %w[.jpg .jpeg .png .gif .webp .heic .pdf].freeze
+  MAX_ATTACHMENT_SIZE = 10.megabytes
+
+  self.max_drive_files = 2
+
   belongs_to :client
   belongs_to :catalog, optional: true
   belongs_to :ordered_by, class_name: "User", optional: true
@@ -36,6 +44,7 @@ class Order < ApplicationRecord
   validates :order_items, presence: true
   validates :price, numericality: { greater_than_or_equal_to: 0 }
   validates :total_quantity, numericality: { greater_than_or_equal_to: 0 }
+  validate :validate_max_drive_files
   validate :cancellation_only_allowed_from_submitted, if: -> { status_changed? && status_cancelled? }
 
   accepts_nested_attributes_for :order_items, allow_destroy: true

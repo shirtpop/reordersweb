@@ -285,6 +285,23 @@
         </div>
       <% end %>
 
+      <!-- Attachments -->
+      <% if @order.drive_files.any? %>
+        <div class="bg-white rounded-xl shadow-md border-2 border-gray-200 overflow-hidden">
+          <div class="bg-gradient-to-r from-gray-50 to-gray-100 px-6 py-4 border-b-2 border-gray-200">
+            <h3 class="text-lg font-bold text-gray-900">Attachments</h3>
+          </div>
+          <ul class="p-6 space-y-2">
+            <% @order.drive_files.each do |file| %>
+              <li>
+                <%= link_to file.filename, file.download_url, target: "_blank", rel: "noopener",
+                    class: "text-sm font-medium text-pink-600 hover:text-pink-700 hover:underline" %>
+              </li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
       <!-- Delivery Information -->
       <div class="bg-white rounded-xl shadow-md border-2 border-gray-200 overflow-hidden">
         <div class="bg-gradient-to-r from-gray-50 to-gray-100 px-6 py-4 border-b-2 border-gray-200">
