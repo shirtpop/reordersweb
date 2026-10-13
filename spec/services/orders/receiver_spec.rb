@@ -13,7 +13,7 @@ RSpec.describe Orders::Receiver do
       described_class.call!(order: order, user: user)
 
       aggregate_failures do
-        expect(described_class).to have_received(:new).with(order: order, user: user, apply_inventory: true)
+        expect(described_class).to have_received(:new).with(order: order, user: user, apply_inventory: true, record_receiver: true)
         expect(receiver).to have_received(:call!)
       end
     end

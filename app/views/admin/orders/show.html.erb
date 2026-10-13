@@ -194,6 +194,14 @@
               data: {
                 turbo_confirm: "Cancel this order? It will stop appearing in the client's order history, but admins will still be able to see it."
               } %>
+        <% elsif @order.status_processing? && !@order.received? && !@order.client.inventory_enabled? %>
+          <%= button_to "Mark as Received",
+              mark_as_received_admin_order_path(@order),
+              method: :post,
+              class: "w-full inline-flex items-center justify-center px-4 py-2 bg-green-600 border border-transparent rounded-md font-semibold text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors",
+              data: {
+                turbo_confirm: "Mark this order as received on behalf of the client?"
+              } %>
         <% end %>
       </div>
 

@@ -1,7 +1,7 @@
 module Admin
   class OrdersController < BaseController
     def index
-      scope = params[:q].present? ? Order.search_by_keyword(params[:q]) : Order.order(created_at: :desc)
+      scope = params[:q].present? ? Order.submitted.search_by_keyword(params[:q]) : Order.submitted.order(created_at: :desc)
       @pagy, @orders = pagy(scope.includes(:client, :catalog))
     end
 
@@ -25,6 +25,24 @@ module Admin
       redirect_to admin_order_path(@order), notice: "Order marked as processing."
     rescue ActiveRecord::RecordInvalid => e
       redirect_to admin_order_path(@order), alert: "Failed to update order: #{e.message}"
+    end
+
+    def mark_as_received
+      @order = Order.find(params[:id])
+      if @order.client.inventory_enabled?
+        return redirect_to admin_order_path(@order),
+          alert: "This client tracks inventory, so the order must be received on the client side."
+      end
+
+      Orders::Receiver.call!(
+        order: @order,
+        user: current_user,
+        apply_inventory: false,
+        record_receiver: false
+      )
+      redirect_to admin_order_path(@order), notice: "Order marked as received."
+    rescue Orders::Receiver::Error => e
+      redirect_to admin_order_path(@order), alert: e.message
     end
 
     def cancel

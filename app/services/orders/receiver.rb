@@ -6,16 +6,17 @@ module Orders
     class InventoryLockError < Error; end
     class BusinessRuleError < Error; end
 
-    def self.call!(order:, user:, apply_inventory: true)
-      new(order:, user:, apply_inventory:).call!
+    def self.call!(order:, user:, apply_inventory: true, record_receiver: true)
+      new(order:, user:, apply_inventory:, record_receiver:).call!
     end
 
     attr_reader :order, :user
 
-    def initialize(order:, user:, apply_inventory: true)
+    def initialize(order:, user:, apply_inventory: true, record_receiver: true)
       @order = order
       @user = user
       @apply_inventory = apply_inventory
+      @record_receiver = record_receiver
     end
 
     def call!
@@ -103,7 +104,7 @@ module Orders
       order.update!(
         status: :received,
         received_at: Time.current,
-        received_by_id: user.id
+        received_by_id: (user.id if @record_receiver)
       )
     end
   end
