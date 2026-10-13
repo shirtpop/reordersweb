@@ -1,0 +1,42 @@
+<div class="w-full p-4 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+  <div class="mb-4">
+    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Visitors Log</h3>
+    <p class="text-sm text-gray-500 dark:text-gray-400">Last 10 users who signed in</p>
+  </div>
+
+  <div class="overflow-x-auto">
+    <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+      <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+        <tr>
+          <th scope="col" class="px-4 py-3">User</th>
+          <th scope="col" class="px-4 py-3">Client</th>
+          <th scope="col" class="px-4 py-3">Signed in</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if visitors.any? %>
+          <% visitors.each do |user| %>
+            <tr class="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700">
+              <td class="px-4 py-3 font-medium text-gray-900 dark:text-white">
+                <%= user.full_name.presence || user.email %>
+                <% if user.full_name.present? %>
+                  <div class="text-xs font-normal text-gray-500 dark:text-gray-400"><%= user.email %></div>
+                <% end %>
+              </td>
+              <td class="px-4 py-3"><%= user.client&.company_name || "—" %></td>
+              <td class="px-4 py-3" title="<%= l(user.current_sign_in_at, format: :long) %>">
+                <%= time_ago_in_words(user.current_sign_in_at) %> ago
+              </td>
+            </tr>
+          <% end %>
+        <% else %>
+          <tr>
+            <td colspan="5" class="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
+              No sign-ins yet
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

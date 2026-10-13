@@ -33,6 +33,11 @@ module Admin
                                     .includes(:client)
                                     .order(delivery_date: :asc)
                                     .limit(20)
+
+      @recent_visitors = User.role_client.where.not(current_sign_in_at: nil)
+                             .includes(:client)
+                             .order(current_sign_in_at: :desc)
+                             .limit(10)
     end
 
     def chart_data
